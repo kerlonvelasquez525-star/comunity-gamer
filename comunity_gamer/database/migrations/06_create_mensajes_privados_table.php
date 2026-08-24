@@ -11,20 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-
         Schema::create('mensajes_privados', function (Blueprint $table) {
-            $table->integer('id_mensaje')->primary()->autoIncrement();
-            $table->integer('id_emisor');
-            $table->foreign('id_emisor')->references('id_usuario')->on('usuarios');
-            $table->integer('id_receptor');
-            $table->foreign('id_receptor')->references('id_usuario')->on('usuarios');
+            $table->id('id_mensaje');
+            $table->foreignId('id_emisor')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('id_receptor')->constrained('users')->cascadeOnDelete();
             $table->text('contenido');
             $table->timestamp('fecha_envio')->useCurrent();
             $table->boolean('leido');
+
+            $table->index(['id_receptor', 'leido', 'fecha_envio']);
+            $table->index(['id_emisor', 'id_receptor', 'fecha_envio']);
         });
 
-        Schema::enableForeignKeyConstraints();
     }
 
     /**

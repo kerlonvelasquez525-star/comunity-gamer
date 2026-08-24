@@ -6,20 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('etiquetas', function (Blueprint $table) {
-            $table->integer('id_etiqueta')->primary()->autoIncrement();
-            $table->string('nombre', 40)->unique();
+            $table->id('id_etiqueta');
+            $table->string('nombre')->unique();
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('etiquetas');

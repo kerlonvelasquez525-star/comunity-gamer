@@ -4,33 +4,21 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::disableForeignKeyConstraints();
-
+return new class extends Migration {
+    public function up(): void {
         Schema::create('aportes', function (Blueprint $table) {
-            $table->integer('id_aporte')->primary()->autoIncrement();
-            $table->integer('id_hilo');
-            $table->foreign('id_hilo')->references('id_hilo')->on('hilos');
-            $table->integer('id_usuario');
+            $table->id('id_aporte');
+            $table->foreignId('id_hilo')->constrained('hilos', 'id_hilo')->cascadeOnDelete();
+            $table->foreignId('id_usuario')->constrained('users')->cascadeOnDelete();
             $table->text('contenido');
-            $table->timestamp('fecha')->useCurrent();
-            $table->integer('id_aporte_padre')->nullable();
-        });
+            $table->timestamp('fecha_aporte')->useCurrent();
 
-        Schema::enableForeignKeyConstraints();
+            $table->index(['id_hilo', 'fecha_aporte']);
+            $table->index('id_usuario');
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('aportes');
     }
 };

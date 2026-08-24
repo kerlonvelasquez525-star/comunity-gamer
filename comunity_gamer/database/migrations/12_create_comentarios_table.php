@@ -4,33 +4,21 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::disableForeignKeyConstraints();
-
+return new class extends Migration {
+    public function up(): void {
         Schema::create('comentarios', function (Blueprint $table) {
-            $table->integer('id_comentario')->primary()->autoIncrement();
-            $table->integer('id_publicacion');
-            $table->foreign('id_publicacion')->references('id_publicacion')->on('publicaciones');
-            $table->integer('id_usuario');
+            $table->id('id_comentario');
+            $table->foreignId('id_publicacion')->constrained('publicaciones')->cascadeOnDelete();
+            $table->foreignId('id_usuario')->constrained('users')->cascadeOnDelete();
             $table->text('contenido');
-            $table->timestamp('fecha')->useCurrent();
-            $table->integer('id_comentario_padre')->nullable();
-        });
+            $table->timestamp('fecha_comentario')->useCurrent();
 
-        Schema::enableForeignKeyConstraints();
+            $table->index(['id_publicacion', 'fecha_comentario']);
+            $table->index('id_usuario');
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('comentarios');
     }
 };

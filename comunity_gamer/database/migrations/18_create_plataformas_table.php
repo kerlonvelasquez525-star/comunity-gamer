@@ -6,20 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('plataformas', function (Blueprint $table) {
-            $table->integer('id_plataforma')->primary()->autoIncrement();
-            $table->string('nombre', 40)->unique();
+            $table->id();
+            $table->string('nombre')->unique(); // Ej: PC, PS5, Xbox
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('plataformas');

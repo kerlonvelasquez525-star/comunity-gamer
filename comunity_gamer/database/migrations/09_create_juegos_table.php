@@ -6,22 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('juegos', function (Blueprint $table) {
-            $table->integer('id_juego')->primary()->autoIncrement();
-            $table->string('nombre', 100)->unique();
-            $table->string('genero', 50)->nullable();
-            $table->string('imagen_url', 255)->nullable();
+            $table->id();
+            $table->string('titulo');
+            $table->text('descripcion')->nullable();
+            $table->string('desarrollador')->nullable();
+            $table->date('fecha_lanzamiento')->nullable();
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('juegos');

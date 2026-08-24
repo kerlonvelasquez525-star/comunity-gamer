@@ -4,33 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::disableForeignKeyConstraints();
-
+return new class extends Migration {
+    public function up(): void {
         Schema::create('respuestas_soporte', function (Blueprint $table) {
-            $table->integer('id_respuesta')->primary()->autoIncrement();
-            $table->integer('id_reporte');
-            $table->foreign('id_reporte')->references('id_reporte')->on('reportes_soporte');
-            $table->integer('id_usuario');
-            $table->text('contenido');
-            $table->boolean('es_solucion');
-            $table->timestamp('fecha')->useCurrent();
-        });
+            $table->id('id_respuesta');
+            $table->foreignId('id_reporte')->constrained('reportes_soporte', 'id_reporte')->cascadeOnDelete();
+            $table->foreignId('id_usuario')->constrained('users')->cascadeOnDelete();
+            $table->text('mensaje');
+            $table->timestamp('fecha_respuesta')->useCurrent();
 
-        Schema::enableForeignKeyConstraints();
+            $table->index(['id_reporte', 'fecha_respuesta']);
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('respuestas_soporte');
     }
 };

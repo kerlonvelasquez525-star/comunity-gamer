@@ -4,33 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::disableForeignKeyConstraints();
-
+return new class extends Migration {
+    public function up(): void {
         Schema::create('votos_soporte', function (Blueprint $table) {
-            $table->integer('id_voto')->primary()->autoIncrement();
-            $table->integer('id_usuario');
-            $table->tinyInteger('valor');
-            $table->integer('id_reporte')->nullable();
-            $table->integer('id_respuesta')->nullable();
-            $table->unique(['id_usuario', 'id_respuesta']);
-            $table->unique(['id_usuario', 'id_reporte']);
+            $table->id('id_voto');
+            $table->foreignId('id_reporte')->constrained('reportes_soporte', 'id_reporte')->cascadeOnDelete();
+            $table->foreignId('id_usuario')->constrained('users')->cascadeOnDelete();
+            $table->smallInteger('voto'); // +1 o -1
+            $table->unique(['id_reporte', 'id_usuario']);
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('votos_soporte');
     }
 };

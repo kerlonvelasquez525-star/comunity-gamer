@@ -4,32 +4,21 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::disableForeignKeyConstraints();
-
+return new class extends Migration {
+    public function up(): void {
         Schema::create('reacciones', function (Blueprint $table) {
-            $table->integer('id_reaccion')->primary()->autoIncrement();
-            $table->integer('id_usuario');
-            $table->enum('tipo', ["like","love","haha","wow","sad","angry"]);
-            $table->integer('id_publicacion')->nullable();
-            $table->integer('id_mensaje')->nullable();
-            $table->integer('id_comentario')->nullable();
-        });
+            $table->id('id_reaccion');
+            $table->foreignId('id_usuario')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('id_publicacion')->constrained('publicaciones')->cascadeOnDelete();
+            $table->string('tipo', 20);
+            $table->timestamp('fecha')->useCurrent();
 
-        Schema::enableForeignKeyConstraints();
+            $table->unique(['id_usuario', 'id_publicacion']);
+            $table->index(['id_publicacion', 'tipo']);
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::dropIfExists('reacciones');
     }
 };

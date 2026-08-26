@@ -16,7 +16,7 @@ Route::prefix('{current_team}')
         Route::view('dashboard', 'dashboard')->name('dashboard');
         
         // Tus rutas de recursos:
-        Route::resource('home', HomeController::class);
+        Route::get('home', [HomeController::class, 'index'])->name('home.index');
         Route::resource('noticias', NoticiasController::class);
         Route::resource('comentarios', ComentariosController::class);
         Route::resource('comunidad', ComunidadController::class);

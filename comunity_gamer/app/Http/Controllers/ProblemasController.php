@@ -3,63 +3,64 @@
 namespace App\Http\Controllers;
 
 use App\Models\Problemas;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProblemasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $problemas = Problemas::query()
+            ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')))
+            ->when($request->filled('prioridad'), fn ($query) => $query->where('prioridad', $request->string('prioridad')))
+            ->latest()
+            ->paginate($request->integer('per_page', 15));
+
+        return response()->json($problemas);
+    }
+   public function create(): JsonResponse
+    {
+        return response()->json(['message' => 'Formulario de reporte disponible.']);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(Request $request): JsonResponse
     {
-        //
-    }
+        $problema = Problemas::create($request->validate([
+            'titulo' => ['required', 'string', 'max:160'],
+            'descripcion' => ['required', 'string', 'max:5000'],
+            'prioridad' => ['required', 'in:baja,media,alta,critica'],
+            'plataforma' => ['nullable', 'string', 'max:80'],
+        ]) + [
+            'estado' => 'abierto',
+            'user_id' => $request->user()->id,
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return response()->json($problema, 201);
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Problemas $problemas)
+    public function show(Problemas $problema): JsonResponse
     {
-        //
+        return response()->json($problema);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Problemas $problemas)
+    public function edit(Problemas $problema): JsonResponse
     {
-        //
+        return response()->json($problema);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Problemas $problemas)
+    public function update(Request $request, Problemas $problema): JsonResponse
     {
-        //
+        $problema->update($request->validate([
+            'titulo' => ['sometimes', 'required', 'string', 'max:160'],
+            'descripcion' => ['sometimes', 'required', 'string', 'max:5000'],
+            'prioridad' => ['sometimes', 'required', 'in:baja,media,alta,critica'],
+            'estado' => ['sometimes', 'required', 'in:abierto,en_progreso,resuelto,cerrado'],
+            'plataforma' => ['nullable', 'string', 'max:80'],
+        ]));
+
+        return response()->json($problema->fresh());
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Problemas $problemas)
+    public function destroy(Problemas $problema): JsonResponse
     {
-        //
+        $problema->delete();
+
+        return response()->json(['message' => 'Reporte eliminado correctamente.']);
     }
 }

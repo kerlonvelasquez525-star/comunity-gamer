@@ -3,63 +3,60 @@
 namespace App\Http\Controllers;
 
 use App\Models\noticias;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NoticiasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $noticias = noticias::query()
+            ->latest()
+            ->paginate($request->integer('per_page', 12));
+
+        return response()->json($noticias);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): JsonResponse
     {
-        //
+        return response()->json(['message' => 'Formulario de creación disponible.']);
+    }
+    public function store(Request $request): JsonResponse
+    {
+        $noticia = noticias::create($request->validate([
+            'titulo' => ['required', 'string', 'max:180'],
+            'contenido' => ['required', 'string', 'max:10000'],
+            'categoria' => ['nullable', 'string', 'max:80'],
+            'imagen_url' => ['nullable', 'url', 'max:2048'],
+        ]));
+
+        return response()->json($noticia, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(noticias $noticia): JsonResponse
     {
-        //
+        return response()->json($noticia);
+    }
+    public function edit(noticias $noticia): JsonResponse
+    {
+        return response()->json($noticia);
+    }
+    public function update(Request $request, noticias $noticia): JsonResponse
+    {
+        $noticia->update($request->validate([
+            'titulo' => ['sometimes', 'required', 'string', 'max:180'],
+            'contenido' => ['sometimes', 'required', 'string', 'max:10000'],
+            'categoria' => ['nullable', 'string', 'max:80'],
+            'imagen_url' => ['nullable', 'url', 'max:2048'],
+        ]));
+
+        return response()->json($noticia->fresh());
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(noticias $noticias)
+    public function destroy(noticias $noticia): JsonResponse
     {
-        //
-    }
+        $noticia->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(noticias $noticias)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, noticias $noticias)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(noticias $noticias)
-    {
-        //
+        return response()->json(['message' => 'Noticia eliminada correctamente.']);
     }
 }

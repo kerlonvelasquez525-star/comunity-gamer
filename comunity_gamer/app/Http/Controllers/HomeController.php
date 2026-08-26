@@ -2,64 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\home;
+use App\Models\Comentarios;
+use App\Models\Comunidad;
+use App\Models\noticias;
+use App\Models\Problemas;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        return response()->json([
+            'noticias_recientes' => noticias::query()->latest()->limit(5)->get(),
+            'comunidades_activas' => Comunidad::query()->latest()->limit(5)->get(),
+            'problemas_abiertos' => Problemas::query()->whereIn('estado', ['abierto', 'en_progreso'])->count(),
+            'comentarios_totales' => Comentarios::query()->count(),
+        ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): JsonResponse
     {
-        //
+        return response()->json(['message' => 'La portada es de solo lectura.'], 405);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        return response()->json(['message' => 'La portada es de solo lectura.'], 405);
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(home $home)
+    public function show(): JsonResponse
     {
-        //
+        return $this->index();
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(home $home)
+    public function edit(): JsonResponse
     {
-        //
+        return response()->json(['message' => 'La portada es de solo lectura.'], 405);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, home $home)
+    public function update(Request $request): JsonResponse
     {
-        //
+        return response()->json(['message' => 'La portada es de solo lectura.'], 405);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(home $home)
+    public function destroy(): JsonResponse
     {
-        //
+        return response()->json(['message' => 'La portada es de solo lectura.'], 405);
     }
 }

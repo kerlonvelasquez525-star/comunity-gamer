@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('problemas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->string('titulo', 160);
+            $table->text('descripcion');
+            $table->string('estado', 30)->default('abierto');
+            $table->string('prioridad', 30)->default('media');
+            $table->string('plataforma', 80)->nullable();
             $table->timestamps();
         });
     }

@@ -16,8 +16,16 @@ return new class extends Migration
         }
 
         Schema::create('comentarios', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_comentario');
+            $table->foreignId('team_id')->nullable()->constrained('teams')->nullOnDelete();
+            $table->foreignId('id_publicacion')->constrained('publicaciones')->cascadeOnDelete();
+            $table->foreignId('id_usuario')->constrained('users')->cascadeOnDelete();
+            $table->text('contenido');
+            $table->timestamp('fecha_comentario')->useCurrent();
             $table->timestamps();
+
+            $table->index(['id_publicacion', 'fecha_comentario']);
+            $table->index('id_usuario');
         });
     }
 

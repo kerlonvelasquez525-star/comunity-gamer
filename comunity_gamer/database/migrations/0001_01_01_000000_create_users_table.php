@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password'); // Hash de la contraseña (reemplaza a contrasena_hash para compatibilidad)
             $table->string('avatar_url', 255)->nullable();
             $table->text('biografia')->nullable();
-            $table->enum('estado', ["en_linea", "ausente", "desconectado"])->default('desconectado');
+            $table->enum('estado', ['en_linea', 'ausente', 'desconectado'])->default('desconectado');
             $table->rememberToken();
             $table->timestamps(); // Genera created_at (reemplaza a fecha_registro) y updated_at
         });

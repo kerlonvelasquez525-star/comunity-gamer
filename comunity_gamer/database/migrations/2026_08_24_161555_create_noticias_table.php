@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('noticias', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('team_id')->nullable()->constrained('teams')->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('titulo', 180);
             $table->text('contenido');
             $table->string('categoria', 80)->nullable();

@@ -20,5 +20,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('reportes_etiquetas');
     }
-
 };

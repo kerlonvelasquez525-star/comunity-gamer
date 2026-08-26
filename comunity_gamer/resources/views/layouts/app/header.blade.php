@@ -13,6 +13,15 @@
                 <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
+                <flux:navbar.item icon="newspaper" :href="route('noticias.index')" :current="request()->routeIs('noticias.*')" wire:navigate>
+                    Noticias
+                </flux:navbar.item>
+                <flux:navbar.item icon="users" :href="route('comunidad.index')" :current="request()->routeIs('comunidad.*')" wire:navigate>
+                    Comunidades
+                </flux:navbar.item>
+                <flux:navbar.item icon="bug-ant" :href="route('problemas.index')" :current="request()->routeIs('problemas.*')" wire:navigate>
+                    Soporte
+                </flux:navbar.item>
             </flux:navbar>
 
             <flux:spacer />
@@ -62,6 +71,9 @@
                     <flux:sidebar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard')  }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="newspaper" :href="route('noticias.index')" :current="request()->routeIs('noticias.*')" wire:navigate>Noticias</flux:sidebar.item>
+                    <flux:sidebar.item icon="users" :href="route('comunidad.index')" :current="request()->routeIs('comunidad.*')" wire:navigate>Comunidades</flux:sidebar.item>
+                    <flux:sidebar.item icon="bug-ant" :href="route('problemas.index')" :current="request()->routeIs('problemas.*')" wire:navigate>Soporte</flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

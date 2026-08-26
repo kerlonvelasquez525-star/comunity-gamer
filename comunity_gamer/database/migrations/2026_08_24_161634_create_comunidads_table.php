@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -11,10 +9,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comunidads', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        // The canonical communities table is created by 02_create_comunidades_table.
     }
 
     /**
@@ -22,6 +17,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comunidads');
+        // Kept as a no-op for compatibility with databases that ran this migration.
     }
 };

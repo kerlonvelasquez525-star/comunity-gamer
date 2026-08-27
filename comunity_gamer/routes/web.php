@@ -21,6 +21,7 @@ Route::prefix('{current_team}')
         Route::resource('comentarios', ComentariosController::class);
         Route::resource('comunidad', ComunidadController::class);
         Route::resource('problemas', ProblemasController::class);
+        Route::view('/', 'pages.home')->name('home');
     });
 
 require __DIR__.'/settings.php';

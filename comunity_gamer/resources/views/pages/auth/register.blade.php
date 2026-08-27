@@ -6,13 +6,13 @@
 </head>
 <body>
 
-    <a href="{{ route('home') }}" class="logo-corner-link" wire:navigate>
+    <a href="{{ route('home') }}" class="logo-corner-link">
         <img src="{{ asset('nexus.png') }}" alt="Logo Comunidad Gamer" class="logo-corner">
     </a>
 
     <div class="login-container">
         <div class="login-header">
-            <a href="{{ route('home') }}" class="back-link" wire:navigate>&larr; Volver al inicio</a>
+            <a href="{{ route('home') }}" class="back-link">&larr; Volver al inicio</a>
         </div>
         <span class="logo-tag">// Comunidad Gamer</span>
 

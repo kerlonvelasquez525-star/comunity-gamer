@@ -2,11 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  @include('partials.head', ['title' => __('Log in')])
-    <link rel="stylesheet" href="{{ asset('css/style_sb.css') }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <title>nova-community | Cyberpunk Gaming Portal</title>
+  @include('partials.head', ['title' => 'Nova Community'])
+  <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
@@ -17,7 +15,7 @@
       <div class="brand-title">nova-comunity</div>
     </div>
     <nav>
-      <a href="/thomas/index.html" class="active">Home</a>
+      <a href="{{ route('home') }}" class="active">Home</a>
       <a href="#">noticias</a>
       <a href="#">comentarios</a>
       <a href="#">comunidad</a>
@@ -28,7 +26,7 @@
         <span class="status-dot"></span>
         SYS_STATUS: ONLINE
       </div>
-      <a href="/sebastian/index.html" class="btn-signin"><i class="fa-solid fa-user"></i> &gt;</a>
+      <a href="{{ route('login') }}" class="btn-signin"><i class="fa-solid fa-user"></i> &gt;</a>
     </div>
   </header>
 
@@ -44,8 +42,8 @@
       </p>
 
       <div class="cta-group">
-        <a href="/sebastian/index.html" class="btn-primary">iniciar sesion &gt;</a>
-        <a href="/sebastian/index.html" class="btn-icon">registrarse &gt;</a>
+        <a href="{{ route('login') }}" class="btn-primary">iniciar sesion &gt;</a>
+        <a href="{{ route('register') }}" class="btn-icon">registrarse &gt;</a>
       </div>
 
       <!-- Métricas / Estadísticas -->
@@ -238,10 +236,16 @@
   </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    const resetWelcomePosition = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
       const slider = document.getElementById('slider');
       const btnUp = document.getElementById('slider-up');
       const btnDown = document.getElementById('slider-down');
+
+      if (slider) {
+        slider.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
 
       if (slider && btnUp && btnDown) {
         const scrollAmount = () => slider.clientHeight * 0.9;
@@ -254,7 +258,10 @@
           slider.scrollBy({ top: scrollAmount(), behavior: 'smooth' });
         });
       }
-    });
+    };
+
+    document.addEventListener('DOMContentLoaded', resetWelcomePosition);
+    document.addEventListener('livewire:navigated', resetWelcomePosition);
   </script>
 
 </body>

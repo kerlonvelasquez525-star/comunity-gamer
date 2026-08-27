@@ -238,6 +238,34 @@ body::before {
   display: inline-block;
 }
 
+.field-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ff4d6d;
+  text-shadow: 0 0 6px rgba(255, 77, 109, 0.6);
+}
+
+.switch-note {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 13px;
+  color: #a99cc9;
+}
+
+.switch-note a {
+  margin-left: 6px;
+  color: #00ffc8;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.switch-note a:hover {
+  color: #ff2ee6;
+  text-shadow: 0 0 8px rgba(255, 46, 230, 0.8);
+}
+
 .back-link:hover {
   color: #ff2ee6;
   text-shadow: 0 0 8px rgba(255, 46, 230, 0.8);

@@ -10,7 +10,7 @@
     ];
 @endphp
 
-<x-layouts::guest :title="__('Nexus Community')">
+<x-layouts::public :title="__('Nexus Community')">
     @push('styles')
         <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
     @endpush
@@ -188,4 +188,4 @@
     </div>
 
     <script src="{{ asset('js/home.js') }}" defer></script>
-</x-layouts::guest>
+</x-layouts::public>

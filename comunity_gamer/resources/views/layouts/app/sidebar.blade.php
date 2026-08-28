@@ -10,17 +10,17 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
-                @if ($teamSlug)
-                    <x-app-logo :sidebar="true" href="{{ route('dashboard', $teamSlug) }}" wire:navigate />
-                @else
-                    <x-app-logo :sidebar="true" href="{{ route('home') }}" wire:navigate />
+                @auth
+                    @if ($teamSlug)
+                        <x-app-logo :sidebar="true" href="{{ route('dashboard', $teamSlug) }}" wire:navigate />
+                    @else
+                        <x-app-logo :sidebar="true" href="{{ route('home') }}" wire:navigate />
+                    @endif
+
+                    <livewire:team-switcher />
                 @endif
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
-
-            @auth
-                <livewire:team-switcher />
-            @endauth
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">

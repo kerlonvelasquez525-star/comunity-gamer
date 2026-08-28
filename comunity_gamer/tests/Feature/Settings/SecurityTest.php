@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Settings;
 
-use App\Livewire\Pages\Settings\Security;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;

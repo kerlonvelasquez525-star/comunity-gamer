@@ -18,6 +18,7 @@ class ComunidadController extends Controller
         $comunidades = Comunidad::query()
             ->where('team_id', $team->id)
             ->when($request->filled('buscar'), fn ($query) => $query->where('nombre', 'like', '%'.$request->string('buscar').'%'))
+            ->with('creador')
             ->withCount('miembros')
             ->latest()
             ->paginate($request->integer('per_page', 12))
@@ -25,11 +26,11 @@ class ComunidadController extends Controller
 
         return $request->expectsJson()
             ? response()->json($comunidades)
-            : response()->view('gamer.index', [
+            : response()->view('pages::auth.comunidad', [
                 'resource' => 'comunidad',
                 'title' => 'Comunidades gamer',
                 'items' => $comunidades,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -39,11 +40,11 @@ class ComunidadController extends Controller
         Gate::authorize('create', [Comunidad::class, $team]);
 
         return $request->expectsJson()
-            ? response()->json(['message' => 'Formulario de creación disponible.'])
+            ? response()->json(['message' => 'Formulario de creacion disponible.'])
             : response()->view('gamer.form', [
                 'resource' => 'comunidad',
                 'title' => 'Nueva comunidad',
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -65,7 +66,7 @@ class ComunidadController extends Controller
             ]);
 
             $comunidad->miembros()->syncWithoutDetaching([
-                $request->user()->id => ['rol' => 'admin']
+                $request->user()->id => ['rol' => 'admin'],
             ]);
 
             return $comunidad;
@@ -89,7 +90,7 @@ class ComunidadController extends Controller
                 'resource' => 'comunidad',
                 'title' => $comunidad->nombre,
                 'item' => $comunidad,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -104,7 +105,7 @@ class ComunidadController extends Controller
                 'resource' => 'comunidad',
                 'title' => 'Editar comunidad',
                 'item' => $comunidad,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -129,7 +130,7 @@ class ComunidadController extends Controller
     {
         $team = $this->currentTeam($request);
         Gate::authorize('delete', [$comunidad, $team]);
-        
+
         $comunidad->delete();
 
         return $request->expectsJson()

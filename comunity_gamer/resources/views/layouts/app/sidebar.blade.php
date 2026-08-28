@@ -1,3 +1,7 @@
+@php
+    $teamSlug = auth()->user()?->currentTeam?->slug;
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
@@ -6,20 +10,70 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard', ['current_team' => auth()->user()?->currentTeam?->slug ?? 'default']) }}" wire:navigate />
+                @if ($teamSlug)
+                    <x-app-logo :sidebar="true" href="{{ route('dashboard', $teamSlug) }}" wire:navigate />
+                @else
+                    <x-app-logo :sidebar="true" href="{{ route('home') }}" wire:navigate />
+                @endif
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
-            {{-- Cargar el selector de equipos solo si el usuario está autenticado --}}
             @auth
                 <livewire:team-switcher />
             @endauth
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard', ['current_team' => auth()->user()?->currentTeam?->slug ?? 'default'])" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
-                    </flux:sidebar.item>
+                    @if ($teamSlug)
+                        <flux:sidebar.item
+                            icon="home"
+                            :href="route('dashboard', $teamSlug)"
+                            :current="request()->routeIs('dashboard')"
+                            wire:navigate
+                        >
+                            {{ __('Dashboard') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item
+                            icon="newspaper"
+                            :href="route('noticias.index', $teamSlug)"
+                            :current="request()->routeIs('noticias.*')"
+                            wire:navigate
+                        >
+                            {{ __('Noticias') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item
+                            icon="chat-bubble-left-right"
+                            :href="route('comentarios.index', $teamSlug)"
+                            :current="request()->routeIs('comentarios.*')"
+                            wire:navigate
+                        >
+                            {{ __('Comentarios') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item
+                            icon="user-group"
+                            :href="route('comunidad.index', $teamSlug)"
+                            :current="request()->routeIs('comunidad.*')"
+                            wire:navigate
+                        >
+                            {{ __('Comunidades') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item
+                            icon="exclamation-triangle"
+                            :href="route('problemas.index', $teamSlug)"
+                            :current="request()->routeIs('problemas.*')"
+                            wire:navigate
+                        >
+                            {{ __('Problemas') }}
+                        </flux:sidebar.item>
+                    @else
+                        <flux:sidebar.item icon="home" :href="route('home')" wire:navigate>
+                            {{ __('Inicio') }}
+                        </flux:sidebar.item>
+                    @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 
@@ -35,7 +89,6 @@
                 </flux:sidebar.item>
             </flux:sidebar.nav>
 
-            {{-- Menú de usuario de escritorio seguro --}}
             @auth
                 <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
             @endauth

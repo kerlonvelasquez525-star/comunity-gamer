@@ -12,33 +12,39 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HomeController extends Controller
 {
+    /**
+     * Panel principal del equipo: metricas y ultimos movimientos.
+     */
     public function index(Request $request): Response
     {
         $team = $this->currentTeam($request);
+
         Gate::authorize('viewAny', [noticias::class, $team]);
 
         $data = [
-            'noticias_recientes' => noticias::where('team_id', $team->id)->latest()->limit(5)->get(),
-            'comunidades_activas' => Comunidad::where('team_id', $team->id)->latest()->limit(5)->get(),
-            'problemas_abiertos' => Problemas::where('team_id', $team->id)->whereIn('estado', ['abierto', 'en_progreso'])->count(),
-            'comentarios_totales' => Comentarios::where('team_id', $team->id)->count(),
             'team' => $team,
+            'noticias_recientes' => noticias::query()
+                ->where('team_id', $team->id)
+                ->with('autor')
+                ->latest()
+                ->limit(5)
+                ->get(),
+            'comunidades_activas' => Comunidad::query()
+                ->where('team_id', $team->id)
+                ->withCount('miembros')
+                ->latest()
+                ->limit(5)
+                ->get(),
+            'noticias_totales' => noticias::where('team_id', $team->id)->count(),
+            'comentarios_totales' => Comentarios::where('team_id', $team->id)->count(),
+            'problemas_abiertos' => Problemas::query()
+                ->where('team_id', $team->id)
+                ->whereIn('estado', ['abierto', 'en_progreso'])
+                ->count(),
         ];
 
         return $request->expectsJson()
             ? response()->json($data)
-            : response()->view('gamer.home', $data);
-    }
-
-    public function create(Request $request): Response { return $this->readonlyResponse(); }
-    public function store(Request $request): Response { return $this->readonlyResponse(); }
-    public function show(Request $request): Response { return $this->index($request); }
-    public function edit(Request $request): Response { return $this->readonlyResponse(); }
-    public function update(Request $request): Response { return $this->readonlyResponse(); }
-    public function destroy(Request $request): Response { return $this->readonlyResponse(); }
-
-    private function readonlyResponse(): Response
-    {
-        return response()->json(['message' => 'La portada es de solo lectura.'], 405);
+            : response()->view('dashboard', $data);
     }
 }

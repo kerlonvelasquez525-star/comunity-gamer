@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
-<head>
-    @include('partials.head', ['title' => __('Log in')])
+<x-layouts::auth :title="__('Log in')">
     <link rel="stylesheet" href="{{ asset('css/style_sb.css') }}">
-</head>
-<body>
 
     <a href="{{ route('home') }}" class="logo-corner-link">
         <img src="{{ asset('nexus.png') }}" alt="Logo Comunidad Gamer" class="logo-corner">
@@ -93,8 +88,4 @@
 
     </div>
 
-    <script src="{{ asset('js/inicio.js') }}"></script>
-
-    @fluxScripts
-</body>
-</html>
+</x-layouts::auth>

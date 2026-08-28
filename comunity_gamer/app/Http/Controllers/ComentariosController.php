@@ -17,6 +17,7 @@ class ComentariosController extends Controller
 
         $comentarios = Comentarios::query()
             ->where('team_id', $team->id)
+            ->with('autor')
             ->when($request->filled('publicacion_id'), fn ($query) => $query->where('id_publicacion', $request->integer('publicacion_id')))
             ->latest('fecha_comentario')
             ->paginate($request->integer('per_page', 20))
@@ -24,11 +25,11 @@ class ComentariosController extends Controller
 
         return $request->expectsJson()
             ? response()->json($comentarios)
-            : response()->view('gamer.index', [
+            : response()->view('pages::auth.comentarios', [
                 'resource' => 'comentarios',
                 'title' => 'Comentarios de la comunidad',
                 'items' => $comentarios,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -38,11 +39,11 @@ class ComentariosController extends Controller
         Gate::authorize('create', [Comentarios::class, $team]);
 
         return $request->expectsJson()
-            ? response()->json(['message' => 'Formulario de creación disponible.'])
+            ? response()->json(['message' => 'Formulario de creacion disponible.'])
             : response()->view('gamer.form', [
                 'resource' => 'comentarios',
                 'title' => 'Nuevo comentario',
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -62,7 +63,7 @@ class ComentariosController extends Controller
                 ->where('team_id', $team->id)
                 ->exists(),
             404,
-            'La publicación solicitada no pertenece a este equipo.'
+            'La publicacion solicitada no pertenece a este equipo.'
         );
 
         $comentario = Comentarios::create([
@@ -87,7 +88,7 @@ class ComentariosController extends Controller
                 'resource' => 'comentarios',
                 'title' => 'Comentario',
                 'item' => $comentario,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -102,7 +103,7 @@ class ComentariosController extends Controller
                 'resource' => 'comentarios',
                 'title' => 'Editar comentario',
                 'item' => $comentario,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -126,7 +127,7 @@ class ComentariosController extends Controller
     {
         $team = $this->currentTeam($request);
         Gate::authorize('delete', [$comentario, $team]);
-        
+
         $comentario->delete();
 
         return $request->expectsJson()

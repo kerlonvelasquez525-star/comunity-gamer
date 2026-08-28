@@ -13,3 +13,6 @@
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance
+
+{{-- Hojas de estilo especificas de cada pagina: @push('styles') desde la vista --}}
+@stack('styles')

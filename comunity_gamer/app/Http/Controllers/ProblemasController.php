@@ -16,6 +16,7 @@ class ProblemasController extends Controller
 
         $problemas = Problemas::query()
             ->where('team_id', $team->id)
+            ->with('autor')
             ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')))
             ->when($request->filled('prioridad'), fn ($query) => $query->where('prioridad', $request->string('prioridad')))
             ->latest()
@@ -28,10 +29,13 @@ class ProblemasController extends Controller
                 'resource' => 'problemas',
                 'title' => 'Centro de problemas',
                 'items' => $problemas,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
+    /**
+     * Formulario publico de reporte (pages/auth/problemas.blade.php).
+     */
     public function create(Request $request): Response
     {
         $team = $this->currentTeam($request);
@@ -39,10 +43,10 @@ class ProblemasController extends Controller
 
         return $request->expectsJson()
             ? response()->json(['message' => 'Formulario de reporte disponible.'])
-            : response()->view('gamer.form', [
+            : response()->view('pages::auth.problemas', [
                 'resource' => 'problemas',
-                'title' => 'Nuevo reporte',
-                'team' => $team
+                'title' => 'Reportar una incidencia',
+                'team' => $team,
             ]);
     }
 
@@ -67,7 +71,7 @@ class ProblemasController extends Controller
 
         return $request->expectsJson()
             ? response()->json($problema, 201)
-            : redirect()->route('problemas.show', [$team->slug, $problema])->with('status', 'Reporte enviado.');
+            : redirect()->route('problemas.show', [$team->slug, $problema])->with('status', 'Reporte enviado correctamente.');
     }
 
     public function show(Request $request, string $current_team, Problemas $problema): Response
@@ -81,7 +85,7 @@ class ProblemasController extends Controller
                 'resource' => 'problemas',
                 'title' => $problema->titulo,
                 'item' => $problema,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -96,7 +100,7 @@ class ProblemasController extends Controller
                 'resource' => 'problemas',
                 'title' => 'Editar reporte',
                 'item' => $problema,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -124,7 +128,7 @@ class ProblemasController extends Controller
     {
         $team = $this->currentTeam($request);
         Gate::authorize('delete', [$problema, $team]);
-        
+
         $problema->delete();
 
         return $request->expectsJson()

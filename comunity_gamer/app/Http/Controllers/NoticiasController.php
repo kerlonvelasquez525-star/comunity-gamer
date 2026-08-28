@@ -16,17 +16,20 @@ class NoticiasController extends Controller
 
         $noticias = noticias::query()
             ->where('team_id', $team->id)
+            ->with('autor')
+            ->when($request->filled('buscar'), fn ($query) => $query->where('titulo', 'like', '%'.$request->string('buscar').'%'))
+            ->when($request->filled('categoria'), fn ($query) => $query->where('categoria', $request->string('categoria')))
             ->latest()
             ->paginate($request->integer('per_page', 12))
             ->appends($request->query());
 
         return $request->expectsJson()
             ? response()->json($noticias)
-            : response()->view('gamer.index', [
+            : response()->view('pages::auth.noticias', [
                 'resource' => 'noticias',
-                'title' => 'Noticias gamer',
+                'title' => 'Centro de noticias',
                 'items' => $noticias,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -36,11 +39,11 @@ class NoticiasController extends Controller
         Gate::authorize('create', [noticias::class, $team]);
 
         return $request->expectsJson()
-            ? response()->json(['message' => 'Formulario de creación disponible.'])
+            ? response()->json(['message' => 'Formulario de creacion disponible.'])
             : response()->view('gamer.form', [
                 'resource' => 'noticias',
                 'title' => 'Nueva noticia',
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -78,7 +81,7 @@ class NoticiasController extends Controller
                 'resource' => 'noticias',
                 'title' => $noticia->titulo,
                 'item' => $noticia,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -93,7 +96,7 @@ class NoticiasController extends Controller
                 'resource' => 'noticias',
                 'title' => 'Editar noticia',
                 'item' => $noticia,
-                'team' => $team
+                'team' => $team,
             ]);
     }
 
@@ -120,7 +123,7 @@ class NoticiasController extends Controller
     {
         $team = $this->currentTeam($request);
         Gate::authorize('delete', [$noticia, $team]);
-        
+
         $noticia->delete();
 
         return $request->expectsJson()

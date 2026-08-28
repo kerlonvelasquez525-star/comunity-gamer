@@ -1,30 +1,55 @@
+@php
+    $teamSlug = auth()->user()?->currentTeam?->slug;
+
+    $navLinks = [
+        ['label' => 'home',        'route' => 'dashboard'],
+        ['label' => 'noticias',    'route' => 'noticias.index'],
+        ['label' => 'comentarios', 'route' => 'comentarios.index'],
+        ['label' => 'comunidad',   'route' => 'comunidad.index'],
+        ['label' => 'problemas',   'route' => 'problemas.index'],
+    ];
+@endphp
+
 <x-layouts::guest :title="__('Nexus Community')">
+    @push('styles')
+        <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
+    @endpush
+
     @auth
         <livewire:pages::teams.pending-invitations-modal />
     @endauth
 
-    <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
-
     {{-- NAVBAR SUPERIOR --}}
     <header>
         <div class="brand">
-            <div class="brand-logo"><img src="{{ asset('nexus.png') }}" alt="Nexus Community Logo"></div>
+            <div class="brand-logo">
+                <img src="{{ asset('nexus.png') }}" alt="Nexus Community" width="48" height="48" decoding="async">
+            </div>
             <span class="brand-title">nexus-comunity</span>
         </div>
 
-        <nav>
-            <a href="#" class="active">home</a>
-            <a href="#">noticias</a>
-            <a href="#">comentarios</a>
-            <a href="#">comunidad</a>
-            <a href="#">problemas</a>
+        <nav aria-label="Navegación principal">
+            @foreach ($navLinks as $index => $link)
+                @if ($teamSlug)
+                    <a href="{{ route($link['route'], $teamSlug) }}" @class(['active' => $index === 0])>
+                        {{ $link['label'] }}
+                    </a>
+                @else
+                    {{-- Sin sesión o sin equipo: la sección exige autenticación --}}
+                    <a href="{{ route('login') }}" @class(['active' => $index === 0])>
+                        {{ $link['label'] }}
+                    </a>
+                @endif
+            @endforeach
         </nav>
 
         <div class="header-right">
             <div class="sys-status">
                 <span class="status-dot"></span>
             </div>
-            <a href="{{ route('login') }}" class="btn-signin">
+            <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : route('login') }}"
+               class="btn-signin"
+               aria-label="{{ $teamSlug ? 'Ir al panel' : 'Iniciar sesión' }}">
                 <flux:icon name="user" class="w-4 h-4" />
             </a>
         </div>
@@ -40,20 +65,26 @@
             <h1 class="hero-title">CONOCE TUS JUEGOS</h1>
 
             <p class="hero-description">
-                Reseñas tácticas, datos de esports en bruto y publicaciones de la comunidad sin filtros. 
-                GameVault es tu banco de memoria externo para conocer tus juegos.
+                Reseñas tácticas, datos de esports en bruto y publicaciones de la comunidad sin filtros.
+                Nexus Community es tu banco de memoria externo para conocer tus juegos.
             </p>
 
             <div class="cta-group">
-                <a href="{{ route('login') }}" class="btn-primary">
-                    Iniciar sesión &rarr;
-                </a>
-                <a href="{{ route('register') }}" class="btn-icon">
-                    registrarse &gt;
-                </a>
+                @auth
+                    <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : route('teams.index') }}" class="btn-primary">
+                        Ir al panel &rarr;
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="btn-primary">
+                        Iniciar sesión &rarr;
+                    </a>
+                    <a href="{{ route('register') }}" class="btn-icon">
+                        registrarse &gt;
+                    </a>
+                @endauth
             </div>
 
-            {{-- TARJETA DE ESTADÍSTICAS REUBICADA --}}
+            {{-- TARJETA DE ESTADÍSTICAS --}}
             <div class="stats-card">
                 <div class="stat-item">
                     <h3>248K</h3>
@@ -77,21 +108,19 @@
                 </div>
 
                 <div class="squad-list">
-                    <div class="squad-item">
-                        <div class="squad-info">
-                            <h4>BUGS NUEVOS</h4>
-                            <p>Cyberpunk / Extraction</p>
+                    @foreach ([
+                        ['name' => 'BUGS NUEVOS',      'detail' => 'Cyberpunk / Extraction'],
+                        ['name' => 'BUSCANDO SQUADS',  'detail' => 'FORTNITE, CSGO, COD • 4-5 jugadores'],
+                    ] as $squad)
+                        <div class="squad-item">
+                            <div class="squad-info">
+                                <h4>{{ $squad['name'] }}</h4>
+                                <p>{{ $squad['detail'] }}</p>
+                            </div>
+                            <a href="{{ $teamSlug ? route('comunidad.index', $teamSlug) : route('login') }}"
+                               class="btn-join">UNIRSE</a>
                         </div>
-                        <button class="btn-join">UNIRSE</button>
-                    </div>
-
-                    <div class="squad-item">
-                        <div class="squad-info">
-                            <h4>BUSCANDO SQUADS</h4>
-                            <p>FORTNITE, CSGO, COD • 4-5 jugadores</p>
-                        </div>
-                        <button class="btn-join">UNIRSE</button>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </section>
@@ -101,8 +130,8 @@
             <div class="slider-header">
                 <h2 class="slider-title">EXPLORAR BASES DE DATOS</h2>
                 <div class="slider-controls">
-                    <button id="slider-up" class="control-btn" aria-label="Subir">&lt;</button>
-                    <button id="slider-down" class="control-btn" aria-label="Bajar">&gt;</button>
+                    <button type="button" id="slider-up" class="control-btn" aria-label="Anterior">&lt;</button>
+                    <button type="button" id="slider-down" class="control-btn" aria-label="Siguiente">&gt;</button>
                 </div>
             </div>
 
@@ -119,26 +148,23 @@
                      'desc'  => 'Revisión completa de la física de derrape en circuitos urbanos y enlaces cibernéticos nivel 3.',
                      'user'  => 'ViperNet', 'time' => 'HACE 5H'],
                     ['img' => 'https://images.unsplash.com/photo-1605902711622-cfb43c443f6c?auto=format&fit=crop&w=800&q=80',
-                        'badge' => 'ANÁLISIS DE JUEGO', 'read' =>
-    '5 MIN READ',
-                        'title' => 'SHADOW REALMS: Estrategias de sigilo y combate',
-                        'desc'  => 'Exploración de las mecánicas de sigilo, rutas de escape y optimización de recursos en entornos urbanos.',
-                        'user'  => 'StealthMaster', 'time' => 'HACE 3H'],
-                    ['img' => 'https://images.unsplash.com/photo-1581091870620-1c8e5f4b6f1d?auto=format&fit=crop&w=800&q=80',
-                        'badge' => 'NOVEDADES DE JUEGO', 'read' =>
-    '7 MIN READ',
-                        'title' => 'CYBER HORIZON: Explorando la expansión de mundo abierto',
-                        'desc'  => 'Análisis de la nueva expansión, incluyendo misiones secundarias         y la integración de la inteligencia artificial en NPCs.',
-                        'user'  => 'CyberExplorer', 'time' => 'HACE 4H'],
+                     'badge' => 'ANÁLISIS DE JUEGO', 'read' => '5 MIN READ',
+                     'title' => 'SHADOW REALMS: Estrategias de sigilo y combate',
+                     'desc'  => 'Exploración de las mecánicas de sigilo, rutas de escape y optimización de recursos en entornos urbanos.',
+                     'user'  => 'StealthMaster', 'time' => 'HACE 3H'],
+                    ['img' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80',
+                     'badge' => 'NOVEDADES DE JUEGO', 'read' => '7 MIN READ',
+                     'title' => 'CYBER HORIZON: Explorando la expansión de mundo abierto',
+                     'desc'  => 'Análisis de la nueva expansión, incluyendo misiones secundarias y la integración de la inteligencia artificial en NPCs.',
+                     'user'  => 'CyberExplorer', 'time' => 'HACE 4H'],
                     ['img' => 'https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=800&q=80',
-                        'badge' => 'ACTUALIZACIÓN DE MOTOR', 'read' =>
-    '8 MIN READ',
-                        'title' => 'VIRTUAL REALITY: Mejoras en la física y la interacción',
-                        'desc'  => 'Revisión de las últimas mejoras en el motor de realidad virtual, incluyendo la simulación de físicas y la respuesta háptica.',
-                        'user'  => 'VRTechie', 'time' => 'HACE 6H'],
+                     'badge' => 'ACTUALIZACIÓN DE MOTOR', 'read' => '8 MIN READ',
+                     'title' => 'VIRTUAL REALITY: Mejoras en la física y la interacción',
+                     'desc'  => 'Revisión de las últimas mejoras en el motor de realidad virtual, incluyendo la simulación de físicas y la respuesta háptica.',
+                     'user'  => 'VRTechie', 'time' => 'HACE 6H'],
                 ] as $game)
                     <article class="game-card">
-                        <img src="{{ $game['img'] }}" alt="{{ $game['title'] }}" class="game-image">
+                        <img src="{{ $game['img'] }}" alt="" loading="lazy" decoding="async" class="game-image">
                         <div class="game-card-body">
                             <div>
                                 <span class="news-badge">{{ $game['badge'] }}</span>
@@ -161,5 +187,5 @@
 
     </div>
 
-    <script src="{{ asset('js/home.js') }}"></script>
+    <script src="{{ asset('js/home.js') }}" defer></script>
 </x-layouts::guest>

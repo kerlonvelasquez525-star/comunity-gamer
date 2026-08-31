@@ -11,14 +11,18 @@
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
                 @auth
-                    @if ($teamSlug)
-                        <x-app-logo :sidebar="true" href="{{ route('dashboard', $teamSlug) }}" wire:navigate />
-                    @else
-                        <x-app-logo :sidebar="true" href="{{ route('home') }}" wire:navigate />
-                    @endif
+                    <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : route('home') }}"
+                       wire:navigate
+                       class="flex items-center gap-2.5 px-2 py-1">
+                        <img src="{{ asset('nexus.png') }}"
+                             alt="Nexus Logo"
+                             class="h-8 w-8 object-contain"
+                             style="width: 32px; height: 32px; min-width: 32px; max-height: 32px;">
+                        <span class="font-bold text-base tracking-wider text-zinc-100">NEXUS</span>
+                    </a>
 
                     <livewire:team-switcher />
-                @endif
+                @endauth
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 

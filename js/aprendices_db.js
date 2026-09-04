@@ -91,6 +91,32 @@ const APRENDICES_DATA = [
     "ficha": "3294152",
     "programa": "Análisis y Desarrollo de Software",
     "rol": "Aprendiz / Desarrollador Junior",
+    "biografia": "Aprendiz SENA apasionado por el desarrollo web y el aprendizaje de nuevas tecnologías de programación.",
+    "habilidades": [
+      "Git",
+      "GitHub",
+      "HTML5",
+      "CSS3"
+    ],
+    "intereses": [
+      "Desarrollo Web",
+      "Programación"
+    ],
+    "avatar": "assets/avatares/avatar_carlos.svg",
+    "redes": {
+      "github": "https://github.com/Anfixsinax",
+      "linkedin": "https://linkedin.com/in/Anfixsinax",
+      "portafolio": "https://Anfixsinax.github.io/mi-perfil-sena"
+    },
+    "fraseFavorita": "No eres un dios... ¡pero aun así me deleitaré con tu esencia!",
+    "estado": "Listo para colaborar"
+  },
+  {
+    "id": "kerlon-velasquez",
+    "nombreCompleto": "Kerlon Velasquez",
+    "ficha": "3294152",
+    "programa": "Análisis y Desarrollo de Software",
+    "rol": "Aprendiz / Desarrollador Junior",
     "biografia": "Aprendiz SENA apasionado por el desarrollo web y el aprendizaje de nuevas tecnologías de programación en constante aprendizaje.",
     "habilidades": [
       "Git",
@@ -103,13 +129,71 @@ const APRENDICES_DATA = [
       "Desarrollo Web",
       "Programación"
     ],
-    "avatar": "assets/avatares/avatar_default.svg",
+    "avatar": "assets/avatares/avatar_carlos.svg",
     "redes": {
       "github": "https://github.com/kerlonvelasquez525-star",
       "linkedin": "https://www.linkedin.com/in/kerlon-velasquez-72180b429/",
       "portafolio": "https://github.com/kerlonvelasquez525-star/crear_componentes_frontend"
     },
-    "fraseFavorita": "No eres un dios... ¡pero aun así me deleitaré con tu esencia!",
+    "fraseFavorita": "La práctica constante hace al maestro del código.",
+    "estado": "Listo para colaborar"
+  },
+  {
+    "id": "valentina-chaves",
+    "nombreCompleto": "Valentina Chaves",
+    "ficha": "3294152",
+    "programa": "Análisis y Desarrollo de Software",
+    "rol": "Aprendiz / Desarrollador Junior",
+    "biografia": "Estudiante en Analisis y Desarrollo de Software en el sena, apasionada por la tecnologia y la programacion mas orientada al backend con conocimientos basicos en JavaScript, python, php, laravel.",
+    "habilidades": [
+      "postgresql",
+      "GitHub",
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "Trabajo en Equipo"
+    ],
+    "intereses": [
+      "Desarrollo backend",
+      "Bases de Datos",
+      "Inteligencia Artificial"
+    ],
+    "avatar": "assets/avatares/avatar_laura.svg",
+    "redes": {
+      "github": "https://github.com/Valentinna-p28",
+      "linkedin": "https://linkedin.com/in/tu-usuario",
+      "portafolio": "https://tu-usuario.github.io/mi-perfil-sena"
+    },
+    "fraseFavorita": "El código limpio siempre parece que fue escrito por alguien a quien le importaba.",
+    "estado": "Disponible para proyectos colaborativos"
+  },
+  {
+    "id": "william-stevan-torres-zapata",
+    "nombreCompleto": "William Stevan Torres Zapata",
+    "ficha": "3294152",
+    "programa": "Análisis y Desarrollo de Software",
+    "rol": "Aprendiz / Desarrollador Junior",
+    "biografia": "Aprendiz SENA apasionado por el desarrollo web, las bases de datos (SQL y NoSQL) y el aprendizaje de nuevas tecnologías de programación.",
+    "habilidades": [
+      "Git",
+      "GitHub",
+      "HTML5",
+      "CSS3",
+      "SQL",
+      "NoSQL",
+      "JavaScript"
+    ],
+    "intereses": [
+      "Desarrollo Web",
+      "Programación"
+    ],
+    "avatar": "assets/avatares/avatar_carlos.svg",
+    "redes": {
+      "github": "https://github.com/senawilliamt-blip",
+      "linkedin": "https://linkedin.com/in/senawilliamt-blip",
+      "portafolio": "https://senawilliamt-blip.github.io/mi-perfil-sena"
+    },
+    "fraseFavorita": "No solo escribo código, hago que el equipo avance.",
     "estado": "Listo para colaborar"
   },
   {

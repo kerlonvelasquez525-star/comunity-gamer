@@ -8,8 +8,17 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Controlador encargado de gestionar las noticias internas del equipo.
+ *
+ * Aquí se realizan las operaciones de listado, creación, visualización,
+ * edición y eliminación de contenido informativo asociado a un equipo.
+ */
 class NoticiasController extends Controller
 {
+    /**
+     * Lista las noticias del equipo actual con filtros y paginación.
+     */
     public function index(Request $request): Response
     {
         $team = $this->currentTeam($request);
@@ -35,6 +44,9 @@ class NoticiasController extends Controller
             ]);
     }
 
+    /**
+     * Muestra el formulario para crear una nueva noticia.
+     */
     public function create(Request $request): Response
     {
         $team = $this->currentTeam($request);
@@ -49,6 +61,9 @@ class NoticiasController extends Controller
             ]);
     }
 
+    /**
+     * Guarda una noticia nueva con validación y posible imagen adjunta.
+     */
     public function store(Request $request): Response
     {
         $team = $this->currentTeam($request);
@@ -79,6 +94,9 @@ class NoticiasController extends Controller
             : redirect()->route('noticias.show', [$team->slug, $noticia])->with('status', 'Noticia publicada.');
     }
 
+    /**
+     * Muestra el detalle completo de una noticia específica.
+     */
     public function show(Request $request, string $current_team, noticias $noticia): Response
     {
         $team = $this->currentTeam($request);
@@ -94,6 +112,9 @@ class NoticiasController extends Controller
             ]);
     }
 
+    /**
+     * Presenta el formulario para editar una noticia ya creada.
+     */
     public function edit(Request $request, string $current_team, noticias $noticia): Response
     {
         $team = $this->currentTeam($request);
@@ -109,6 +130,9 @@ class NoticiasController extends Controller
             ]);
     }
 
+    /**
+     * Actualiza la noticia con los datos validados y reemplaza la imagen si se envía una nueva.
+     */
     public function update(Request $request, string $current_team, noticias $noticia): Response
     {
         $team = $this->currentTeam($request);
@@ -139,6 +163,9 @@ class NoticiasController extends Controller
             : redirect()->route('noticias.show', [$team->slug, $noticia])->with('status', 'Noticia actualizada.');
     }
 
+    /**
+     * Elimina definitivamente una noticia del equipo.
+     */
     public function destroy(Request $request, string $current_team, noticias $noticia): Response
     {
         $team = $this->currentTeam($request);

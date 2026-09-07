@@ -8,12 +8,21 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use SimpleXMLElement;
 
+/**
+ * Comando para sincronizar noticias oficiales desde feeds RSS/XML de videojuegos.
+ *
+ * Este proceso evita duplicados por hash o URL y guarda cada noticia como un
+ * contenido público sin equipo asociado.
+ */
 class SyncOfficialNews extends Command
 {
     protected $signature = 'news:sync-official {--limit=10 : Maximum items per feed}';
 
     protected $description = 'Importar noticias recientes desde fuentes oficiales de videojuegos';
 
+    /**
+     * Recorre los feeds configurados, valida el XML y guarda las noticias relevantes.
+     */
     public function handle(): int
     {
         $imported = 0;
@@ -39,16 +48,19 @@ class SyncOfficialNews extends Command
                 }
 
                 foreach ($this->items($xml) as $item) {
+                    // Controla el número máximo de elementos importados por corrida.
                     if ($imported >= $limit * count(config('official_news.feeds', []))) {
                         break 2;
                     }
 
+                    // Extrae los campos principales para comparar y guardar la noticia.
                     $url = $this->value($item, 'link');
                     $title = $this->value($item, 'title');
                     $content = $this->value($item, 'description') ?: $this->value($item, 'summary');
 
                     $sourceHash = $url ? hash('sha256', $url) : null;
 
+                    // Evita duplicados según el hash de la URL o la propia URL del artículo.
                     if (! $url || ! $title || noticias::query()
                         ->where('fuente_hash', $sourceHash)
                         ->orWhere('fuente_url', $url)
@@ -81,6 +93,8 @@ class SyncOfficialNews extends Command
     }
 
     /**
+     * Normaliza la estructura XML para obtener un listado de artículos del feed.
+     *
      * @return array<int, SimpleXMLElement>
      */
     private function items(SimpleXMLElement $xml): array
@@ -94,6 +108,9 @@ class SyncOfficialNews extends Command
             : [];
     }
 
+    /**
+     * Obtiene un campo del item del feed, soportando tanto RSS como Atom.
+     */
     private function value(SimpleXMLElement $item, string $field): string
     {
         if ($field === 'link' && isset($item->link['href'])) {

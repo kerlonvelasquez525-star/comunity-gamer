@@ -8,8 +8,17 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * Controlador público para la landing principal de noticias.
+ *
+ * Muestra las noticias oficiales sin asignar un equipo y permite comentar
+ * contenido de origen externo cuando el usuario está autenticado.
+ */
 class PublicNewsController extends Controller
 {
+    /**
+     * Carga la vista pública con las últimas noticias oficiales del sistema.
+     */
     public function index(): View
     {
         return view('nexus_community', [
@@ -23,6 +32,9 @@ class PublicNewsController extends Controller
         ]);
     }
 
+    /**
+     * Guarda un comentario asociado a una noticia oficial pública.
+     */
     public function comment(Request $request, noticias $noticia): RedirectResponse
     {
         abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);

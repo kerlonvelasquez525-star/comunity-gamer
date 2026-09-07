@@ -2,7 +2,13 @@
 <x-layouts::app :title="__('Centro de Noticias')">
     @vite(['resources/css/noticias.css'])
 
+    {{--
+        Vista principal del módulo de noticias.
+        Muestra el encabezado, filtros de búsqueda y la lista de noticias
+        del equipo actual, además de permitir crear una nueva publicación.
+    --}}
     <div class="news-page w-full space-y-8 p-6 lg:p-10">
+        {{-- Encabezado con título del equipo y botón para publicar una noticia. --}}
         <header class="rounded-2xl border border-zinc-800/80 bg-zinc-900/95 p-8 text-white shadow-xl backdrop-blur-md">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
@@ -16,6 +22,7 @@
             </div>
         </header>
  
+        {{-- Formulario de búsqueda y filtros para localizar noticias por texto o tipo. --}}
         <form method="GET" action="{{ route('noticias.index', $team->slug) }}" class="flex flex-col gap-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4 sm:flex-row">
             <label class="sr-only" for="buscar">Buscar noticias</label>
             <input id="buscar" name="buscar" type="search" value="{{ request('buscar') }}" placeholder="Buscar noticias..." class="min-w-0 flex-1 rounded-lg border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500">
@@ -23,6 +30,7 @@
             <button type="submit" class="rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-zinc-950 hover:bg-cyan-300">Buscar</button>
         </form>
 
+        {{-- Grid principal donde se renderiza cada noticia como una tarjeta. --}}
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($items as $noticia)
                 <article class="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-300 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-400/5">
@@ -50,6 +58,7 @@
             @endforelse
         </div>
 
+        {{-- Paginación para navegar entre páginas de noticias. --}}
         @if ($items->hasPages())
             <div class="pt-4">{{ $items->links() }}</div>
         @endif

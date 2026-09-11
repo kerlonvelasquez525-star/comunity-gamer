@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -46,5 +47,15 @@ class Comunidad extends Model
         return $this->belongsToMany(User::class, 'miembros_comunidad', 'comunidad_id', 'user_id')
             ->withPivot('rol')
             ->withTimestamps();
+    }
+
+    public function canales(): HasMany
+    {
+        return $this->hasMany(Canal::class, 'comunidad_id');
+    }
+
+    public function foros(): HasMany
+    {
+        return $this->hasMany(Foro::class, 'comunidad_id');
     }
 }

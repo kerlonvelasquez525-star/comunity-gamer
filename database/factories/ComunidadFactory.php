@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Comunidad;
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +20,10 @@ class ComunidadFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'team_id' => Team::factory(),
+            'nombre' => fake()->unique()->sentence(3),
+            'descripcion' => fake()->sentence(),
+            'creador_id' => User::factory(),
         ];
     }
 }

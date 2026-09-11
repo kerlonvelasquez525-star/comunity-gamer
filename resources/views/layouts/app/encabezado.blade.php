@@ -7,6 +7,7 @@
         ['label' => __('Comentarios'), 'icon' => 'chat-bubble-left-right', 'route' => 'comentarios.index', 'pattern' => 'comentarios.*'],
         ['label' => __('Comunidades'), 'icon' => 'user-group', 'route' => 'comunidad.index', 'pattern' => 'comunidad.*'],
         ['label' => __('Problemas'), 'icon' => 'exclamation-triangle', 'route' => 'problemas.index', 'pattern' => 'problemas.*'],
+        ['label' => __('Asistente'), 'icon' => 'sparkles', 'route' => 'chatbot.index', 'pattern' => 'chatbot.*'],
     ] : [
         ['label' => __('Inicio'), 'icon' => 'home', 'route' => 'home', 'pattern' => null],
     ];

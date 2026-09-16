@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Models\noticias;
 use App\Models\NoticiasComentario;
 use Illuminate\Http\RedirectResponse;
@@ -30,6 +31,30 @@ class PublicNewsController extends Controller
                 ->limit(6)
                 ->get(),
         ]);
+    }
+
+    public function refresh(): JsonResponse
+    {
+        $news = noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()->limit(3)])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        return response()->json($news->map(function (noticias $noticia): array {
+            return [
+                'id' => $noticia->id,
+                'comments_count' => $noticia->comentarios->count(),
+                'comments' => $noticia->comentarios->map(function (NoticiasComentario $comentario): array {
+                    return [
+                        'author' => $comentario->autor?->name ?? 'Usuario',
+                        'content' => $comentario->contenido,
+                    ];
+                })->values()->all(),
+            ];
+        })->values()->all());
     }
 
     /**

@@ -38,6 +38,9 @@ use Illuminate\Support\Facades\Route;
 // Página principal pública que muestra noticias oficiales y la comunidad.
 Route::get('/', [PublicNewsController::class, 'index'])->name('home');
 
+Route::get('noticias-oficiales/refresh', [PublicNewsController::class, 'refresh'])
+    ->name('official-news.refresh');
+
 // Permite comentar noticias oficiales desde la vista pública, solo para usuarios autenticados.
 
 Route::post('noticias-oficiales/{noticia}/comentarios', [PublicNewsController::class, 'comment'])

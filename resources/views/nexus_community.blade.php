@@ -142,6 +142,30 @@
                 @endauth
             </div>
 
+            <div class="feature-strip" aria-label="Ventajas de la comunidad">
+                <div class="feature-pill">
+                    <span class="feature-kicker">01</span>
+                    <div>
+                        <strong>Comunidades activas</strong>
+                        <small>Grupos por juego y estilo de play</small>
+                    </div>
+                </div>
+                <div class="feature-pill">
+                    <span class="feature-kicker">02</span>
+                    <div>
+                        <strong>Noticias reales</strong>
+                        <small>Actualizaciones y contenido verificado</small>
+                    </div>
+                </div>
+                <div class="feature-pill">
+                    <span class="feature-kicker">03</span>
+                    <div>
+                        <strong>Juego en equipo</strong>
+                        <small>Más fácil encontrar squad y hablar</small>
+                    </div>
+                </div>
+            </div>
+
             {{-- TARJETA DE ESTADÍSTICAS --}}
             <div class="stats-card">
                 <div class="stat-item">
@@ -228,23 +252,43 @@
 
         <div class="official-news-grid">
             @forelse ($officialNews as $noticia)
+                @php
+                    $newsImageUrl = null;
+
+                    if (!empty($noticia->imagen_url)) {
+                        $newsImageUrl = filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)
+                            ? $noticia->imagen_url
+                            : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url);
+                    }
+
+                    if (empty($newsImageUrl)) {
+                        $newsImageUrl = asset('nexus.png');
+                    }
+                @endphp
+
                 <article class="official-news-card" id="noticia-{{ $noticia->id }}">
-                    @if ($noticia->imagen_url)
-                        <img src="{{ filter_var($noticia->imagen_url, FILTER_VALIDATE_URL) ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url) }}" alt="{{ $noticia->titulo }}" class="official-news-image" loading="lazy">
-                    @endif
+                    <img
+                        src="{{ $newsImageUrl }}"
+                        alt="{{ $noticia->titulo }}"
+                        class="official-news-image"
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';"
+                    >
                     <div class="official-news-content">
                         <p class="official-news-source">{{ $noticia->fuente_nombre }} · {{ $noticia->created_at?->diffForHumans() }}</p>
                         <h3>{{ $noticia->titulo }}</h3>
                         <p class="official-news-description">{{ $noticia->contenido }}</p>
                         <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
 
-                        <div class="official-comments">
-                            <h4>Comentarios ({{ $noticia->comentarios->count() }})</h4>
-                            @forelse ($noticia->comentarios->take(3) as $comentario)
-                                <p class="official-comment"><strong>{{ $comentario->autor?->name ?? 'Usuario' }}:</strong> {{ $comentario->contenido }}</p>
-                            @empty
-                                <p class="official-comment-empty">Sé el primero en comentar.</p>
-                            @endforelse
+                        <div class="official-comments" data-news-id="{{ $noticia->id }}">
+                            <h4>Comentarios (<span data-comments-total="{{ $noticia->id }}">{{ $noticia->comentarios->count() }}</span>)</h4>
+                            <div data-comments-list="{{ $noticia->id }}">
+                                @forelse ($noticia->comentarios->take(3) as $comentario)
+                                    <p class="official-comment"><strong>{{ $comentario->autor?->name ?? 'Usuario' }}:</strong> {{ $comentario->contenido }}</p>
+                                @empty
+                                    <p class="official-comment-empty">Sé el primero en comentar.</p>
+                                @endforelse
+                            </div>
 
                             @auth
                                 <form method="POST" action="{{ route('official-news.comments.store', $noticia) }}" class="official-comment-form">

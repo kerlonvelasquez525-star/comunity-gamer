@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Enums\TeamRole;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -41,6 +43,15 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        $demoTeam = Team::query()->where('slug', 'nexus-demo-community')->first();
+
+        if ($demoTeam) {
+            $demoTeam->members()->syncWithoutDetaching([
+                $user->id => ['role' => TeamRole::Member->value],
+            ]);
+            $user->forceFill(['current_team_id' => $demoTeam->id])->save();
+        }
 
         event(new Registered($user));
 

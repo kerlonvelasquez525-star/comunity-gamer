@@ -12,12 +12,12 @@
         <header class="rounded-2xl border border-zinc-800/80 bg-zinc-900/95 p-8 text-white shadow-xl backdrop-blur-md">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">{{ $team->name ?? 'EQUIPO' }} // TRANSMISIÓN EN VIVO</p>
+                    <p class="text-sm font-semibold text-amber-400">{{ $team->name ?? 'Equipo' }}</p>
                     <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Centro de noticias</h1>
                     <p class="mt-2 max-w-2xl text-sm text-zinc-400">Noticias de tu equipo y novedades de fuentes oficiales de videojuegos.</p>
                 </div>
                 @if (Route::has('noticias.create'))
-                    <a href="{{ route('noticias.create', $team->slug) }}" wire:navigate class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300">Publicar noticia</a>
+                    <a href="{{ route('noticias.create', $team->slug) }}" wire:navigate class="inline-flex items-center justify-center rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold text-zinc-950 transition hover:bg-amber-300">Compartir noticia</a>
                 @endif
             </div>
         </header>

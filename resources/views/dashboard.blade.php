@@ -6,20 +6,20 @@
 
         <!-- BANNER PRINCIPAL -->
         <div class="rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-amber-400">{{ $team->name }}</p>
-            <h1 class="mt-3 text-4xl font-bold tracking-tight">Tu centro de juego</h1>
+            <p class="text-sm font-semibold text-amber-400">{{ $team->name }}</p>
+            <h1 class="mt-3 text-4xl font-bold tracking-tight">Todo lo que pasa en tu comunidad</h1>
             <p class="mt-3 max-w-2xl text-zinc-300">
-                Noticias, comunidades y soporte reunidos en el espacio de tu equipo.
+                Noticias, grupos y soporte reunidos en un solo lugar.
             </p>
         </div>
 
         <!-- TARJETAS DE MÉTRICAS -->
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ([
-                ['label' => 'Noticias publicadas', 'value' => $noticias_totales,     'route' => 'noticias.index', 'theme' => 'news'],
+                ['label' => 'Noticias',            'value' => $noticias_totales,     'route' => 'noticias.index', 'theme' => 'news'],
                 ['label' => 'Comentarios',         'value' => $comentarios_totales,  'route' => 'comentarios.index', 'theme' => 'comments'],
                 ['label' => 'Comunidades',         'value' => $comunidades_activas->count(), 'route' => 'comunidad.index', 'theme' => 'communities'],
-                ['label' => 'Problemas abiertos',  'value' => $problemas_abiertos,   'route' => 'problemas.index', 'theme' => 'issues'],
+                ['label' => 'Casos abiertos',      'value' => $problemas_abiertos,   'route' => 'problemas.index', 'theme' => 'issues'],
             ] as $card)
                 <a href="{{ route($card['route'], $team->slug) }}" wire:navigate
                    class="metric-card metric-card--{{ $card['theme'] }} rounded-xl border border-zinc-200 bg-white p-5 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
@@ -94,7 +94,7 @@
         <div class="chat-wrapper">
             <!-- Barra lateral de Amigos / Jugadores -->
             <div class="chat-sidebar">
-                <div class="sidebar-header">// JUGADORES ONLINE</div>
+                <div class="sidebar-header">Jugadores activos</div>
                 <ul class="friends-list">
                     <li class="friend-item active">
                         <div class="avatar">V</div>

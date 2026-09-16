@@ -1,192 +1,82 @@
 .dashboard-shell {
-    --dashboard-bg: #1f1f37;
-    --dashboard-card: #464681;
-    --dashboard-purple: #8b2fc9;
-    --dashboard-purple-glow: rgba(139, 47, 201, 0.4);
-    --dashboard-cyan: #00f0ff;
-    --dashboard-cyan-glow: rgba(0, 240, 255, 0.3);
-    --dashboard-text: #f0f3f8;
-    --dashboard-muted: #7e8b9b;
-    --dashboard-border: #1a1d28;
+    --dash-bg: #11151b;
+    --dash-surface: #1a2129;
+    --dash-surface-soft: #202a33;
+    --dash-border: #2b3540;
+    --dash-text: #f3f5f7;
+    --dash-muted: #a5b0ba;
+    --dash-brand: #f2a93b;
+    --dash-accent: #65d6c2;
     position: relative;
     isolation: isolate;
-    color: var(--dashboard-text);
-    background-color: var(--dashboard-bg);
-    background-image:
-        radial-gradient(circle at 8% 8%, rgba(139, 47, 201, 0.16), transparent 30%),
-        radial-gradient(circle at 92% 34%, rgba(0, 240, 255, 0.08), transparent 28%),
-        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-    background-size: auto, auto, 34px 34px, 34px 34px;
+    color: var(--dash-text);
+    background: var(--dash-bg);
 }
 
 .dashboard-shell > div:first-child {
-    background: linear-gradient(135deg, #090a12 0%, #252044 58%, #163b4a 100%);
-    border: 1px solid var(--dashboard-border);
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.08);
+    background: linear-gradient(135deg, #18222a, #1b252d);
+    border: 1px solid var(--dash-border);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .18);
 }
 
 .dashboard-shell .bg-white,
 .dashboard-shell .dark\:bg-zinc-900 {
-    background-color: rgba(70, 70, 129, 0.84);
-    border-color: var(--dashboard-border);
+    background-color: var(--dash-surface);
+    border-color: var(--dash-border);
 }
 
 .dashboard-shell .bg-zinc-50,
 .dashboard-shell .bg-zinc-100,
 .dashboard-shell .dark\:bg-zinc-800,
 .dashboard-shell .dark\:bg-zinc-800\/50 {
-    background-color: rgba(31, 31, 55, 0.72);
-}
-
-.dashboard-shell .bg-zinc-200 {
-    background-color: #5c5c91;
-}
-
-.dashboard-shell .bg-amber-400\/10,
-.dashboard-shell .dark\:bg-amber-400\/5,
-.dashboard-shell .bg-amber-400\/20 {
-    background-color: rgba(0, 240, 255, 0.1);
-}
-
-.dashboard-shell .bg-purple-500\/10,
-.dashboard-shell .bg-indigo-500\/10 {
-    background-color: rgba(139, 47, 201, 0.18);
+    background-color: var(--dash-surface-soft);
 }
 
 .dashboard-shell .bg-zinc-950,
-.dashboard-shell .dark\:bg-black {
-    background-color: #090a12;
-}
-
+.dashboard-shell .dark\:bg-black { background-color: #0d1116; }
 .dashboard-shell .text-zinc-900,
-.dashboard-shell .dark\:text-white {
-    color: var(--dashboard-text);
-}
-
+.dashboard-shell .dark\:text-white { color: var(--dash-text); }
 .dashboard-shell .text-zinc-500,
 .dashboard-shell .text-zinc-400,
-.dashboard-shell .dark\:text-zinc-400 {
-    color: var(--dashboard-muted);
-}
-
+.dashboard-shell .dark\:text-zinc-400 { color: var(--dash-muted); }
 .dashboard-shell .text-amber-400,
 .dashboard-shell .text-amber-500,
 .dashboard-shell .text-amber-600,
-.dashboard-shell .dark\:text-amber-400 {
-    color: var(--dashboard-cyan);
-}
-
-.dashboard-shell .text-purple-500,
-.dashboard-shell .text-indigo-500 {
-    color: #d98cff;
-}
-
-.dashboard-shell .text-emerald-500 {
-    color: #62f5bd;
-}
-
-.dashboard-shell .border-amber-400\/30,
-.dashboard-shell .border-amber-400\/40,
-.dashboard-shell .border-amber-400\/20,
-.dashboard-shell .border-purple-500\/20,
-.dashboard-shell .border-indigo-500\/20 {
-    border-color: rgba(0, 240, 255, 0.35);
-}
-
+.dashboard-shell .dark\:text-amber-400 { color: var(--dash-brand); }
 .dashboard-shell .border-zinc-200,
 .dashboard-shell .dark\:border-zinc-700,
-.dashboard-shell .dark\:border-zinc-800 {
-    border-color: var(--dashboard-border);
-}
-
-.dashboard-shell a {
-    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-}
-
-.dashboard-shell a:hover {
-    border-color: var(--dashboard-cyan);
-    box-shadow: 0 0 18px var(--dashboard-cyan-glow);
-}
-
-.dashboard-shell .hover\:border-amber-400:hover {
-    border-color: var(--dashboard-cyan);
-}
+.dashboard-shell .dark\:border-zinc-800 { border-color: var(--dash-border); }
+.dashboard-shell a { transition: border-color .2s ease, background-color .2s ease, transform .2s ease; }
+.dashboard-shell a:hover { border-color: rgba(242, 169, 59, .65); }
 
 .dashboard-shell .metric-card {
     position: relative;
     overflow: hidden;
     border-top: 3px solid var(--metric-color);
-    background: linear-gradient(145deg, rgba(70, 70, 129, 0.96), rgba(31, 31, 55, 0.92));
+    background: var(--dash-surface);
 }
 
 .dashboard-shell .metric-card::after {
     position: absolute;
-    right: -2rem;
-    bottom: -3rem;
-    width: 8rem;
-    height: 8rem;
-    border-radius: 9999px;
+    right: -2.2rem;
+    bottom: -2.8rem;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
     background: var(--metric-color);
     content: '';
-    opacity: 0.12;
-    filter: blur(1px);
+    opacity: .08;
 }
 
-.dashboard-shell .metric-card .text-3xl {
-    color: var(--metric-color);
-    text-shadow: 0 0 12px var(--metric-glow);
-}
-
-.dashboard-shell .metric-card--news {
-    --metric-color: #00f0ff;
-    --metric-glow: rgba(0, 240, 255, 0.45);
-}
-
-.dashboard-shell .metric-card--comments {
-    --metric-color: #d98cff;
-    --metric-glow: rgba(139, 47, 201, 0.55);
-}
-
-.dashboard-shell .metric-card--communities {
-    --metric-color: #62f5bd;
-    --metric-glow: rgba(98, 245, 189, 0.45);
-}
-
-.dashboard-shell .metric-card--issues {
-    --metric-color: #ff6b7d;
-    --metric-glow: rgba(255, 107, 125, 0.45);
-}
-
-.dashboard-shell .metric-card:hover {
-    border-color: var(--metric-color);
-    box-shadow: 0 0 20px var(--metric-glow);
-    transform: translateY(-2px);
-}
-
-.dashboard-shell .chat-wrapper {
-    border-color: var(--dashboard-border);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35), 0 0 20px rgba(0, 240, 255, 0.08);
-}
+.dashboard-shell .metric-card .text-3xl { color: var(--metric-color); }
+.dashboard-shell .metric-card--news { --metric-color: #65d6c2; }
+.dashboard-shell .metric-card--comments { --metric-color: #f2a93b; }
+.dashboard-shell .metric-card--communities { --metric-color: #9ed36a; }
+.dashboard-shell .metric-card--issues { --metric-color: #ef8d7a; }
+.dashboard-shell .metric-card:hover { background: var(--dash-surface-soft); transform: translateY(-2px); }
+.dashboard-shell .chat-wrapper { box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .2); }
 
 @media (max-width: 640px) {
-    .dashboard-shell {
-        padding: 1rem;
-    }
-
-    .dashboard-shell > div:first-child {
-        padding: 1.5rem;
-    }
-}
-
-.dashboard-shell .chat-status-playing {
-    color: #f0f3f8;
-}
-
-.dashboard-shell .chat-status-offline {
-    color: #ff6b7d;
-}
-
-.dashboard-shell .chat-title {
-    color: var(--dashboard-cyan);
+    .dashboard-shell { padding: 1rem; }
+    .dashboard-shell > div:first-child { padding: 1.5rem; }
 }

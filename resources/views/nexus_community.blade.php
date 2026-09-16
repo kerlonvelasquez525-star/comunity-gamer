@@ -61,6 +61,7 @@
 
 {{-- Usamos :: para el layout (namespace de la carpeta /resources/views/layouts) --}}
 <x-layouts::public :title="__('Nexus Community')">
+    <div class="public-home">
     
     <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
 
@@ -116,26 +117,27 @@
 
         {{-- COLUMNA IZQUIERDA --}}
         <section class="hero-left">
-            <span class="badge-tag">BIENVENIDO // NUEVOS JUEGOS CADA DÍA</span>
+            <span class="badge-tag">Una comunidad para jugar mejor acompañado</span>
 
-            <h1 class="hero-title">CONOCE TUS JUEGOS</h1>
+            <h1 class="hero-title">Encuentra tu próxima partida</h1>
 
             <p class="hero-description">
-                Reseñas tácticas, datos de esports en bruto y publicaciones de la comunidad sin filtros.
-                Nexus Community es tu banco de memoria externo para conocer tus juegos.
+                Descubre noticias, grupos y conversaciones de jugadores que comparten tus mismos juegos.
+                Nexus Community es tu lugar para encontrar gente y volver a disfrutar de jugar en compañía.
             </p>
 
             <div class="cta-group">
                 @auth
                     <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : route('teams.index') }}" class="btn-primary">
-                        Ir al panel &rarr;
+                        Abrir mi comunidad &rarr;
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="btn-primary">
                         Iniciar sesión &rarr;
                     </a>
                     <a href="{{ route('register') }}" class="btn-icon">
-                        registrarse &gt;
+                        <span>Crear mi cuenta</span>
+                        <span class="btn-icon-arrow" aria-hidden="true">&rarr;</span>
                     </a>
                 @endauth
             </div>
@@ -159,8 +161,8 @@
             {{-- SALAS DE CONVERSACIÓN ACTIVAS --}}
             <div class="extra-section">
                 <div class="extra-header">
-                    <span class="extra-title">⚡ SALAS DE CONVERSACION ACTIVAS</span>
-                    <span class="voice-tag">FILTRAR POR JUEGO</span>
+                    <span class="extra-title">Salas activas ahora</span>
+                    <span class="voice-tag">Explorar por juego</span>
                 </div>
 
                 <div class="squad-list">
@@ -184,7 +186,7 @@
         {{-- COLUMNA DERECHA: SLIDER DE JUEGOS --}}
         <section class="hero-right">
             <div class="slider-header">
-                <h2 class="slider-title">EXPLORAR BASES DE DATOS</h2>
+                <h2 class="slider-title">Historias para descubrir</h2>
                 <div class="slider-controls">
                     <button type="button" id="slider-up" class="control-btn" aria-label="Anterior">&lt;</button>
                     <button type="button" id="slider-down" class="control-btn" aria-label="Siguiente">&gt;</button>
@@ -264,4 +266,5 @@
     </section>
 
     <script src="{{ asset('js/home.js') }}" defer></script>
+    </div>
 </x-layouts::public>

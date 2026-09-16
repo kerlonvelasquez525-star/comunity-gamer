@@ -4,26 +4,40 @@
 
 .news-page {
   /* Paleta de colores consistente con style_th */
-  --bg-dark: #1f1f37;
-  --card-bg: #464681;
-  --accent-purple: #8b2fc9;
-  --accent-purple-glow: rgba(139, 47, 201, 0.4);
-  --accent-cyan: #00f0ff;
-  --accent-cyan-glow: rgba(0, 240, 255, 0.3);
-  --text-main: #f0f3f8;
-  --text-muted: #7e8b9b;
-  --border-color: #1a1d28;
+  --bg-dark: #11151b;
+  --card-bg: #1a2129;
+  --accent-purple: #f2a93b;
+  --accent-purple-glow: rgba(242, 169, 59, 0.22);
+  --accent-cyan: #65d6c2;
+  --accent-cyan-glow: rgba(101, 214, 194, 0.2);
+  --text-main: #f3f5f7;
+  --text-muted: #a5b0ba;
+  --border-color: #2b3540;
   
   /* Colores adicionales para variedad */
-  --accent-orange: #ff9f1c;
-  --accent-pink: #ff3ea5;
+  --accent-orange: #f2a93b;
+  --accent-pink: #ef8d7a;
 }
 
 /* Los estilos permanecen encapsulados para no alterar el layout principal. */
 .news-page {
   color: var(--text-main);
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
+
+.news-page > header,
+.news-page > form,
+.news-page article {
+  border-color: var(--border-color) !important;
+  background: var(--card-bg) !important;
+  box-shadow: none !important;
+}
+
+.news-page article:hover { border-color: rgba(242, 169, 59, .65) !important; }
+.news-page h1, .news-page h2 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -.03em; }
+.news-page .text-cyan-400, .news-page .text-amber-400, .news-page .text-amber-600 { color: var(--accent-purple) !important; }
+.news-page button { background: var(--accent-purple); }
+.news-page input { border-color: var(--border-color); background: #11151b; }
 
 /* --- CONTENEDOR PRINCIPAL --- */
 .noticias-container {

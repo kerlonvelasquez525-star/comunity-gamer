@@ -5,7 +5,7 @@
     <div class="dashboard-shell w-full space-y-12 p-6 lg:p-10">
 
         <!-- BANNER PRINCIPAL -->
-        <div class="rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
+        <div class="cyber-hero rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
             <p class="text-sm font-semibold text-amber-400">{{ $team->name }}</p>
             <h1 class="mt-3 text-4xl font-bold tracking-tight">Todo lo que pasa en tu comunidad</h1>
             <p class="mt-3 max-w-2xl text-zinc-300">

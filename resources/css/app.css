@@ -4,6 +4,7 @@
 
 /* Estilos de la página de reportes */
 @import './problemas.css';
+@import './cyberpunk.css';
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

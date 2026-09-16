@@ -1,0 +1,199 @@
+.app-main {
+    --cp-bg: #080d16;
+    --cp-panel: rgba(13, 21, 34, .9);
+    --cp-panel-strong: #101c2c;
+    --cp-line: rgba(65, 219, 255, .24);
+    --cp-cyan: #41dbff;
+    --cp-pink: #ff4fd8;
+    --cp-lime: #b7f34a;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--cp-bg) !important;
+    background-image:
+        linear-gradient(rgba(65, 219, 255, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(65, 219, 255, .045) 1px, transparent 1px),
+        radial-gradient(circle at 10% 10%, rgba(255, 79, 216, .1), transparent 28%),
+        radial-gradient(circle at 90% 78%, rgba(65, 219, 255, .09), transparent 30%);
+    background-size: 42px 42px, 42px 42px, auto, auto;
+}
+
+.app-main::after {
+    position: absolute;
+    top: 4rem;
+    right: 3vw;
+    width: min(24rem, 34vw);
+    height: min(24rem, 34vw);
+    content: '';
+    z-index: -1;
+    opacity: .055;
+    background: url('/nexus.png') center / contain no-repeat;
+    filter: saturate(1.5) drop-shadow(0 0 2rem var(--cp-cyan));
+    pointer-events: none;
+}
+
+.app-main > div {
+    position: relative;
+    z-index: 1;
+}
+
+.app-main > div > header:not(.cyber-hero) {
+    position: relative;
+    overflow: hidden;
+    padding: 1.75rem;
+    border: 1px solid var(--cp-line);
+    border-radius: 1rem;
+    background:
+        linear-gradient(90deg, rgba(8, 16, 28, .98), rgba(8, 16, 28, .74)),
+        url('/nexus.png') 94% center / 9rem auto no-repeat;
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .22);
+}
+
+.app-main > div > header:not(.cyber-hero)::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    content: '';
+    background: linear-gradient(90deg, var(--cp-pink), var(--cp-cyan), transparent);
+    opacity: .75;
+}
+
+.app-main > div > header:not(.cyber-hero) > * {
+    position: relative;
+    z-index: 1;
+}
+
+.app-main h1,
+.app-main h2,
+.app-main h3 {
+    color: #f2f8ff;
+    letter-spacing: .015em;
+    text-shadow: 0 0 1.2rem rgba(65, 219, 255, .12);
+}
+
+.app-main .bg-white,
+.app-main .dark\:bg-zinc-900,
+.app-main .dark\:bg-zinc-950,
+.app-main .bg-zinc-900,
+.app-main .bg-zinc-950 {
+    background: linear-gradient(145deg, rgba(16, 28, 44, .96), rgba(7, 13, 23, .96)) !important;
+    border-color: var(--cp-line) !important;
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .2), inset 0 1px rgba(255, 255, 255, .035);
+}
+
+.app-main .bg-zinc-50,
+.app-main .bg-zinc-100,
+.app-main .dark\:bg-zinc-800,
+.app-main .dark\:bg-zinc-800\/50 {
+    background: rgba(20, 35, 53, .86) !important;
+    border-color: var(--cp-line) !important;
+}
+
+.app-main .border-zinc-200,
+.app-main .border-zinc-300,
+.app-main .border-zinc-700,
+.app-main .border-zinc-800,
+.app-main .dark\:border-zinc-700,
+.app-main .dark\:border-zinc-800 {
+    border-color: var(--cp-line) !important;
+}
+
+.app-main .text-zinc-900,
+.app-main .dark\:text-white,
+.app-main .text-zinc-800 {
+    color: #f2f8ff !important;
+}
+
+.app-main .text-zinc-500,
+.app-main .text-zinc-400,
+.app-main .dark\:text-zinc-400 {
+    color: #96aabd !important;
+}
+
+.app-main .text-amber-400,
+.app-main .text-amber-500,
+.app-main .text-amber-600,
+.app-main .dark\:text-amber-400 {
+    color: var(--cp-cyan) !important;
+}
+
+.app-main a:not([class*="bg-"]):hover {
+    color: var(--cp-cyan) !important;
+}
+
+.app-main button.bg-zinc-900,
+.app-main button.dark\:bg-white {
+    background: var(--cp-cyan) !important;
+    color: #061019 !important;
+}
+
+.app-main input,
+.app-main textarea,
+.app-main select {
+    border-color: var(--cp-line) !important;
+    background-color: rgba(5, 12, 22, .8) !important;
+    color: #f2f8ff !important;
+}
+
+.app-main input:focus,
+.app-main textarea:focus,
+.app-main select:focus {
+    border-color: var(--cp-cyan) !important;
+    box-shadow: 0 0 0 2px rgba(65, 219, 255, .16), 0 0 1.2rem rgba(65, 219, 255, .1) !important;
+}
+
+.app-header {
+    border-bottom-color: var(--cp-line) !important;
+    background: rgba(6, 13, 24, .92) !important;
+    box-shadow: 0 0 2rem rgba(65, 219, 255, .08) !important;
+}
+
+.app-header nav a.bg-zinc-800\/80,
+.app-header nav a:hover {
+    background: rgba(65, 219, 255, .1) !important;
+    color: var(--cp-cyan) !important;
+    box-shadow: inset 0 -2px var(--cp-cyan), 0 0 1rem rgba(65, 219, 255, .1) !important;
+}
+
+.app-header .text-amber-400,
+.app-header .text-amber-600 {
+    color: var(--cp-cyan) !important;
+}
+
+.cyber-hero {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--cp-line) !important;
+    background:
+        linear-gradient(90deg, rgba(5, 12, 22, .98) 0%, rgba(5, 12, 22, .78) 58%, rgba(5, 12, 22, .3) 100%),
+        url('/nexus.png') right 12% center / min(18rem, 36vw) auto no-repeat,
+        linear-gradient(135deg, #12253a, #090f1b) !important;
+    box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, .35), 0 0 2rem rgba(65, 219, 255, .08) !important;
+}
+
+.cyber-hero::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(115deg, transparent 35%, rgba(65, 219, 255, .08) 50%, transparent 65%);
+    transform: translateX(-100%);
+    animation: cyber-scan 7s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.cyber-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes cyber-scan {
+    0%, 55% { transform: translateX(-100%); }
+    75%, 100% { transform: translateX(100%); }
+}
+
+@media (max-width: 640px) {
+    .app-main::after { width: 14rem; height: 14rem; top: 5rem; right: -4rem; }
+    .cyber-hero { background-size: 11rem auto, auto; }
+}

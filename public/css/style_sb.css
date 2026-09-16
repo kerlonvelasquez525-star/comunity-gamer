@@ -23,7 +23,8 @@ body {
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at 20% 20%, #252044 0%, #1f1f37 60%, #090a12 100%);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
 }
  

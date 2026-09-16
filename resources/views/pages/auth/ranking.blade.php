@@ -3,7 +3,7 @@
     <div class="mx-auto w-full max-w-7xl space-y-8 p-6 lg:p-10">
 
         <!-- ENCABEZADO PRINCIPAL -->
-        <div class="rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
+        <div class="cyber-hero rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
             <a href="{{ route('home') }}" class="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-zinc-400 hover:text-amber-400 transition mb-4">
                 &larr; Volver al inicio
             </a>

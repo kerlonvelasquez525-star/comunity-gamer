@@ -18,7 +18,7 @@ class ChatbotTest extends TestCase
         $this->actingAs($user)
             ->get(route('chatbot.index'))
             ->assertOk()
-            ->assertSee('Community assistant')
+            ->assertSee('Asistente de la comunidad')
             ->assertSee('assistantQuestion');
     }
 
@@ -51,7 +51,18 @@ class ChatbotTest extends TestCase
             ->postJson(route('chat.bot.answer'), ['question' => 'Cuantos usuarios hay en linea?'])
             ->assertOk()
             ->assertJsonPath('intent', 'online_users')
-            ->assertJsonPath('answer', 'En este momento hay 2 usuarios en linea. La cifra corresponde a usuarios autenticados con actividad dentro de la ventana activa de la plataforma.');
+            ->assertJsonPath('answer', 'Ahora mismo hay 2 usuarios en línea. La cifra incluye usuarios autenticados con actividad dentro de la ventana activa de la plataforma.');
+    }
+
+    public function test_chatbot_matches_natural_report_questions_to_moderation_guidance(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+
+        $this->actingAs($user)
+            ->postJson(route('chat.bot.answer'), ['question' => '¿Cómo reporto un mensaje de acoso?'])
+            ->assertOk()
+            ->assertJsonPath('intent', 'report')
+            ->assertJsonPath('suggestions.0', '¿Qué puedo reportar?');
     }
 
     public function test_chatbot_does_not_persist_questions_as_private_messages(): void

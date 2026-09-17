@@ -29,7 +29,7 @@
                     
                     <!-- Lado Izquierdo: Logo contenido correctamente -->
                     <div class="flex shrink-0 items-center gap-4">
-                        <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : route('home') }}"
+                        <a href="{{ route('home') }}"
                            wire:navigate
                            class="flex items-center transition-transform hover:scale-105"
                            title="Ir al inicio">

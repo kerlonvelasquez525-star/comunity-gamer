@@ -37,10 +37,10 @@
     {{-- NAVBAR SUPERIOR --}}
     <header>
         <div class="brand">
-            <div class="brand-logo">
+            <a href="{{ route('home') }}" class="brand-logo" aria-label="Ir a la página principal de Nexus Community">
                 <img src="{{ asset('nexus.png') }}" alt="Nexus Community" width="48" height="48" decoding="async">
-            </div>
-            <span class="brand-title">nexus-comunity</span>
+            </a>
+            <a href="{{ route('home') }}" class="brand-title" aria-label="Ir a la página principal de Nexus Community">nexus-comunity</a>
         </div>
 
         <nav aria-label="Navegación principal">

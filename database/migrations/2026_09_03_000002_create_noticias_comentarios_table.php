@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('noticias_comentarios', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('noticia_id')->constrained('noticias')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->text('contenido');
             $table->timestamps();
             $table->index(['noticia_id', 'created_at']);

@@ -19,6 +19,7 @@ use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PlataformaController;
 use App\Http\Controllers\ProblemasController;
 use App\Http\Controllers\PublicacionController;
+use App\Http\Controllers\PublicCommunityController;
 use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\ReaccionController;
 use App\Http\Controllers\ReporteModeracionController;
@@ -41,10 +42,18 @@ Route::get('/', [PublicNewsController::class, 'index'])->name('home');
 Route::get('noticias-oficiales/refresh', [PublicNewsController::class, 'refresh'])
     ->name('official-news.refresh');
 
+Route::get('noticias-publicas', [PublicNewsController::class, 'publicIndex'])
+    ->name('public-noticias.index');
+
+Route::get('comunidad-publica', [PublicCommunityController::class, 'index'])
+    ->name('public-comunidad.index');
+
+Route::get('soporte-publico', [PublicNewsController::class, 'publicProblems'])
+    ->name('public-problemas.index');
+
 // Permite comentar noticias oficiales desde la vista pública, solo para usuarios autenticados.
 
 Route::post('noticias-oficiales/{noticia}/comentarios', [PublicNewsController::class, 'comment'])
-    ->middleware(['auth', 'verified'])
     ->name('official-news.comments.store');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
@@ -96,12 +105,18 @@ Route::prefix('{current_team}')
 
         // CRUD de noticias del equipo: listar, crear, editar, ver y eliminar.
         Route::resource('noticias', NoticiasController::class);
+        Route::post('noticias/{noticia}/comentarios', [NoticiasController::class, 'storeComment'])
+            ->name('noticias.comentarios.store');
 
         // CRUD de comentarios del equipo y su contenido asociado.
         Route::resource('comentarios', ComentariosController::class);
 
         // Gestión de comunidades del equipo.
         Route::resource('comunidad', ComunidadController::class);
+        Route::patch('comunidad/{comunidad}/miembros/{user}/rol', [ComunidadController::class, 'updateMemberRole'])
+            ->name('comunidad.miembros.rol');
+        Route::post('comunidad/{comunidad}/miembros/invitar', [ComunidadController::class, 'inviteMember'])
+            ->name('comunidad.miembros.invitar');
 
         // Gestión de problemas o incidencias del equipo.
         Route::resource('problemas', ProblemasController::class);

@@ -21,7 +21,24 @@ class Comunidad extends Model
 
     protected $table = 'comunidades';
 
-    protected $fillable = ['team_id', 'nombre', 'descripcion', 'creador_id'];
+    protected $fillable = [
+        'team_id',
+        'nombre',
+        'descripcion',
+        'tipo',
+        'nivel',
+        'rango',
+        'estado',
+        'max_miembros',
+        'creador_id',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'max_miembros' => 'integer',
+        ];
+    }
 
     /**
      * @return BelongsTo<Team, $this>

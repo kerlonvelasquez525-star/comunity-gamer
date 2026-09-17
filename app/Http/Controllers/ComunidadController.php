@@ -56,6 +56,11 @@ class ComunidadController extends Controller
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
+            'tipo' => ['nullable', 'string', 'max:50'],
+            'nivel' => ['nullable', 'string', 'max:50'],
+            'rango' => ['nullable', 'string', 'max:50'],
+            'estado' => ['nullable', 'string', 'max:50'],
+            'max_miembros' => ['nullable', 'integer', 'min:2', 'max:500'],
         ]);
 
         $comunidad = DB::transaction(function () use ($request, $team, $validated) {
@@ -117,6 +122,11 @@ class ComunidadController extends Controller
         $validated = $request->validate([
             'nombre' => ['sometimes', 'required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
+            'tipo' => ['nullable', 'string', 'max:50'],
+            'nivel' => ['nullable', 'string', 'max:50'],
+            'rango' => ['nullable', 'string', 'max:50'],
+            'estado' => ['nullable', 'string', 'max:50'],
+            'max_miembros' => ['nullable', 'integer', 'min:2', 'max:500'],
         ]);
 
         $comunidad->update($validated);
@@ -124,6 +134,48 @@ class ComunidadController extends Controller
         return $request->expectsJson()
             ? response()->json($comunidad->fresh())
             : redirect()->route('comunidad.show', [$team->slug, $comunidad])->with('status', 'Comunidad actualizada.');
+    }
+
+    public function updateMemberRole(Request $request, string $current_team, Comunidad $comunidad, \App\Models\User $user): Response
+    {
+        $team = $this->currentTeam($request);
+        Gate::authorize('update', [$comunidad, $team]);
+
+        $validated = $request->validate([
+            'rol' => ['required', 'string', 'in:admin,moderador,miembro'],
+        ]);
+
+        $comunidad->miembros()->syncWithoutDetaching([
+            $user->id => ['rol' => $validated['rol']],
+        ]);
+
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Rol actualizado.', 'rol' => $validated['rol']])
+            : redirect()->route('comunidad.show', [$team->slug, $comunidad])->with('status', 'Rol actualizado.');
+    }
+
+    public function inviteMember(Request $request, string $current_team, Comunidad $comunidad): Response
+    {
+        $team = $this->currentTeam($request);
+        Gate::authorize('update', [$comunidad, $team]);
+
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+        ]);
+
+        $user = \App\Models\User::findOrFail($validated['user_id']);
+
+        if (! $user->belongsToTeam($team)) {
+            abort(422, 'Este usuario no pertenece al equipo.');
+        }
+
+        $comunidad->miembros()->syncWithoutDetaching([
+            $user->id => ['rol' => 'miembro'],
+        ]);
+
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Miembro invitado.', 'user_id' => $user->id])
+            : redirect()->route('comunidad.show', [$team->slug, $comunidad])->with('status', 'Miembro invitado a la comunidad.');
     }
 
     public function destroy(Request $request, string $current_team, Comunidad $comunidad): Response

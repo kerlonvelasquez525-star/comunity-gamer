@@ -42,11 +42,137 @@
         bindButton(document.getElementById('slider-down'), slider, 1);
     };
 
+    const bindNewsCarousel = () => {
+        document.querySelectorAll('[data-news-carousel]').forEach((carousel) => {
+            if (carousel.dataset.bound === 'true') {
+                return;
+            }
+
+            const slides = [...carousel.querySelectorAll('[data-carousel-slide]')];
+            const dots = [...carousel.querySelectorAll('[data-carousel-dot]')];
+
+            if (slides.length < 2) {
+                return;
+            }
+
+            let currentIndex = 0;
+            let intervalId;
+
+            const showSlide = (index) => {
+                currentIndex = (index + slides.length) % slides.length;
+                slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === currentIndex));
+                dots.forEach((dot, dotIndex) => {
+                    const active = dotIndex === currentIndex;
+                    dot.classList.toggle('is-active', active);
+                    dot.setAttribute('aria-current', active ? 'true' : 'false');
+                });
+            };
+
+            const restartAutoPlay = () => {
+                window.clearInterval(intervalId);
+                intervalId = window.setInterval(() => showSlide(currentIndex + 1), 6000);
+            };
+
+            carousel.querySelector('[data-carousel-prev]')?.addEventListener('click', () => {
+                showSlide(currentIndex - 1);
+                restartAutoPlay();
+            });
+            carousel.querySelector('[data-carousel-next]')?.addEventListener('click', () => {
+                showSlide(currentIndex + 1);
+                restartAutoPlay();
+            });
+            dots.forEach((dot) => dot.addEventListener('click', () => {
+                showSlide(Number(dot.dataset.carouselDot));
+                restartAutoPlay();
+            }));
+            carousel.addEventListener('mouseenter', () => window.clearInterval(intervalId));
+            carousel.addEventListener('mouseleave', restartAutoPlay);
+            carousel.dataset.bound = 'true';
+            restartAutoPlay();
+        });
+    };
+
+    const bindPublicComments = () => {
+        document.querySelectorAll('.official-comment-form').forEach((form) => {
+            if (form.dataset.bound === 'true') {
+                return;
+            }
+
+            form.dataset.bound = 'true';
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const input = form.querySelector('input[name="contenido"]');
+                const list = form.closest('.official-comments')?.querySelector('[data-comments-list]');
+                const total = form.closest('.official-comments')?.querySelector('[data-comments-total]');
+
+                if (!input || !list || !total) {
+                    form.submit();
+                    return;
+                }
+
+                const value = input.value.trim();
+                if (!value) {
+                    input.focus();
+                    return;
+                }
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken || '',
+                    },
+                    body: new URLSearchParams(new FormData(form)).toString(),
+                });
+
+                if (!response.ok) {
+                    form.submit();
+                    return;
+                }
+
+                const payload = await response.json();
+                const comment = payload.comment || {
+                    author: 'Usuario',
+                    contenido: value,
+                };
+
+                const emptyState = list.querySelector('.official-comment-empty');
+                if (emptyState) {
+                    emptyState.remove();
+                }
+
+                const newComment = document.createElement('p');
+                newComment.className = 'official-comment';
+                newComment.innerHTML = `<strong>${comment.author}:</strong> ${comment.contenido}`;
+                list.prepend(newComment);
+
+                const count = Number(total.textContent || '0') + 1;
+                total.textContent = String(count);
+
+                form.reset();
+            });
+        });
+    };
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSlider, { once: true });
+        document.addEventListener('DOMContentLoaded', () => {
+            initSlider();
+            bindNewsCarousel();
+            bindPublicComments();
+        }, { once: true });
     } else {
         initSlider();
+        bindNewsCarousel();
+        bindPublicComments();
     }
 
-    document.addEventListener('livewire:navigated', initSlider);
+    document.addEventListener('livewire:navigated', () => {
+        initSlider();
+        bindNewsCarousel();
+        bindPublicComments();
+    });
 })();

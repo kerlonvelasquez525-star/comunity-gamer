@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\noticias;
+use App\Models\NoticiasComentario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -102,6 +103,8 @@ class NoticiasController extends Controller
         $team = $this->currentTeam($request);
         Gate::authorize('view', [$noticia, $team]);
 
+        $noticia->load(['comentarios' => fn ($query) => $query->with('autor')->latest()]);
+
         return $request->expectsJson()
             ? response()->json($noticia)
             : response()->view('gamer.show', [
@@ -110,6 +113,26 @@ class NoticiasController extends Controller
                 'item' => $noticia,
                 'team' => $team,
             ]);
+    }
+
+    public function storeComment(Request $request, string $current_team, noticias $noticia): Response
+    {
+        $team = $this->currentTeam($request);
+        Gate::authorize('view', [$noticia, $team]);
+
+        $validated = $request->validate([
+            'contenido' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $comentario = NoticiasComentario::create([
+            'noticia_id' => $noticia->id,
+            'user_id' => $request->user()->id,
+            'contenido' => $validated['contenido'],
+        ]);
+
+        return $request->expectsJson()
+            ? response()->json($comentario, 201)
+            : redirect()->route('noticias.show', [$team->slug, $noticia])->with('status', 'Comentario publicado.');
     }
 
     /**

@@ -50,6 +50,33 @@ class PublicNewsController extends Controller
         ]);
     }
 
+    public function publicIndex(): View
+    {
+        $news = noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()->limit(3)])
+            ->latest()
+            ->paginate(6);
+
+        return view('public-news', [
+            'items' => $news,
+            'title' => 'Noticias oficiales',
+        ]);
+    }
+
+    public function publicProblems(): View
+    {
+        return view('public-problems', [
+            'title' => 'Soporte y ayuda',
+            'helpPoints' => [
+                'Guías rápidas para montar tu equipo y encontrar partidas.',
+                'Preguntas frecuentes sobre seguridad, registro y acceso.',
+                'Soporte para equipos, reportes y moderación del contenido.',
+            ],
+        ]);
+    }
+
     public function refresh(): JsonResponse
     {
         $news = noticias::query()
@@ -77,7 +104,7 @@ class PublicNewsController extends Controller
     /**
      * Guarda un comentario asociado a una noticia oficial pública.
      */
-    public function comment(Request $request, noticias $noticia): RedirectResponse
+    public function comment(Request $request, noticias $noticia): RedirectResponse|JsonResponse
     {
         abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);
 
@@ -85,11 +112,22 @@ class PublicNewsController extends Controller
             'contenido' => ['required', 'string', 'max:2000'],
         ]);
 
-        NoticiasComentario::create([
+        $comentario = NoticiasComentario::create([
             'noticia_id' => $noticia->id,
-            'user_id' => $request->user()->id,
+            'user_id' => $request->user()?->id,
             'contenido' => $validated['contenido'],
         ]);
+
+        if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'comment' => [
+                    'id' => $comentario->id,
+                    'contenido' => $comentario->contenido,
+                    'author' => $comentario->autor?->name ?? 'Usuario',
+                ],
+            ], 201);
+        }
 
         return back()->with('status', 'Comentario publicado.');
     }

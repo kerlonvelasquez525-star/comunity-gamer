@@ -17,17 +17,17 @@
     };
 
     $navLinks = [
-        ['label' => 'home', 'route' => 'dashboard'],
-        ['label' => 'noticias', 'route' => 'noticias.index'],
-        ['label' => 'comentarios', 'route' => 'comentarios.index'],
-        ['label' => 'comunidad', 'route' => 'comunidad.index'],
-        ['label' => 'problemas', 'route' => 'problemas.index'],
+        ['label' => 'home', 'route' => 'dashboard', 'anchor' => '#top'],
+        ['label' => 'noticias', 'route' => 'noticias.index', 'anchor' => '#noticias'],
+        ['label' => 'comentarios', 'route' => 'comentarios.index', 'anchor' => '#comentarios'],
+        ['label' => 'comunidad', 'route' => 'comunidad.index', 'anchor' => '#comunidad'],
+        ['label' => 'problemas', 'route' => 'problemas.index', 'anchor' => '#problemas'],
     ];
 @endphp
 
 {{-- Usamos :: para el layout (namespace de la carpeta /resources/views/layouts) --}}
 <x-layouts::public :title="__('Nexus Community')">
-    <div class="public-home">
+    <div id="top" class="public-home">
     
     <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
 
@@ -43,23 +43,26 @@
             <span class="brand-title">nexus-comunity</span>
         </div>
 
-        <nav aria-label="Navegación principal">
+        <nav aria-label="Navegación principal" class="public-main-nav">
             @foreach ($navLinks as $index => $link)
+                @php
+                    $guestHref = match ($link['label']) {
+                        'home' => route('home'),
+                        'noticias' => route('public-noticias.index'),
+                        'comentarios' => route('home') . '#comentarios',
+                        'comunidad' => route('public-comunidad.index'),
+                        'problemas' => route('public-problemas.index'),
+                        default => route('home'),
+                    };
+                    $authHref = $teamSlug ? route($link['route'], $teamSlug) : route('teams.index');
+                @endphp
+
                 @auth
-                    @if ($teamSlug)
-                        {{-- Logueado y con equipo activo: va directo a la sección --}}
-                        <a href="{{ route($link['route'], $teamSlug) }}" @class(['active' => $index === 0])>
-                            {{ $link['label'] }}
-                        </a>
-                    @else
-                        {{-- Logueado pero SIN equipo activo: llévalo a elegir/crear equipo, no a login --}}
-                        <a href="{{ route('teams.index') }}" @class(['active' => $index === 0])>
-                            {{ $link['label'] }}
-                        </a>
-                    @endif
+                    <a href="{{ $authHref }}" @class(['active' => $index === 0, 'public-nav-link' => true])>
+                        {{ $link['label'] }}
+                    </a>
                 @else
-                    {{-- Sin sesión: la sección exige autenticación --}}
-                    <a href="{{ route('login') }}" @class(['active' => $index === 0])>
+                    <a href="{{ $guestHref }}" @class(['active' => $index === 0, 'public-nav-link' => true])>
                         {{ $link['label'] }}
                     </a>
                 @endauth
@@ -71,7 +74,7 @@
                 <span class="status-dot"></span>
             </div>
             <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : (auth()->check() ? route('teams.index') : route('login')) }}"
-               class="btn-signin"
+               class="btn-signin btn-signin-soft"
                aria-label="{{ $teamSlug ? 'Ir al panel' : (auth()->check() ? 'Elegir equipo' : 'Iniciar sesión') }}">
                 <flux:icon name="user" class="w-4 h-4" />
             </a>
@@ -165,7 +168,7 @@
                                 <h4>{{ $squad['name'] }}</h4>
                                 <p>{{ $squad['detail'] }}</p>
                             </div>
-                            <a href="{{ $teamSlug ? route('comunidad.index', $teamSlug) : (auth()->check() ? route('teams.index') : route('login')) }}"
+                            <a href="{{ $teamSlug ? route('comunidad.index', $teamSlug) : (auth()->check() ? route('teams.index') : route('public-comunidad.index')) }}"
                                class="btn-join">UNIRSE</a>
                         </div>
                     @endforeach
@@ -220,14 +223,15 @@
 
     </div>
 
-    <section class="official-news-section" aria-labelledby="official-news-title">
-        <div class="official-news-heading">
+    <section id="noticias" class="official-news-section news-public-shell" aria-labelledby="official-news-title">
+        <div id="comentarios" class="sr-only" aria-hidden="true"></div>
+        <div class="official-news-heading news-public-header">
             <span class="badge-tag">FUENTES VERIFICADAS // ACTUALIZACIONES</span>
             <h2 id="official-news-title" class="official-news-title">Noticias oficiales de videojuegos</h2>
             <p class="hero-description">Novedades publicadas por los blogs oficiales de las principales plataformas.</p>
         </div>
 
-        <div class="official-news-grid">
+        <div class="official-news-grid news-public-grid">
             @forelse ($officialNews as $noticia)
                 @php
                     $newsImageUrl = null;
@@ -243,21 +247,24 @@
                     }
                 @endphp
 
-                <article class="official-news-card" id="noticia-{{ $noticia->id }}">
-                    <img
-                        src="{{ $newsImageUrl }}"
-                        alt="{{ $noticia->titulo }}"
-                        class="official-news-image"
-                        loading="lazy"
-                        onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';"
-                    >
+                <article class="official-news-card news-public-card" id="noticia-{{ $noticia->id }}">
+                    <div class="news-public-image-wrap">
+                        <img
+                            src="{{ $newsImageUrl }}"
+                            alt="{{ $noticia->titulo }}"
+                            class="official-news-image"
+                            loading="lazy"
+                            onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';"
+                        >
+                        <span class="news-public-badge">{{ strtoupper($noticia->fuente_nombre ?: 'NEXUS') }}</span>
+                    </div>
                     <div class="official-news-content">
                         <p class="official-news-source">{{ $noticia->fuente_nombre }} · {{ $noticia->created_at?->diffForHumans() }}</p>
                         <h3>{{ $noticia->titulo }}</h3>
                         <p class="official-news-description">{{ $noticia->contenido }}</p>
                         <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
 
-                        <div class="official-comments" data-news-id="{{ $noticia->id }}">
+                        <div class="official-comments news-public-comments" data-news-id="{{ $noticia->id }}">
                             <h4>Comentarios (<span data-comments-total="{{ $noticia->id }}">{{ $noticia->comentarios->count() }}</span>)</h4>
                             <div data-comments-list="{{ $noticia->id }}">
                                 @forelse ($noticia->comentarios->take(3) as $comentario)
@@ -267,16 +274,15 @@
                                 @endforelse
                             </div>
 
-                            @auth
-                                <form method="POST" action="{{ route('official-news.comments.store', $noticia) }}" class="official-comment-form">
-                                    @csrf
-                                    <label class="sr-only" for="comment-{{ $noticia->id }}">Escribe un comentario</label>
-                                    <input id="comment-{{ $noticia->id }}" name="contenido" maxlength="2000" required placeholder="Escribe un comentario...">
-                                    <button type="submit">Comentar</button>
-                                </form>
-                            @else
-                                <a href="{{ route('login') }}" class="official-news-link">Inicia sesión para comentar</a>
-                            @endauth
+                            <form method="POST" action="{{ route('official-news.comments.store', $noticia) }}" class="official-comment-form">
+                                @csrf
+                                <label class="sr-only" for="comment-{{ $noticia->id }}">Escribe un comentario</label>
+                                <input id="comment-{{ $noticia->id }}" name="contenido" maxlength="2000" required placeholder="Escribe un comentario...">
+                                <button type="submit">Comentar</button>
+                                @guest
+                                    <small class="official-news-link" style="display:block; margin-top:0.5rem;">Comentario público sin iniciar sesión</small>
+                                @endguest
+                            </form>
                         </div>
                     </div>
                 </article>

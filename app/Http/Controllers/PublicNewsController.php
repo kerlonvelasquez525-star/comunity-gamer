@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\Models\noticias;
 use App\Models\NoticiasComentario;
+use App\Models\Publicacion;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -22,6 +24,15 @@ class PublicNewsController extends Controller
      */
     public function index(): View
     {
+        $usuariosActivos = User::query()->count();
+        $postsDiarios = Publicacion::query()->count() + noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->count();
+        $telemetria = $usuariosActivos > 0
+            ? round((User::query()->whereNotNull('email_verified_at')->count() / $usuariosActivos) * 100, 1)
+            : 0;
+
         return view('nexus_community', [
             'officialNews' => noticias::query()
                 ->whereNull('team_id')
@@ -30,6 +41,9 @@ class PublicNewsController extends Controller
                 ->latest()
                 ->limit(6)
                 ->get(),
+            'usuarios_activos' => $usuariosActivos,
+            'post_diarios' => $postsDiarios,
+            'telemetria' => $telemetria,
         ]);
     }
 

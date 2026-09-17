@@ -1,6 +1,20 @@
 @php
     $teamSlug = auth()->user()?->currentTeam?->slug;
 
+    $formatCompactNumber = function ($value): string {
+        $value = (float) $value;
+
+        if ($value >= 1000000) {
+            return number_format($value / 1000000, 1, ',', '').'M';
+        }
+
+        if ($value >= 1000) {
+            return number_format($value / 1000, 1, ',', '').'K';
+        }
+
+        return number_format($value, 0, ',', '.');
+    };
+
     $navLinks = [
         ['label' => 'home',        'route' => 'dashboard'],
         ['label' => 'noticias',    'route' => 'noticias.index'],
@@ -169,15 +183,15 @@
             {{-- TARJETA DE ESTADÍSTICAS --}}
             <div class="stats-card">
                 <div class="stat-item">
-                    <h3>248K</h3>
+                    <h3>{{ $formatCompactNumber($usuarios_activos ?? 0) }}</h3>
                     <p>USUARIOS ACTIVOS</p>
                 </div>
                 <div class="stat-item">
-                    <h3>12.4M</h3>
+                    <h3>{{ $formatCompactNumber($post_diarios ?? 0) }}</h3>
                     <p>POST DIARIOS</p>
                 </div>
                 <div class="stat-item">
-                    <h3>98.4%</h3>
+                    <h3>{{ rtrim(rtrim(number_format($telemetria ?? 0, 1, ',', '.'), '0'), ',') }}%</h3>
                     <p>TELEMETRÍA</p>
                 </div>
             </div>

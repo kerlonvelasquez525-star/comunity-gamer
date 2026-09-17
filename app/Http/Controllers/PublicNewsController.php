@@ -33,14 +33,17 @@ class PublicNewsController extends Controller
             ? round((User::query()->whereNotNull('email_verified_at')->count() / $usuariosActivos) * 100, 1)
             : 0;
 
+        $featuredNews = noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
+            ->latest()
+            ->limit(5)
+            ->get();
+
         return view('nexus_community', [
-            'officialNews' => noticias::query()
-                ->whereNull('team_id')
-                ->where('es_oficial', true)
-                ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
-                ->latest()
-                ->limit(6)
-                ->get(),
+            'officialNews' => $featuredNews,
+            'featuredNews' => $featuredNews,
             'usuarios_activos' => $usuariosActivos,
             'post_diarios' => $postsDiarios,
             'telemetria' => $telemetria,

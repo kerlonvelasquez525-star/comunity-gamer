@@ -1,3 +1,4 @@
+
 @php
     $teamSlug = auth()->user()?->currentTeam?->slug;
 
@@ -16,60 +17,11 @@
     };
 
     $navLinks = [
-        ['label' => 'home',        'route' => 'dashboard'],
-        ['label' => 'noticias',    'route' => 'noticias.index'],
+        ['label' => 'home', 'route' => 'dashboard'],
+        ['label' => 'noticias', 'route' => 'noticias.index'],
         ['label' => 'comentarios', 'route' => 'comentarios.index'],
-        ['label' => 'comunidad',   'route' => 'comunidad.index'],
-        ['label' => 'problemas',   'route' => 'problemas.index'],
-    ];
-
-    // Array de tarjetas para el slider de la derecha
-    $gamesCards = [
-        [
-            'img'   => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ÚLTIMAS NOTICIAS', 
-            'read'  => '4 MIN READ',
-            'title' => 'PROYECTO BLACKOUT: Descifrando las nuevas reglas de extracción en los videojuegos',
-            'desc'  => 'Un análisis exhaustivo de las mecánicas del parche v4.12, las nubes de radiación dinámicas y las rutas tácticas óptimas de despliegue.',
-            'user'  => 'GhostOperator', 
-            'time'  => 'HACE 2H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ÚLTIMOS PARCHES', 
-            'read'  => '6 MIN READ',
-            'title' => 'NEON VELOCITY: Actualización de motor de aceleración',
-            'desc'  => 'Revisión completa de la física de derrape en circuitos urbanos y enlaces cibernéticos nivel 3.',
-            'user'  => 'ViperNet', 
-            'time'  => 'HACE 5H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1605902711622-cfb43c443f6c?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ANÁLISIS DE JUEGO', 
-            'read'  => '5 MIN READ',
-            'title' => 'SHADOW REALMS: Estrategias de sigilo y combate',
-            'desc'  => 'Exploración de las mecánicas de sigilo, rutas de escape y optimización de recursos en entornos urbanos.',
-            'user'  => 'StealthMaster', 
-            'time'  => 'HACE 3H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'NOVEDADES DE JUEGO', 
-            'read'  => '7 MIN READ',
-            'title' => 'CYBER HORIZON: Explorando la expansión de mundo abierto',
-            'desc'  => 'Análisis de la nueva expansión, incluyendo misiones secundarias y la integración de la inteligencia artificial en NPCs.',
-            'user'  => 'CyberExplorer', 
-            'time'  => 'HACE 4H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ACTUALIZACIÓN DE MOTOR', 
-            'read'  => '8 MIN READ',
-            'title' => 'VIRTUAL REALITY: Mejoras en la física y la interacción',
-            'desc'  => 'Revisión de las últimas mejoras en el motor de realidad virtual, incluyendo la simulación de físicas y la respuesta háptica.',
-            'user'  => 'VRTechie', 
-            'time'  => 'HACE 6H'
-        ],
+        ['label' => 'comunidad', 'route' => 'comunidad.index'],
+        ['label' => 'problemas', 'route' => 'problemas.index'],
     ];
 @endphp
 
@@ -232,22 +184,33 @@
             </div>
 
             <div class="games-slider" id="slider">
-                @foreach ($gamesCards as $game)
+                @foreach ($featuredNews ?? [] as $story)
+                    @php
+                        $storyImage = !empty($story->imagen_url)
+                            ? (filter_var($story->imagen_url, FILTER_VALIDATE_URL)
+                                ? $story->imagen_url
+                                : \Illuminate\Support\Facades\Storage::disk('public')->url($story->imagen_url))
+                            : asset('nexus.png');
+
+                        $storyExcerpt = trim((string) $story->contenido);
+                        $storyExcerpt = strlen($storyExcerpt) > 150 ? substr($storyExcerpt, 0, 150).'...' : $storyExcerpt;
+                    @endphp
+
                     <article class="game-card">
-                        <img src="{{ $game['img'] }}" alt="" loading="lazy" decoding="async" class="game-image">
+                        <img src="{{ $storyImage }}" alt="{{ $story->titulo }}" loading="lazy" decoding="async" class="game-image">
                         <div class="game-card-body">
                             <div>
-                                <span class="news-badge">{{ $game['badge'] }}</span>
-                                <span class="read-time">{{ $game['read'] }}</span>
+                                <span class="news-badge">{{ strtoupper($story->categoria ?: 'NOTICIA OFICIAL') }}</span>
+                                <span class="read-time">{{ $story->comentarios->count() > 0 ? 'ACTIVA' : 'NUEVA' }}</span>
                             </div>
-                            <h3 class="game-card-title">{{ $game['title'] }}</h3>
-                            <p class="game-card-desc">{{ $game['desc'] }}</p>
+                            <h3 class="game-card-title">{{ $story->titulo }}</h3>
+                            <p class="game-card-desc">{{ $storyExcerpt }}</p>
                             <div class="game-card-footer">
                                 <div class="operator-info">
                                     <div class="avatar-sm"></div>
-                                    <span class="operator-name">{{ $game['user'] }}</span>
+                                    <span class="operator-name">{{ $story->autor?->name ?? $story->fuente_nombre ?? 'Nexus' }}</span>
                                 </div>
-                                <span class="deploy-time">PUBLICADO: {{ $game['time'] }}</span>
+                                <span class="deploy-time">PUBLICADO: {{ $story->created_at?->diffForHumans() ?? 'AHORA' }}</span>
                             </div>
                         </div>
                     </article>

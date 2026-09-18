@@ -121,13 +121,14 @@ class DatabaseSeeder extends Seeder
         }
 
         $communities = collect([
-            ['name' => 'Zona de Squad', 'description' => 'Encuentra jugadores y arma tu equipo.', 'game' => 'Fortnite', 'platform' => 'Multiplataforma', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Noche'],
-            ['name' => 'Estrategia y Guias', 'description' => 'Consejos, builds y rutas compartidas por la comunidad.', 'game' => 'Minecraft', 'platform' => 'PC', 'region' => 'Global', 'language' => 'Español', 'mode' => 'Cooperativa', 'schedule' => 'Flexible'],
-            ['name' => 'Torneos Nexus', 'description' => 'Organizacion de eventos y competencias semanales.', 'game' => 'Valorant', 'platform' => 'PC', 'region' => 'Norteamérica', 'language' => 'Inglés', 'mode' => 'Competitiva', 'schedule' => 'Fines de semana'],
+            ['name' => 'Zona de Squad', 'description' => 'Encuentra jugadores y arma tu equipo.', 'game' => 'Fortnite', 'platform' => 'Multiplataforma', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Noche', 'image' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'],
+            ['name' => 'Estrategia y Guias', 'description' => 'Consejos, builds y rutas compartidas por la comunidad.', 'game' => 'Minecraft', 'platform' => 'PC', 'region' => 'Global', 'language' => 'Español', 'mode' => 'Cooperativa', 'schedule' => 'Flexible', 'image' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80'],
+            ['name' => 'Torneos Nexus', 'description' => 'Organizacion de eventos y competencias semanales.', 'game' => 'Valorant', 'platform' => 'PC', 'region' => 'Norteamérica', 'language' => 'Inglés', 'mode' => 'Competitiva', 'schedule' => 'Fines de semana', 'image' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80'],
         ])->map(fn (array $data) => Comunidad::updateOrCreate(
             ['team_id' => $demoTeam->id, 'nombre' => $data['name']],
             [
                 'descripcion' => $data['description'],
+                'imagen_url' => $data['image'],
                 'juego_principal' => $data['game'],
                 'plataforma' => $data['platform'],
                 'region' => $data['region'],
@@ -141,9 +142,10 @@ class DatabaseSeeder extends Seeder
             ],
         ));
 
-        foreach ($communities as $community) {
+        foreach ($communities as $index => $community) {
+            $memberCount = [12, 7, 18][$index] ?? 10;
             $community->miembros()->syncWithoutDetaching(
-                $users->random(min(12, $users->count()))->mapWithKeys(fn (User $user) => [
+                $users->random($memberCount)->mapWithKeys(fn (User $user) => [
                     $user->id => ['rol' => $user->id === $community->creador_id ? 'admin' : 'miembro'],
                 ])->all(),
             );

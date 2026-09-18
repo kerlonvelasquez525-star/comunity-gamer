@@ -1,0 +1,24 @@
+{
+  "name": "community-directory",
+  "version": "1.0.0",
+  "description": "A project to manage community directories with CRUD operations.",
+  "main": "src/app.ts",
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "dev": "ts-node-dev src/app.ts",
+    "build": "tsc",
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "prisma": "^3.0.0",
+    "@prisma/client": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0",
+    "ts-node": "^10.0.0",
+    "ts-node-dev": "^1.0.0"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}

@@ -52,7 +52,14 @@
             @forelse ($items as $comunidad)
                 <article class="internal-community-card">
                     <div class="internal-community-image-wrap">
-                        <img src="{{ asset('nexus.png') }}" alt="{{ $comunidad->nombre }}" class="internal-community-image" loading="lazy">
+                        @php
+                            $communityImage = ! empty($comunidad->imagen_url)
+                                ? (filter_var($comunidad->imagen_url, FILTER_VALIDATE_URL)
+                                    ? $comunidad->imagen_url
+                                    : \Illuminate\Support\Facades\Storage::disk('public')->url($comunidad->imagen_url))
+                                : asset('nexus.png');
+                        @endphp
+                        <img src="{{ $communityImage }}" alt="{{ $comunidad->nombre }}" class="internal-community-image" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';">
                         <span class="internal-community-badge">COMUNIDAD ACTIVA</span>
                     </div>
                     <div class="internal-community-content">

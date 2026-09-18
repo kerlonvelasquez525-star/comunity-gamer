@@ -80,6 +80,46 @@ class ExampleTest extends TestCase
             ->assertSee('Comunidades activas');
     }
 
+    public function test_public_community_page_uses_stored_images_and_actual_member_counts(): void
+    {
+        $owner = User::factory()->create(['email_verified_at' => now()]);
+        $team = Team::factory()->create();
+        $owner->teams()->attach($team->id, ['role' => TeamRole::Owner->value]);
+
+        $communitySmall = Comunidad::create([
+            'team_id' => $team->id,
+            'nombre' => 'Comunidad pequeña',
+            'descripcion' => 'Pequeña comunidad test.',
+            'tipo' => 'publica',
+            'estado' => 'Abierta',
+            'imagen_url' => 'https://example.com/community-small.jpg',
+            'creador_id' => $owner->id,
+        ]);
+
+        $communityLarge = Comunidad::create([
+            'team_id' => $team->id,
+            'nombre' => 'Comunidad grande',
+            'descripcion' => 'Gran comunidad test.',
+            'tipo' => 'publica',
+            'estado' => 'Abierta',
+            'imagen_url' => 'https://example.com/community-large.jpg',
+            'creador_id' => $owner->id,
+        ]);
+
+        $communitySmall->miembros()->attach([User::factory()->create()->id, User::factory()->create()->id]);
+        $communityLarge->miembros()->attach([
+            User::factory()->create()->id,
+            User::factory()->create()->id,
+            User::factory()->create()->id,
+            User::factory()->create()->id,
+        ]);
+
+        $this->get(route('public-comunidad.index'))
+            ->assertOk()
+            ->assertSee('https://example.com/community-large.jpg')
+            ->assertSee('https://example.com/community-small.jpg');
+    }
+
     public function test_public_problems_page_is_available_without_login(): void
     {
         $this->get(route('public-problemas.index'))
@@ -112,6 +152,28 @@ class ExampleTest extends TestCase
             'contenido' => 'Excelente actualización.',
         ]);
         $this->assertInstanceOf(NoticiasComentario::class, NoticiasComentario::query()->first());
+    }
+
+    public function test_public_home_telemetry_reflects_users_active_in_the_last_thirty_days(): void
+    {
+        User::factory()->create(['created_at' => now()->subDays(45)]);
+        $activeUser = User::factory()->create(['created_at' => now()->subDays(10)]);
+
+        noticias::create([
+            'titulo' => 'Noticia para medir actividad',
+            'contenido' => 'Actividad reciente de la comunidad.',
+            'fuente_nombre' => 'Nexus',
+            'fuente_url' => 'https://example.com/actividad',
+            'es_oficial' => true,
+        ]);
+
+        $this->actingAs($activeUser)
+            ->post(route('official-news.comments.store', noticias::query()->first()), ['contenido' => 'Actividad reciente.'])
+            ->assertRedirect();
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('50%');
     }
 
     public function test_authenticated_user_can_comment_on_team_news(): void

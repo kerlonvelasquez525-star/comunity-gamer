@@ -17,10 +17,10 @@
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ([
                 ['label' => 'Noticias',            'value' => $noticias_totales,     'route' => 'noticias.index', 'theme' => 'news'],
-                ['label' => 'Comunidades',         'value' => $comunidades_totales, 'route' => 'public-comunidad.index', 'theme' => 'communities'],
+                ['label' => 'Comunidades',         'value' => $comunidades_totales, 'route' => 'comunidad.index', 'theme' => 'communities'],
                 ['label' => 'Casos abiertos',      'value' => $problemas_abiertos,   'route' => 'problemas.index', 'theme' => 'issues'],
             ] as $card)
-                <a href="{{ $card['route'] === 'public-comunidad.index' ? route('public-comunidad.index') : route($card['route'], $team->slug) }}" wire:navigate
+                <a href="{{ route($card['route'], $team->slug) }}" wire:navigate
                    class="metric-card metric-card--{{ $card['theme'] }} rounded-xl border border-zinc-200 bg-white p-5 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $card['label'] }}</p>
                     <p class="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">{{ $card['value'] }}</p>
@@ -34,7 +34,7 @@
                 <span><strong>Noticias</strong><small>Publica y conversa</small></span>
                 <span class="dashboard-quick-arrow">&rarr;</span>
             </a>
-            <a href="{{ route('public-comunidad.index') }}" wire:navigate>
+            <a href="{{ route('comunidad.index', $team->slug) }}" wire:navigate>
                 <span class="dashboard-quick-icon">C</span>
                 <span><strong>Comunidades</strong><small>Gestiona tus grupos</small></span>
                 <span class="dashboard-quick-arrow">&rarr;</span>
@@ -80,15 +80,46 @@
             <section class="space-y-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-semibold text-zinc-900 dark:text-white">Comunidades activas</h2>
-                    <a href="{{ route('public-comunidad.index') }}" wire:navigate
+                    <a href="{{ route('comunidad.index', $team->slug) }}" wire:navigate
                        class="text-sm font-semibold text-amber-600 hover:underline">Explorar</a>
                 </div>
+
+                <form method="GET" action="{{ route('dashboard') }}" class="grid gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900 md:grid-cols-2 xl:grid-cols-3">
+                    <input type="search" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar comunidad..." aria-label="Buscar comunidad"
+                           class="col-span-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+
+                    @foreach (['juego_principal' => 'Juego', 'plataforma' => 'Plataforma', 'region' => 'Región', 'idioma' => 'Idioma', 'modalidad' => 'Modalidad', 'horario' => 'Horario', 'tipo' => 'Estilo', 'nivel' => 'Nivel', 'rango' => 'Rango', 'estado' => 'Estado'] as $filter => $label)
+                        <label class="space-y-1 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                            <span>{{ $label }}</span>
+                            <select name="{{ $filter }}" class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                                <option value="">Todos</option>
+                                @foreach ($filterOptions[$filter] ?? [] as $option)
+                                    <option value="{{ $option }}" @selected(request($filter) === $option)>{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                    @endforeach
+
+                    <div class="col-span-full flex items-center justify-end gap-3">
+                        @if (request()->hasAny(['buscar', 'juego_principal', 'plataforma', 'region', 'idioma', 'modalidad', 'horario', 'tipo', 'nivel', 'rango', 'estado']))
+                            <a href="{{ route('dashboard') }}" class="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white">Limpiar</a>
+                        @endif
+                        <button type="submit" class="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400">Filtrar</button>
+                    </div>
+                </form>
 
                 <div class="dashboard-community-grid">
                 @forelse ($comunidades_activas as $comunidad)
                         <article class="dashboard-community-card">
                             <div class="dashboard-community-image-wrap">
-                                <img src="{{ asset('nexus.png') }}" alt="{{ $comunidad->nombre }}" class="dashboard-community-image" loading="lazy">
+                                @php
+                                    $communityImage = ! empty($comunidad->imagen_url)
+                                        ? (filter_var($comunidad->imagen_url, FILTER_VALIDATE_URL)
+                                            ? $comunidad->imagen_url
+                                            : \Illuminate\Support\Facades\Storage::disk('public')->url($comunidad->imagen_url))
+                                        : asset('nexus.png');
+                                @endphp
+                                <img src="{{ $communityImage }}" alt="{{ $comunidad->nombre }}" class="dashboard-community-image" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';">
                                 <span class="dashboard-community-badge">COMUNIDAD ACTIVA</span>
                             </div>
                             <div class="dashboard-community-content">
@@ -108,7 +139,7 @@
                                     <span>{{ $comunidad->miembros_count }} {{ $comunidad->miembros_count === 1 ? 'miembro' : 'miembros' }}</span>
                                     <span class="dashboard-community-status">Activa</span>
                                 </div>
-                                <a href="{{ route('public-comunidad.index') }}" wire:navigate class="dashboard-community-link">Solicitar ingreso &rarr;</a>
+                                <a href="{{ route('comunidad.index', $team->slug) }}" wire:navigate class="dashboard-community-link">Ver comunidad &rarr;</a>
                             </div>
                         </article>
                 @empty

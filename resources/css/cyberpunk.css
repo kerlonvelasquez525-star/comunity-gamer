@@ -29,7 +29,7 @@
     content: '';
     z-index: -1;
     opacity: .055;
-    background: url('/nexus.png') center / contain no-repeat;
+    background: url('../views/img/nexus.png') center / contain no-repeat;
     filter: saturate(1.5) drop-shadow(0 0 2rem var(--cp-cyan));
     pointer-events: none;
 }
@@ -47,7 +47,7 @@
     border-radius: 1rem;
     background:
         linear-gradient(90deg, rgba(8, 16, 28, .98), rgba(8, 16, 28, .74)),
-        url('/nexus.png') 94% center / 9rem auto no-repeat;
+        url('../views/img/nexus.png') 94% center / 9rem auto no-repeat;
     box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .22);
 }
 
@@ -170,7 +170,7 @@
     border: 1px solid var(--cp-line) !important;
     background:
         linear-gradient(90deg, rgba(5, 12, 22, .98) 0%, rgba(5, 12, 22, .78) 58%, rgba(5, 12, 22, .3) 100%),
-        url('/nexus.png') right 12% center / min(18rem, 36vw) auto no-repeat,
+        url('../views/img/nexus.png') right 12% center / min(18rem, 36vw) auto no-repeat,
         linear-gradient(135deg, #12253a, #090f1b) !important;
     box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, .35), 0 0 2rem rgba(65, 219, 255, .08) !important;
 }

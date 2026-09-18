@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 /**
@@ -41,13 +42,26 @@ class PublicNewsController extends Controller
             }
         }
 
-        $usuariosActivos = User::query()->count();
+        $totalUsuarios = User::query()->count();
+        $actividadDesde = Carbon::now()->subDays(30);
+        $usuariosActivos = collect()
+            ->merge(User::query()->where('created_at', '>=', $actividadDesde)->pluck('id'))
+            ->merge(Publicacion::query()->where('created_at', '>=', $actividadDesde)->pluck('user_id'))
+            ->merge(NoticiasComentario::query()->where('created_at', '>=', $actividadDesde)->pluck('user_id'))
+            ->merge(
+                \DB::table('miembros_comunidad')
+                    ->where('created_at', '>=', $actividadDesde)
+                    ->pluck('user_id'),
+            )
+            ->filter()
+            ->unique()
+            ->count();
         $postsDiarios = Publicacion::query()->count() + noticias::query()
             ->whereNull('team_id')
             ->where('es_oficial', true)
             ->count();
-        $telemetria = $usuariosActivos > 0
-            ? round((User::query()->whereNotNull('email_verified_at')->count() / $usuariosActivos) * 100, 1)
+        $telemetria = $totalUsuarios > 0
+            ? round(($usuariosActivos / $totalUsuarios) * 100, 1)
             : 0;
 
         $featuredNews = noticias::query()

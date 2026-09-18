@@ -25,6 +25,7 @@ class Comunidad extends Model
         'team_id',
         'nombre',
         'descripcion',
+        'imagen_url',
         'juego_principal',
         'plataforma',
         'region',

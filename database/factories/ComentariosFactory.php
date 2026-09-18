@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\noticias;
 use App\Models\Comentarios;
+use App\Models\noticias;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

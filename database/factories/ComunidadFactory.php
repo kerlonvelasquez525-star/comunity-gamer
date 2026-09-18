@@ -23,6 +23,11 @@ class ComunidadFactory extends Factory
             'team_id' => Team::factory(),
             'nombre' => fake()->unique()->sentence(3),
             'descripcion' => fake()->sentence(),
+            'imagen_url' => fake()->randomElement([
+                'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
+                'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80',
+                'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80',
+            ]),
             'creador_id' => User::factory(),
         ];
     }

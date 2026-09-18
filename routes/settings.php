@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Middleware\EnsureTeamMembership;
 use App\Http\Controllers\ComunidadController;
+use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 

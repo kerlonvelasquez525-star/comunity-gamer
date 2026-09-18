@@ -30,7 +30,8 @@ class PublicCommunityController extends Controller
             ->when($request->filled('nivel'), fn ($query) => $query->where('nivel', $request->string('nivel')))
             ->when($request->filled('rango'), fn ($query) => $query->where('rango', $request->string('rango')))
             ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')))
-            ->latest()
+            ->withCount('miembros')
+            ->orderByDesc('miembros_count')
             ->paginate(12)
             ->appends($request->query());
 

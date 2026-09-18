@@ -6,13 +6,16 @@
             <p class="mt-2 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">Define el perfil de jugadores para que tu comunidad pueda encontrarse fácilmente.</p>
         </div>
 
-        <form method="POST" action="{{ route('comunidad.store', $team->slug) }}" class="space-y-5 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+        <form method="POST" action="{{ route('comunidad.store', $team->slug) }}" class="space-y-5 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900" enctype="multipart/form-data">
             @csrf
             <label class="block text-sm font-semibold text-zinc-800 dark:text-zinc-100">Nombre
                 <input name="nombre" value="{{ old('nombre') }}" required maxlength="100" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800">
             </label>
             <label class="block text-sm font-semibold text-zinc-800 dark:text-zinc-100">Descripción
                 <textarea name="descripcion" rows="4" maxlength="1000" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800">{{ old('descripcion') }}</textarea>
+            </label>
+            <label class="block text-sm font-semibold text-zinc-800 dark:text-zinc-100">Imagen de la comunidad
+                <input name="imagen" type="file" accept="image/*" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800">
             </label>
             <div class="grid gap-4 sm:grid-cols-2">
                 @foreach ([

@@ -1,9 +1,15 @@
 <x-layouts::app :title="$title">
     <div class="mx-auto max-w-3xl space-y-6 p-6 lg:p-10"><a class="text-sm font-semibold text-amber-600" href="{{ url()->previous() }}">Volver</a><div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-amber-600">{{ $team->name }}</p><h1 class="mt-2 text-3xl font-bold">{{ $title }}</h1></div>
-        <form method="POST" action="{{ isset($item) ? route($resource.'.update', [$team->slug, $item]) : route($resource.'.store', $team->slug) }}" class="space-y-5 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">@csrf @isset($item) @method('PUT') @endisset
+        <form method="POST" action="{{ isset($item) ? route($resource.'.update', [$team->slug, $item]) : route($resource.'.store', $team->slug) }}" class="space-y-5 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900" enctype="multipart/form-data">@csrf @isset($item) @method('PUT') @endisset
             @if (in_array($resource, ['publicaciones', 'noticias', 'juegos', 'hilos', 'problemas']))<label class="block text-sm font-semibold">Titulo<input name="titulo" value="{{ old('titulo', $item->titulo ?? '') }}" required maxlength="180" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800"></label>@endif
             @if (in_array($resource, ['comunidad', 'foros', 'canales', 'plataformas', 'idiomas', 'etiquetas']))<label class="block text-sm font-semibold">Nombre<input name="nombre" value="{{ old('nombre', $item->nombre ?? '') }}" required maxlength="100" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800"></label>@endif
             @if ($resource === 'comunidad')
+                <label class="block text-sm font-semibold">Imagen de la comunidad<input name="imagen" type="file" accept="image/*" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800"></label>
+                @if (! empty($item?->imagen_url))
+                    <div class="overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-700 dark:bg-zinc-800/60">
+                        <img src="{{ filter_var($item->imagen_url, FILTER_VALIDATE_URL) ? $item->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($item->imagen_url) }}" alt="{{ $item->nombre }}" class="h-32 w-full rounded-lg object-cover">
+                    </div>
+                @endif
                 <div class="grid gap-4 sm:grid-cols-2">
                     <label class="block text-sm font-semibold sm:col-span-2">Juego principal<input name="juego_principal" value="{{ old('juego_principal', $item->juego_principal ?? '') }}" maxlength="100" placeholder="Ej. Valorant, Fortnite, Minecraft" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800"></label>
                     <label class="block text-sm font-semibold">Plataforma<select name="plataforma" class="mt-2 block w-full rounded-lg border-zinc-300 dark:border-zinc-600 dark:bg-zinc-800"><option value="">Cualquiera</option>@foreach (['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Móvil', 'Multiplataforma'] as $option)<option value="{{ $option }}" @selected(old('plataforma', $item->plataforma ?? '') === $option)>{{ $option }}</option>@endforeach</select></label>

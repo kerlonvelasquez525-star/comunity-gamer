@@ -50,11 +50,19 @@
                 @forelse ($items as $comunidad)
                     <article class="official-news-card community-public-card">
                         <div class="news-public-image-wrap">
+                            @php
+                                $communityImage = ! empty($comunidad->imagen_url)
+                                    ? (filter_var($comunidad->imagen_url, FILTER_VALIDATE_URL)
+                                        ? $comunidad->imagen_url
+                                        : \Illuminate\Support\Facades\Storage::disk('public')->url($comunidad->imagen_url))
+                                    : asset('nexus.png');
+                            @endphp
                             <img
-                                src="{{ asset('nexus.png') }}"
+                                src="{{ $communityImage }}"
                                 alt="{{ $comunidad->nombre }}"
                                 class="official-news-image"
                                 loading="lazy"
+                                onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';"
                             >
                             <span class="news-public-badge">COMUNIDAD ACTIVA</span>
                         </div>

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 class ComunidadController extends Controller
@@ -43,9 +44,15 @@ class ComunidadController extends Controller
             ->when($request->filled('plataforma'), fn ($query) => $query->where('plataforma', $request->string('plataforma')))
             ->when($request->filled('region'), fn ($query) => $query->where('region', $request->string('region')))
             ->when($request->filled('modalidad'), fn ($query) => $query->where('modalidad', $request->string('modalidad')))
+            ->when($request->filled('idioma'), fn ($query) => $query->where('idioma', $request->string('idioma')))
+            ->when($request->filled('horario'), fn ($query) => $query->where('horario', $request->string('horario')))
+            ->when($request->filled('tipo'), fn ($query) => $query->where('tipo', $request->string('tipo')))
+            ->when($request->filled('nivel'), fn ($query) => $query->where('nivel', $request->string('nivel')))
+            ->when($request->filled('rango'), fn ($query) => $query->where('rango', $request->string('rango')))
+            ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')))
             ->with('creador')
             ->withCount('miembros')
-            ->latest()
+            ->orderByDesc('miembros_count')
             ->paginate($request->integer('per_page', 12))
             ->appends($request->query());
 
@@ -74,6 +81,8 @@ class ComunidadController extends Controller
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
+            'imagen' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp,gif', 'max:4096'],
+            'imagen_url' => ['nullable', 'url', 'max:2048'],
             'juego_principal' => ['nullable', 'string', 'max:100'],
             'plataforma' => ['nullable', 'string', 'max:50'],
             'region' => ['nullable', 'string', 'max:50'],
@@ -86,6 +95,12 @@ class ComunidadController extends Controller
             'estado' => ['nullable', 'string', 'max:50'],
             'max_miembros' => ['nullable', 'integer', 'min:2', 'max:500'],
         ]);
+
+        if ($request->hasFile('imagen')) {
+            $validated['imagen_url'] = $request->file('imagen')->store('comunidades', 'public');
+        }
+
+        unset($validated['imagen']);
 
         $comunidad = DB::transaction(function () use ($request, $team, $validated) {
             $comunidad = Comunidad::create([
@@ -149,6 +164,8 @@ class ComunidadController extends Controller
         $validated = $request->validate([
             'nombre' => ['sometimes', 'required', 'string', 'max:100'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
+            'imagen' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp,gif', 'max:4096'],
+            'imagen_url' => ['nullable', 'url', 'max:2048'],
             'juego_principal' => ['nullable', 'string', 'max:100'],
             'plataforma' => ['nullable', 'string', 'max:50'],
             'region' => ['nullable', 'string', 'max:50'],
@@ -161,6 +178,15 @@ class ComunidadController extends Controller
             'estado' => ['nullable', 'string', 'max:50'],
             'max_miembros' => ['nullable', 'integer', 'min:2', 'max:500'],
         ]);
+
+        if ($request->hasFile('imagen')) {
+            if ($comunidad->imagen_url && ! filter_var($comunidad->imagen_url, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($comunidad->imagen_url);
+            }
+            $validated['imagen_url'] = $request->file('imagen')->store('comunidades', 'public');
+        }
+
+        unset($validated['imagen']);
 
         $comunidad->update($validated);
 
@@ -225,7 +251,7 @@ class ComunidadController extends Controller
         abort_unless($newOwner->belongsToTeam($team), 422, 'El nuevo administrador debe pertenecer al equipo.');
         abort_unless($comunidad->miembros()->whereKey($newOwner->id)->exists(), 422, 'El nuevo administrador debe ser miembro de la comunidad.');
 
-        DB::transaction(function () use ($comunidad, $newOwner, $request): void {
+        DB::transaction(function () use ($comunidad, $newOwner): void {
             $oldOwnerId = $comunidad->creador_id;
             $comunidad->update(['creador_id' => $newOwner->id]);
             $comunidad->miembros()->syncWithoutDetaching([

@@ -1,6 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
+@import './project-theme.css';
+
+.app-main .internal-community-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #2b3540;
+  border-radius: 1rem;
+  background: #1a2129;
+  color: #f3f5f7;
+  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.app-main .internal-community-card:hover { border-color: rgba(242, 169, 59, .7); box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .2); transform: translateY(-3px); }
+.app-main .internal-community-image-wrap { position: relative; height: 10rem; overflow: hidden; background: #0d1116; }
+.app-main .internal-community-image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+.app-main .internal-community-card:hover .internal-community-image { transform: scale(1.04); }
+.app-main .internal-community-badge { position: absolute; top: .75rem; left: .75rem; padding: .3rem .5rem; border: 1px solid rgba(255, 255, 255, .16); border-radius: .4rem; background: rgba(17, 21, 27, .84); color: #f2a93b; font-size: .62rem; font-weight: 800; letter-spacing: .05em; }
+.app-main .internal-community-content { display: flex; min-width: 0; flex: 1; flex-direction: column; padding: 1rem; }
+.app-main .internal-community-owner { margin: 0; color: #a5b0ba; font-size: .7rem; }
+.app-main .internal-community-content h2 { overflow: hidden; margin: .45rem 0; color: #f3f5f7; font: 700 1.05rem 'Space Grotesk', sans-serif; text-overflow: ellipsis; white-space: nowrap; }
+.app-main .internal-community-description { display: -webkit-box; min-height: 2.5rem; margin: 0; overflow: hidden; color: #a5b0ba; font-size: .8rem; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.app-main .internal-community-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .75rem; }
+.app-main .internal-community-tags span { padding: .22rem .42rem; border: 1px solid #2b3540; border-radius: 999px; color: #a5b0ba; font-size: .62rem; }
+.app-main .internal-community-meta { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .75rem; padding-top: .7rem; border-top: 1px solid #2b3540; color: #a5b0ba; font-size: .72rem; }
+.app-main .internal-community-meta span:last-child { color: #65d6c2; }
+.app-main .internal-community-action { margin-top: .7rem; color: #f2a93b; font-size: .78rem; font-weight: 700; text-decoration: none; }
+.app-main .internal-community-action:hover { color: #ffc15c; }
 
 /* Estilos de la página de reportes */
 @import './problemas.css';

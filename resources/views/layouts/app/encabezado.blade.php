@@ -4,7 +4,6 @@
     $navigationItems = $teamSlug ? [
         ['label' => __('Dashboard'), 'icon' => 'home', 'route' => 'dashboard', 'pattern' => 'dashboard'],
         ['label' => __('Noticias'), 'icon' => 'newspaper', 'route' => 'noticias.index', 'pattern' => 'noticias.*'],
-        ['label' => __('Comentarios'), 'icon' => 'chat-bubble-left-right', 'route' => 'comentarios.index', 'pattern' => 'comentarios.*'],
         ['label' => __('Comunidades'), 'icon' => 'user-group', 'route' => 'comunidad.index', 'pattern' => 'comunidad.*'],
         ['label' => __('Problemas'), 'icon' => 'exclamation-triangle', 'route' => 'problemas.index', 'pattern' => 'problemas.*'],
         ['label' => __('Asistente'), 'icon' => 'sparkles', 'route' => 'chatbot.index', 'pattern' => 'chatbot.*'],
@@ -13,11 +12,17 @@
     ];
 @endphp
 
+@php
+    $chatUsers = auth()->check() && auth()->user()->currentTeam
+        ? auth()->user()->currentTeam->members()->whereKeyNot(auth()->id())->limit(12)->get()
+        : collect();
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
-        @vite(['resources/css/encabezado.css'])
+        @vite(['resources/css/encabezado.css', 'resources/css/chat.css'])
     </head>
     <body class="min-h-screen bg-zinc-950 font-sans text-zinc-100 antialiased" x-data="{ mobileMenuOpen: false }">
 
@@ -113,6 +118,38 @@
                 </div>
             </main>
 
+            @auth
+                <button type="button" class="global-chat-open" data-chat-open aria-controls="global-chat-drawer" aria-expanded="false">
+                    <span class="global-chat-status"></span>
+                    <span>Ver jugadores</span>
+                </button>
+
+                <aside id="global-chat-drawer" class="global-chat-drawer" data-chat-drawer aria-hidden="true" aria-labelledby="global-chat-title">
+                    <div class="global-chat-header">
+                        <div>
+                            <p class="global-chat-kicker">NEXUS // MENSAJES</p>
+                            <h2 id="global-chat-title">Tus jugadores</h2>
+                        </div>
+                        <button type="button" class="global-chat-close" data-chat-close aria-label="Cerrar panel de chat">&times;</button>
+                    </div>
+                    <p class="global-chat-copy">Selecciona la foto o el nombre de un usuario para abrir su conversación.</p>
+                    <div class="global-chat-users">
+                        @forelse ($chatUsers as $chatUser)
+                            <a href="{{ route('chat.show', $chatUser) }}" class="global-chat-user">
+                                <span class="global-chat-avatar">{{ strtoupper(substr($chatUser->name, 0, 1)) }}</span>
+                                <span class="global-chat-user-info">
+                                    <strong>{{ $chatUser->name }}</strong>
+                                    <small>{{ $chatUser->email }}</small>
+                                </span>
+                                <span class="global-chat-arrow" aria-hidden="true">&rarr;</span>
+                            </a>
+                        @empty
+                            <p class="global-chat-empty">No hay otros usuarios disponibles en este equipo.</p>
+                        @endforelse
+                    </div>
+                </aside>
+            @endauth
+
         </div>
 
         @auth
@@ -126,5 +163,29 @@
         @endpersist
 
         @fluxScripts
+
+        @auth
+            <script>
+                (() => {
+                    const drawer = document.querySelector('[data-chat-drawer]');
+                    const openButton = document.querySelector('[data-chat-open]');
+                    const closeButton = document.querySelector('[data-chat-close]');
+
+                    if (!drawer || !openButton || !closeButton) return;
+
+                    const setDrawerState = (isOpen) => {
+                        drawer.classList.toggle('is-open', isOpen);
+                        drawer.setAttribute('aria-hidden', String(!isOpen));
+                        openButton.setAttribute('aria-expanded', String(isOpen));
+                    };
+
+                    openButton.addEventListener('click', () => setDrawerState(true));
+                    closeButton.addEventListener('click', () => setDrawerState(false));
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') setDrawerState(false);
+                    });
+                })();
+            </script>
+        @endauth
     </body>
 </html>

@@ -23,6 +23,29 @@
                 <p class="hero-description">Explora grupos de jugadores, descubre partidas y comparte intereses sin necesidad de registrarte.</p>
             </div>
 
+            @if (session('status'))
+                <div class="community-public-status" role="status">{{ session('status') }}</div>
+            @endif
+
+            <form method="GET" action="{{ route('public-comunidad.index') }}" class="community-public-filters">
+                <input type="search" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar comunidad..." aria-label="Buscar comunidad">
+                @foreach (['juego_principal' => 'Juego', 'plataforma' => 'Plataforma', 'region' => 'Región', 'idioma' => 'Idioma', 'modalidad' => 'Modalidad', 'horario' => 'Horario', 'tipo' => 'Estilo', 'nivel' => 'Nivel', 'rango' => 'Rango', 'estado' => 'Estado'] as $filter => $label)
+                    <label>
+                        <span>{{ $label }}</span>
+                        <select name="{{ $filter }}">
+                            <option value="">Todos</option>
+                            @foreach ($filterOptions[$filter] ?? [] as $option)
+                                <option value="{{ $option }}" @selected(request($filter) === $option)>{{ $option }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                @endforeach
+                <button type="submit">Filtrar</button>
+                @if (request()->hasAny(['buscar', 'juego_principal', 'plataforma', 'region', 'idioma', 'modalidad', 'horario', 'tipo', 'nivel', 'rango', 'estado']))
+                    <a href="{{ route('public-comunidad.index') }}">Limpiar</a>
+                @endif
+            </form>
+
             <div class="official-news-grid community-public-grid">
                 @forelse ($items as $comunidad)
                     <article class="official-news-card community-public-card">
@@ -39,6 +62,13 @@
                             <p class="official-news-source">{{ $comunidad->creador?->name ?? 'Miembro de la comunidad' }}</p>
                             <h3>{{ $comunidad->nombre }}</h3>
                             <p class="official-news-description">{{ $comunidad->descripcion ?: 'Una nueva comunidad gamer, todavía sin descripción.' }}</p>
+                            <div class="community-filter-tags">
+                                @foreach ([$comunidad->juego_principal, $comunidad->plataforma, $comunidad->region, $comunidad->modalidad, $comunidad->horario] as $tag)
+                                    @if (filled($tag))
+                                        <span>{{ $tag }}</span>
+                                    @endif
+                                @endforeach
+                            </div>
                             <div class="community-meta-row">
                                 <span class="community-member-count">
                                     {{ $comunidad->miembros_count }} {{ $comunidad->miembros_count === 1 ? 'miembro' : 'miembros' }}
@@ -46,19 +76,36 @@
                                 <span class="community-status-pill">Activa</span>
                             </div>
                             @php
-                                $communityJoinHref = auth()->check() && $comunidad->equipo?->slug
-                                    ? route('comunidad.show', [$comunidad->equipo->slug, $comunidad])
-                                    : route('login');
+                                $membership = auth()->check() ? $comunidad->miembros->first() : null;
+                                $application = auth()->check() ? $comunidad->solicitudes->first() : null;
                             @endphp
-                            <a href="{{ $communityJoinHref }}" class="official-news-link">
-                                {{ auth()->check() ? 'Unirse a la comunidad' : 'Iniciar sesión para unirse' }} &rarr;
-                            </a>
+                            @if (! auth()->check())
+                                <a href="{{ route('login') }}" class="official-news-link">Iniciar sesión para solicitar ingreso &rarr;</a>
+                            @elseif ($membership)
+                                <span class="community-join-state is-accepted">Ya perteneces a esta comunidad</span>
+                            @elseif ($application?->estado === 'pendiente')
+                                <span class="community-join-state">Solicitud pendiente de aprobación</span>
+                            @elseif ($application?->estado === 'rechazada')
+                                <form method="POST" action="{{ route('public-comunidad.apply', $comunidad) }}">
+                                    @csrf
+                                    <button type="submit" class="official-news-link community-join-button">Solicitar nuevamente &rarr;</button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('public-comunidad.apply', $comunidad) }}">
+                                    @csrf
+                                    <button type="submit" class="official-news-link community-join-button">Solicitar ingreso &rarr;</button>
+                                </form>
+                            @endif
                         </div>
                     </article>
                 @empty
                     <p class="official-news-empty community-empty-state">Todavía no hay comunidades públicas disponibles.</p>
                 @endforelse
             </div>
+
+            @if ($items->hasPages())
+                <div class="community-pagination">{{ $items->links() }}</div>
+            @endif
         </section>
     </div>
 </x-layouts::public>

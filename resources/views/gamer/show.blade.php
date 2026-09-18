@@ -52,10 +52,27 @@
                 <div class="mt-4 space-y-3">
                     @forelse ($item->comentarios ?? collect() as $comentario)
                         <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800">
-                            <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-                                {{ $comentario->autor?->name ?? 'Usuario' }}
-                            </p>
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                                    {{ $comentario->autor?->name ?? 'Usuario' }}
+                                </p>
+                                @if ($comentario->user_id === auth()->id())
+                                    <form method="POST" action="{{ route('noticias.comentarios.destroy', [$team->slug, $item, $comentario]) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-xs font-semibold text-red-600 hover:text-red-500">Eliminar</button>
+                                    </form>
+                                @endif
+                            </div>
                             <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{{ $comentario->contenido }}</p>
+                            @if ($comentario->user_id === auth()->id())
+                                <form method="POST" action="{{ route('noticias.comentarios.update', [$team->slug, $item, $comentario]) }}" class="mt-3 flex flex-col gap-2 sm:flex-row">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="text" name="contenido" value="{{ $comentario->contenido }}" maxlength="2000" required class="min-w-0 flex-1 rounded-lg border-zinc-300 bg-white text-sm dark:border-zinc-600 dark:bg-zinc-900">
+                                    <button type="submit" class="rounded-lg bg-amber-500 px-3 py-2 text-xs font-semibold text-zinc-950 hover:bg-amber-400">Guardar</button>
+                                </form>
+                            @endif
                         </div>
                     @empty
                         <p class="text-sm text-zinc-500 dark:text-zinc-400">Aún no hay comentarios en esta noticia.</p>
@@ -139,6 +156,42 @@
                         </div>
                     @endforeach
                 </div>
+
+                @if (auth()->user() && auth()->user()->can('update', [$item, $team]))
+                    <div class="mt-8 border-t border-zinc-200 pt-6 dark:border-zinc-700">
+                        <div class="flex items-center justify-between gap-3">
+                            <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Solicitudes pendientes</h2>
+                            <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+                                {{ $item->solicitudes->count() }}
+                            </span>
+                        </div>
+
+                        <div class="mt-4 space-y-3">
+                            @forelse ($item->solicitudes as $solicitud)
+                                <div class="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <p class="font-semibold text-zinc-800 dark:text-zinc-100">{{ $solicitud->usuario?->name ?? 'Usuario' }}</p>
+                                        <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $solicitud->usuario?->email }}</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <form method="POST" action="{{ route('comunidad.solicitudes.accept', [$team->slug, $item, $solicitud]) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="rounded-lg bg-emerald-500 px-3 py-2 text-xs font-semibold text-zinc-950">Aceptar</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('comunidad.solicitudes.reject', [$team->slug, $item, $solicitud]) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="rounded-lg border border-red-300 px-3 py-2 text-xs font-semibold text-red-700 dark:border-red-700 dark:text-red-300">Rechazar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="text-sm text-zinc-500 dark:text-zinc-400">No hay solicitudes pendientes.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                @endif
             </section>
         @endif
 

@@ -46,6 +46,46 @@
                                 <span class="community-member-count">{{ $noticia->comentarios->count() }} comentarios</span>
                                 <a href="{{ $noticia->fuente_url ?? route('home') }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer &rarr;</a>
                             </div>
+                            <div class="official-comments" data-news-comments>
+                                <div class="official-comments-heading">
+                                    <h4>Conversación</h4>
+                                    <span data-comments-total>{{ $noticia->comentarios->count() }}</span>
+                                </div>
+                                <div class="official-comment-list" data-comments-list>
+                                    @forelse ($noticia->comentarios as $comentario)
+                                        <p class="official-comment">
+                                            <span class="official-comment-header">
+                                                <strong>{{ $comentario->autor?->name ?? 'Usuario' }}</strong>
+                                                @if (auth()->check() && $comentario->user_id === auth()->id())
+                                                    <span class="official-comment-actions">
+                                                        <button type="submit" form="public-delete-comment-{{ $comentario->id }}">Eliminar</button>
+                                                    </span>
+                                                @endif
+                                            </span>
+                                            <span>{{ $comentario->contenido }}</span>
+                                            @if (auth()->check() && $comentario->user_id === auth()->id())
+                                                <form method="POST" action="{{ route('official-news.comments.update', [$noticia, $comentario]) }}" class="official-comment-edit-form">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="text" name="contenido" value="{{ $comentario->contenido }}" maxlength="2000" aria-label="Editar comentario" required>
+                                                    <button type="submit">Guardar</button>
+                                                </form>
+                                                <form id="public-delete-comment-{{ $comentario->id }}" method="POST" action="{{ route('official-news.comments.destroy', [$noticia, $comentario]) }}" class="hidden">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                            @endif
+                                        </p>
+                                    @empty
+                                        <p class="official-comment-empty">Sé el primero en comentar.</p>
+                                    @endforelse
+                                </div>
+                                <form method="POST" action="{{ route('official-news.comments.store', $noticia) }}" class="official-comment-form" data-public-comment-form data-authenticated="{{ auth()->check() ? 'true' : 'false' }}">
+                                    @csrf
+                                    <input type="text" name="contenido" maxlength="2000" placeholder="Escribe una respuesta..." aria-label="Escribe una respuesta" required>
+                                    <button type="submit">Comentar</button>
+                                </form>
+                            </div>
                         </div>
                     </article>
                 @empty
@@ -57,5 +97,21 @@
                 <div class="community-pagination">{{ $items->links() }}</div>
             @endif
         </section>
+
+        <div class="public-auth-modal" data-public-auth-modal hidden>
+            <div class="public-auth-modal-backdrop" data-public-auth-close></div>
+            <section class="public-auth-dialog" role="dialog" aria-modal="true" aria-labelledby="public-auth-title">
+                <button type="button" class="public-auth-close" data-public-auth-close aria-label="Cerrar">&times;</button>
+                <span class="badge-tag">NEXUS // CUENTA NECESARIA</span>
+                <h2 id="public-auth-title">Regístrate para participar</h2>
+                <p> Puedes leer toda la conversación sin iniciar sesión. Para guardar tu respuesta en esta noticia, crea tu cuenta o inicia sesión.</p>
+                <div class="public-auth-actions">
+                    <a href="{{ route('register') }}" class="btn-primary">Crear mi cuenta &rarr;</a>
+                    <a href="{{ route('login') }}" class="btn-icon">Iniciar sesión</a>
+                </div>
+            </section>
+        </div>
     </div>
+
+    @vite('resources/js/home.js')
 </x-layouts::public>

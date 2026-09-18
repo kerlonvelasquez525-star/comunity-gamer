@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\noticias;
 use App\Models\NoticiasComentario;
 use App\Models\User;
-use App\Models\noticias;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -46,15 +46,14 @@ class DemoSeedDataTest extends TestCase
             ->assertDontSee('Zona de Squad')
             ->assertDontSee('Estrategia y Guias')
             ->assertDontSee('Torneos Nexus')
-            ->assertSee('FUENTES VERIFICADAS // ACTUALIZACIONES')
-            ->assertSee('Noticias oficiales de videojuegos')
-            ->assertSee('Novedades publicadas por los blogs oficiales de las principales plataformas.');
+            ->assertSee('NEXUS // ACTUALIZACIONES')
+            ->assertSee('Noticias oficiales');
 
         $this->get(route('public-comunidad.index'))->assertOk()
             ->assertSee('Zona de Squad')
             ->assertSee('Estrategia y Guias')
             ->assertSee('Torneos Nexus')
-            ->assertSee('Iniciar sesión para unirse');
+            ->assertSee('Iniciar sesión para solicitar ingreso');
     }
 
     public function test_guest_comment_is_saved_after_login(): void
@@ -66,7 +65,7 @@ class DemoSeedDataTest extends TestCase
 
         $this->post(route('official-news.comments.store', $noticia), [
             'contenido' => 'Comentario escrito antes de iniciar sesión.',
-        ])->assertRedirect(route('login'));
+        ])->assertRedirect(route('register'));
 
         $this->actingAs($user)->get('/')->assertOk();
 

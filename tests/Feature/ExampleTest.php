@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\TeamRole;
+use App\Models\Comunidad;
 use App\Models\noticias;
 use App\Models\NoticiasComentario;
 use App\Models\Team;
@@ -26,7 +27,7 @@ class ExampleTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee(route('public-noticias.index'))
-            ->assertSee(route('home') . '#comentarios')
+            ->assertDontSee(route('home').'#comentarios')
             ->assertSee(route('public-comunidad.index'))
             ->assertSee(route('public-problemas.index'));
     }
@@ -42,11 +43,10 @@ class ExampleTest extends TestCase
         ]);
 
         $this->post(route('official-news.comments.store', $news), ['contenido' => 'Comentario de visitante.'])
-            ->assertRedirect();
+            ->assertRedirect(route('register'));
 
-        $this->assertDatabaseHas('noticias_comentarios', [
+        $this->assertDatabaseMissing('noticias_comentarios', [
             'noticia_id' => $news->id,
-            'user_id' => null,
             'contenido' => 'Comentario de visitante.',
         ]);
     }
@@ -62,8 +62,8 @@ class ExampleTest extends TestCase
         ]);
 
         $this->postJson(route('official-news.comments.store', $news), ['contenido' => 'Comentario desde AJAX.'])
-            ->assertCreated()
-            ->assertJsonPath('comment.contenido', 'Comentario desde AJAX.');
+            ->assertUnauthorized()
+            ->assertJsonPath('register_url', route('register'));
     }
 
     public function test_public_news_page_is_available_without_login(): void
@@ -140,6 +140,54 @@ class ExampleTest extends TestCase
         ]);
     }
 
+    public function test_user_can_request_a_public_community_and_admin_can_accept_it(): void
+    {
+        $admin = User::factory()->create(['email_verified_at' => now()]);
+        $applicant = User::factory()->create(['email_verified_at' => now()]);
+        $team = Team::factory()->create(['name' => 'Team Community']);
+        $admin->teams()->attach($team->id, ['role' => TeamRole::Owner->value]);
+        $admin->switchTeam($team);
+        $community = Comunidad::create([
+            'team_id' => $team->id,
+            'nombre' => 'Comunidad competitiva',
+            'descripcion' => 'Comunidad para jugadores competitivos.',
+            'tipo' => 'competitiva',
+            'estado' => 'Abierta',
+            'creador_id' => $admin->id,
+        ]);
+
+        $this->actingAs($applicant)
+            ->post(route('public-comunidad.apply', $community))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('comunidad_solicitudes', [
+            'comunidad_id' => $community->id,
+            'user_id' => $applicant->id,
+            'estado' => 'pendiente',
+        ]);
+
+        $request = $community->solicitudes()->firstOrFail();
+
+        $this->actingAs($admin)
+            ->patch(route('comunidad.solicitudes.accept', [$team->slug, $community, $request]))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('comunidad_solicitudes', [
+            'id' => $request->id,
+            'estado' => 'aceptada',
+        ]);
+        $this->assertDatabaseHas('miembros_comunidad', [
+            'comunidad_id' => $community->id,
+            'user_id' => $applicant->id,
+            'rol' => 'miembro',
+        ]);
+        $this->assertDatabaseHas('team_members', [
+            'team_id' => $team->id,
+            'user_id' => $applicant->id,
+            'role' => TeamRole::Member->value,
+        ]);
+    }
+
     public function test_user_can_create_a_team_community_with_extra_fields(): void
     {
         $user = User::factory()->create(['email_verified_at' => now()]);
@@ -180,7 +228,7 @@ class ExampleTest extends TestCase
         $member->teams()->attach($team->id, ['role' => TeamRole::Member->value]);
         $owner->switchTeam($team);
 
-        $comunidad = \App\Models\Comunidad::create([
+        $comunidad = Comunidad::create([
             'team_id' => $team->id,
             'nombre' => 'Clan de pruebas',
             'descripcion' => 'Comunidad para roles',
@@ -214,7 +262,7 @@ class ExampleTest extends TestCase
         $member->teams()->attach($team->id, ['role' => TeamRole::Member->value]);
         $owner->switchTeam($team);
 
-        $comunidad = \App\Models\Comunidad::create([
+        $comunidad = Comunidad::create([
             'team_id' => $team->id,
             'nombre' => 'Clan invitado',
             'descripcion' => 'Comunidad para invitar',

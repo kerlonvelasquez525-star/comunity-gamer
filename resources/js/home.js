@@ -115,6 +115,10 @@
 
             form.dataset.bound = 'true';
             form.addEventListener('submit', async (event) => {
+                if (form.dataset.authenticated !== 'true') {
+                    return;
+                }
+
                 event.preventDefault();
 
                 const input = form.querySelector('input[name="contenido"]');
@@ -173,21 +177,71 @@
         });
     };
 
+    const bindPublicCommentGate = () => {
+        const modal = document.querySelector('[data-public-auth-modal]');
+
+        if (!modal || modal.dataset.bound === 'true') {
+            return;
+        }
+
+        const closeModal = () => {
+            modal.hidden = true;
+            document.body.classList.remove('public-auth-modal-open');
+        };
+
+        const openModal = () => {
+            modal.hidden = false;
+            document.body.classList.add('public-auth-modal-open');
+            modal.querySelector('[data-public-auth-close]')?.focus();
+        };
+
+        document.querySelectorAll('[data-public-comment-form]').forEach((form) => {
+            if (form.dataset.gateBound === 'true') {
+                return;
+            }
+
+            form.dataset.gateBound = 'true';
+            form.addEventListener('submit', (event) => {
+                if (form.dataset.authenticated === 'true') {
+                    return;
+                }
+
+                event.preventDefault();
+                openModal();
+            });
+        });
+
+        modal.querySelectorAll('[data-public-auth-close]').forEach((element) => {
+            element.addEventListener('click', closeModal);
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !modal.hidden) {
+                closeModal();
+            }
+        });
+
+        modal.dataset.bound = 'true';
+    };
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             initSlider();
             bindNewsCarousel();
             bindPublicComments();
+            bindPublicCommentGate();
         }, { once: true });
     } else {
         initSlider();
         bindNewsCarousel();
         bindPublicComments();
+        bindPublicCommentGate();
     }
 
     document.addEventListener('livewire:navigated', () => {
         initSlider();
         bindNewsCarousel();
         bindPublicComments();
+        bindPublicCommentGate();
     });
 })();

@@ -12,14 +12,14 @@ use App\Models\Hilo;
 use App\Models\Idioma;
 use App\Models\Juego;
 use App\Models\Mensaje;
-use App\Models\Notificacion;
+use App\Models\noticias;
 use App\Models\NoticiasComentario;
+use App\Models\Notificacion;
 use App\Models\Plataforma;
 use App\Models\Problemas;
 use App\Models\Publicacion;
 use App\Models\Reaccion;
 use App\Models\Team;
-use App\Models\noticias;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -62,13 +62,15 @@ class DatabaseSeeder extends Seeder
 
         $officialNews = noticias::factory()->count(30)->create();
 
-        foreach ($officialNews as $noticia) {
-            $commentCount = random_int(2, 5);
+        $minimumNewsComments = max(3, (int) ceil($users->count() * .10));
 
-            for ($i = 0; $i < $commentCount; $i++) {
+        foreach ($officialNews as $noticia) {
+            $commentCount = random_int($minimumNewsComments, $users->count());
+
+            foreach ($users->random($commentCount) as $user) {
                 NoticiasComentario::create([
                     'noticia_id' => $noticia->id,
-                    'user_id' => $users->random()->id,
+                    'user_id' => $user->id,
                     'contenido' => fake()->randomElement([
                         'Tiene muy buena pinta esta actualización.',
                         'Ya estoy preparando mi grupo para probarlo.',
@@ -119,12 +121,24 @@ class DatabaseSeeder extends Seeder
         }
 
         $communities = collect([
-            ['name' => 'Zona de Squad', 'description' => 'Encuentra jugadores y arma tu equipo.'],
-            ['name' => 'Estrategia y Guias', 'description' => 'Consejos, builds y rutas compartidas por la comunidad.'],
-            ['name' => 'Torneos Nexus', 'description' => 'Organizacion de eventos y competencias semanales.'],
-        ])->map(fn (array $data) => Comunidad::firstOrCreate(
+            ['name' => 'Zona de Squad', 'description' => 'Encuentra jugadores y arma tu equipo.', 'game' => 'Fortnite', 'platform' => 'Multiplataforma', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Noche'],
+            ['name' => 'Estrategia y Guias', 'description' => 'Consejos, builds y rutas compartidas por la comunidad.', 'game' => 'Minecraft', 'platform' => 'PC', 'region' => 'Global', 'language' => 'Español', 'mode' => 'Cooperativa', 'schedule' => 'Flexible'],
+            ['name' => 'Torneos Nexus', 'description' => 'Organizacion de eventos y competencias semanales.', 'game' => 'Valorant', 'platform' => 'PC', 'region' => 'Norteamérica', 'language' => 'Inglés', 'mode' => 'Competitiva', 'schedule' => 'Fines de semana'],
+        ])->map(fn (array $data) => Comunidad::updateOrCreate(
             ['team_id' => $demoTeam->id, 'nombre' => $data['name']],
-            ['descripcion' => $data['description'], 'creador_id' => $users->random()->id],
+            [
+                'descripcion' => $data['description'],
+                'juego_principal' => $data['game'],
+                'plataforma' => $data['platform'],
+                'region' => $data['region'],
+                'idioma' => $data['language'],
+                'modalidad' => $data['mode'],
+                'horario' => $data['schedule'],
+                'tipo' => 'publica',
+                'nivel' => $data['mode'] === 'Competitiva' ? 'Pro gamer' : 'Casual',
+                'estado' => 'Abierta',
+                'creador_id' => $users->random()->id,
+            ],
         ));
 
         foreach ($communities as $community) {

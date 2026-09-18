@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureTeamMembership;
+use App\Http\Controllers\ComunidadController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -12,6 +13,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('settings/appearance', 'pages::settings.appearance')->name('appearance.edit');
+
+    Route::get('settings/communities', [ComunidadController::class, 'settingsCommunities'])
+        ->name('communities.settings');
 
     Route::livewire('settings/security', 'pages::settings.security')
         ->middleware(

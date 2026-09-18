@@ -25,6 +25,12 @@ class Comunidad extends Model
         'team_id',
         'nombre',
         'descripcion',
+        'juego_principal',
+        'plataforma',
+        'region',
+        'idioma',
+        'modalidad',
+        'horario',
         'tipo',
         'nivel',
         'rango',
@@ -66,11 +72,25 @@ class Comunidad extends Model
             ->withTimestamps();
     }
 
+    /**
+     * @return HasMany<ComunidadSolicitud, $this>
+     */
+    public function solicitudes(): HasMany
+    {
+        return $this->hasMany(ComunidadSolicitud::class, 'comunidad_id');
+    }
+
+    /**
+     * @return HasMany<Canal, $this>
+     */
     public function canales(): HasMany
     {
         return $this->hasMany(Canal::class, 'comunidad_id');
     }
 
+    /**
+     * @return HasMany<Foro, $this>
+     */
     public function foros(): HasMany
     {
         return $this->hasMany(Foro::class, 'comunidad_id');

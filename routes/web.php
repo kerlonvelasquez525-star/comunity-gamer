@@ -48,6 +48,10 @@ Route::get('noticias-publicas', [PublicNewsController::class, 'publicIndex'])
 Route::get('comunidad-publica', [PublicCommunityController::class, 'index'])
     ->name('public-comunidad.index');
 
+Route::post('comunidad-publica/{comunidad}/solicitar', [PublicCommunityController::class, 'apply'])
+    ->middleware(['auth', 'verified'])
+    ->name('public-comunidad.apply');
+
 Route::get('soporte-publico', [PublicNewsController::class, 'publicProblems'])
     ->name('public-problemas.index');
 
@@ -55,6 +59,12 @@ Route::get('soporte-publico', [PublicNewsController::class, 'publicProblems'])
 
 Route::post('noticias-oficiales/{noticia}/comentarios', [PublicNewsController::class, 'comment'])
     ->name('official-news.comments.store');
+Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::patch('noticias-oficiales/{noticia}/comentarios/{comentario}', [PublicNewsController::class, 'updateComment'])
+        ->name('official-news.comments.update');
+    Route::delete('noticias-oficiales/{noticia}/comentarios/{comentario}', [PublicNewsController::class, 'destroyComment'])
+        ->name('official-news.comments.destroy');
+});
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     // Chat interno entre usuarios autenticados y verificados.
@@ -107,6 +117,10 @@ Route::prefix('{current_team}')
         Route::resource('noticias', NoticiasController::class);
         Route::post('noticias/{noticia}/comentarios', [NoticiasController::class, 'storeComment'])
             ->name('noticias.comentarios.store');
+        Route::patch('noticias/{noticia}/comentarios/{comentario}', [NoticiasController::class, 'updateComment'])
+            ->name('noticias.comentarios.update');
+        Route::delete('noticias/{noticia}/comentarios/{comentario}', [NoticiasController::class, 'destroyComment'])
+            ->name('noticias.comentarios.destroy');
 
         // CRUD de comentarios del equipo y su contenido asociado.
         Route::resource('comentarios', ComentariosController::class);
@@ -117,6 +131,12 @@ Route::prefix('{current_team}')
             ->name('comunidad.miembros.rol');
         Route::post('comunidad/{comunidad}/miembros/invitar', [ComunidadController::class, 'inviteMember'])
             ->name('comunidad.miembros.invitar');
+        Route::patch('comunidad/{comunidad}/transferir', [ComunidadController::class, 'transferOwnership'])
+            ->name('comunidad.transfer');
+        Route::patch('comunidad/{comunidad}/solicitudes/{solicitud}/aceptar', [ComunidadController::class, 'acceptRequest'])
+            ->name('comunidad.solicitudes.accept');
+        Route::patch('comunidad/{comunidad}/solicitudes/{solicitud}/rechazar', [ComunidadController::class, 'rejectRequest'])
+            ->name('comunidad.solicitudes.reject');
 
         // Gestión de problemas o incidencias del equipo.
         Route::resource('problemas', ProblemasController::class);

@@ -25,15 +25,20 @@ class HomeController extends Controller
             'team' => $team,
             'noticias_recientes' => noticias::query()
                 ->where('team_id', $team->id)
-                ->with('autor')
+                ->with(['autor', 'equipo'])
                 ->latest()
                 ->limit(5)
                 ->get(),
             'comunidades_activas' => Comunidad::query()
-                ->where('team_id', $team->id)
+                ->with('equipo')
                 ->withCount('miembros')
                 ->latest()
                 ->limit(5)
+                ->get(),
+            'comunidades_totales' => Comunidad::query()->count(),
+            'chat_users' => $team->members()
+                ->whereKeyNot($request->user()->id)
+                ->limit(12)
                 ->get(),
             'noticias_totales' => noticias::where('team_id', $team->id)->count(),
             'comentarios_totales' => Comentarios::where('team_id', $team->id)->count(),

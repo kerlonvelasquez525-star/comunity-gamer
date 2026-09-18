@@ -40,6 +40,7 @@
                     <div class="flex flex-1 flex-col justify-between p-6">
                         <div class="space-y-3">
                             <div class="flex items-center justify-between gap-3 text-xs text-zinc-500"><span class="text-cyan-400">{{ $noticia->es_oficial ? 'FUENTE OFICIAL' : ($noticia->categoria ?: 'NOTICIA') }}</span><span class="font-mono text-zinc-400">{{ $noticia->created_at?->diffForHumans() }}</span></div>
+                            <p class="text-xs font-semibold text-amber-500">Comunidad: {{ $noticia->equipo?->name ?? 'Comunidad general' }}</p>
                             <h2 class="line-clamp-2 text-lg font-bold text-zinc-100 group-hover:text-cyan-400">{{ $noticia->titulo }}</h2>
                             <p class="line-clamp-3 text-sm text-zinc-400">{{ $noticia->contenido }}</p>
                         </div>
@@ -50,6 +51,46 @@
                             @else
                                 <a href="{{ route('noticias.show', [$team->slug, $noticia]) }}" wire:navigate class="font-semibold text-zinc-400 hover:text-cyan-400">Leer más &rarr;</a>
                             @endif
+                        </div>
+                        <div class="news-card-comments">
+                            <div class="news-card-comments-heading">
+                                <h3>Comentarios</h3>
+                                <span>{{ $noticia->comentarios->count() }}</span>
+                            </div>
+                            <div class="news-card-comments-list">
+                                @forelse ($noticia->comentarios as $comentario)
+                                    <p class="news-card-comment">
+                                        <span class="news-card-comment-header">
+                                            <strong>{{ $comentario->autor?->name ?? 'Usuario' }}</strong>
+                                            @if ($comentario->user_id === auth()->id())
+                                                <span class="news-card-comment-actions">
+                                                    <button type="submit" form="delete-comment-{{ $comentario->id }}" class="news-card-delete-trigger">Eliminar</button>
+                                                </span>
+                                            @endif
+                                        </span>
+                                        <span class="news-card-comment-content" data-comment-content="{{ $comentario->id }}">{{ $comentario->contenido }}</span>
+                                        @if ($comentario->user_id === auth()->id())
+                                            <form method="POST" action="{{ route('noticias.comentarios.update', [$team->slug, $noticia, $comentario]) }}" class="news-card-edit-form" data-comment-edit-form="{{ $comentario->id }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="text" name="contenido" value="{{ $comentario->contenido }}" maxlength="2000" aria-label="Editar comentario" required>
+                                                <button type="submit">Guardar</button>
+                                            </form>
+                                            <form id="delete-comment-{{ $comentario->id }}" method="POST" action="{{ route('noticias.comentarios.destroy', [$team->slug, $noticia, $comentario]) }}" class="hidden">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                        @endif
+                                    </p>
+                                @empty
+                                    <p class="news-card-comments-empty">Todavía no hay respuestas.</p>
+                                @endforelse
+                            </div>
+                            <form method="POST" action="{{ route('noticias.comentarios.store', [$team->slug, $noticia]) }}" class="news-card-comment-form">
+                                @csrf
+                                <input type="text" name="contenido" maxlength="2000" placeholder="Escribe una respuesta..." aria-label="Escribe una respuesta" required>
+                                <button type="submit">Responder</button>
+                            </form>
                         </div>
                     </div>
                 </article>

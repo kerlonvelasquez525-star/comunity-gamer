@@ -29,7 +29,8 @@ class PublicNewsController extends Controller
             $noticia = noticias::query()
                 ->whereNull('team_id')
                 ->where('es_oficial', true)
-                ->find($pendingComment['noticia_id'] ?? null);
+                ->whereKey($pendingComment['noticia_id'] ?? 0)
+                ->first();
 
             if ($noticia && filled($pendingComment['contenido'] ?? null)) {
                 NoticiasComentario::create([
@@ -71,7 +72,7 @@ class PublicNewsController extends Controller
         $news = noticias::query()
             ->whereNull('team_id')
             ->where('es_oficial', true)
-            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()->limit(3)])
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
             ->latest()
             ->paginate(6);
 
@@ -98,7 +99,7 @@ class PublicNewsController extends Controller
         $news = noticias::query()
             ->whereNull('team_id')
             ->where('es_oficial', true)
-            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()->limit(3)])
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
             ->latest()
             ->limit(6)
             ->get();
@@ -109,7 +110,7 @@ class PublicNewsController extends Controller
                 'comments_count' => $noticia->comentarios->count(),
                 'comments' => $noticia->comentarios->map(function (NoticiasComentario $comentario): array {
                     return [
-                        'author' => $comentario->autor?->name ?? 'Usuario',
+                        'author' => optional($comentario->autor)->name ?? 'Usuario',
                         'content' => $comentario->contenido,
                     ];
                 })->values()->all(),
@@ -135,7 +136,15 @@ class PublicNewsController extends Controller
             ]);
             session()->put('url.intended', route('home').'#noticia-'.$noticia->id);
 
-            return redirect()->route('login');
+            if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'message' => 'Debes registrarte o iniciar sesión para guardar tu comentario.',
+                    'register_url' => route('register'),
+                    'login_url' => route('login'),
+                ], 401);
+            }
+
+            return redirect()->route('register');
         }
 
         $comentario = NoticiasComentario::create([
@@ -150,11 +159,39 @@ class PublicNewsController extends Controller
                 'comment' => [
                     'id' => $comentario->id,
                     'contenido' => $comentario->contenido,
-                    'author' => $comentario->autor?->name ?? 'Usuario',
+                    'author' => optional($comentario->autor)->name ?? 'Usuario',
                 ],
             ], 201);
         }
 
         return back()->with('status', 'Comentario publicado.');
+    }
+
+    public function updateComment(Request $request, noticias $noticia, NoticiasComentario $comentario): RedirectResponse|JsonResponse
+    {
+        abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);
+        abort_unless($comentario->noticia_id === $noticia->id && $comentario->user_id === $request->user()->id, 403);
+
+        $validated = $request->validate([
+            'contenido' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $comentario->update($validated);
+
+        return $request->expectsJson()
+            ? response()->json(['success' => true, 'comment' => $comentario->fresh()->load('autor')])
+            : back()->with('status', 'Comentario actualizado.');
+    }
+
+    public function destroyComment(Request $request, noticias $noticia, NoticiasComentario $comentario): RedirectResponse|JsonResponse
+    {
+        abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);
+        abort_unless($comentario->noticia_id === $noticia->id && $comentario->user_id === $request->user()->id, 403);
+
+        $comentario->delete();
+
+        return $request->expectsJson()
+            ? response()->json(['success' => true])
+            : back()->with('status', 'Comentario eliminado.');
     }
 }

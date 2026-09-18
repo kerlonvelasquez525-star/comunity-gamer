@@ -18,7 +18,6 @@
     $navLinks = [
         ['label' => 'home', 'route' => 'dashboard', 'anchor' => '#top'],
         ['label' => 'noticias', 'route' => 'noticias.index', 'anchor' => '#noticias'],
-        ['label' => 'comentarios', 'route' => 'comentarios.index', 'anchor' => '#comentarios'],
         ['label' => 'comunidad', 'route' => 'comunidad.index', 'anchor' => '#comunidad'],
         ['label' => 'problemas', 'route' => 'problemas.index', 'anchor' => '#problemas'],
     ];
@@ -45,7 +44,6 @@
                     $guestHref = match ($link['label']) {
                         'home' => route('home'),
                         'noticias' => route('public-noticias.index'),
-                        'comentarios' => route('public-noticias.index'),
                         'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
                             ? route('public-comunidad.index')
                             : route('home'),
@@ -57,7 +55,6 @@
                     $authHref = match ($link['label']) {
                         'home' => route('home'),
                         'noticias' => route('public-noticias.index'),
-                        'comentarios' => route('public-noticias.index'),
                         'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
                             ? route('public-comunidad.index')
                             : ($teamSlug ? route($link['route'], $teamSlug) : route('teams.index')),

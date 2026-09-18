@@ -27,7 +27,7 @@ class NoticiasController extends Controller
 
         $noticias = noticias::query()
             ->where(fn ($query) => $query->where('team_id', $team->id)->orWhereNull('team_id'))
-            ->with('autor')
+            ->with(['autor', 'equipo', 'comentarios' => fn ($query) => $query->with('autor')->latest()])
             ->when($request->filled('buscar'), fn ($query) => $query->where('titulo', 'like', '%'.$request->string('buscar').'%'))
             ->when($request->filled('categoria'), fn ($query) => $query->where('categoria', $request->string('categoria')))
             ->when($request->filled('oficial'), fn ($query) => $query->where('es_oficial', true))
@@ -133,6 +133,36 @@ class NoticiasController extends Controller
         return $request->expectsJson()
             ? response()->json($comentario, 201)
             : redirect()->route('noticias.show', [$team->slug, $noticia])->with('status', 'Comentario publicado.');
+    }
+
+    public function updateComment(Request $request, string $current_team, noticias $noticia, NoticiasComentario $comentario): Response
+    {
+        $team = $this->currentTeam($request);
+        Gate::authorize('view', [$noticia, $team]);
+        abort_unless($comentario->noticia_id === $noticia->id && $comentario->user_id === $request->user()->id, 403);
+
+        $validated = $request->validate([
+            'contenido' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $comentario->update($validated);
+
+        return $request->expectsJson()
+            ? response()->json($comentario->fresh()->load('autor'))
+            : back()->with('status', 'Comentario actualizado.');
+    }
+
+    public function destroyComment(Request $request, string $current_team, noticias $noticia, NoticiasComentario $comentario): Response
+    {
+        $team = $this->currentTeam($request);
+        Gate::authorize('view', [$noticia, $team]);
+        abort_unless($comentario->noticia_id === $noticia->id && $comentario->user_id === $request->user()->id, 403);
+
+        $comentario->delete();
+
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Comentario eliminado correctamente.'])
+            : back()->with('status', 'Comentario eliminado.');
     }
 
     /**

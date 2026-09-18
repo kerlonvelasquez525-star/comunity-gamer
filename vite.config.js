@@ -10,6 +10,8 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/passkeys.js',
+                'resources/js/home.js',
+                'resources/css/style_th.css',
                 'resources/css/dashboard.css',
                 'resources/css/chat.css', // <-- Agregado
                 'resources/css/noticias.css',

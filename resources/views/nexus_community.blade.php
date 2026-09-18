@@ -1,4 +1,3 @@
-
 @php
     $teamSlug = auth()->user()?->currentTeam?->slug;
 
@@ -25,16 +24,13 @@
     ];
 @endphp
 
-{{-- Usamos :: para el layout (namespace de la carpeta /resources/views/layouts) --}}
 <x-layouts::public :title="__('Nexus Community')">
     <div id="top" class="public-home">
-    
-    <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
 
-    {{-- Usamos punto . para el componente de Livewire --}}
+    @vite('resources/css/style_th.css')
+
     <livewire:pages.teams.pending-invitations-modal />
 
-    {{-- NAVBAR SUPERIOR --}}
     <header>
         <div class="brand">
             <a href="{{ route('home') }}" class="brand-logo" aria-label="Ir a la página principal de Nexus Community">
@@ -48,8 +44,8 @@
                 @php
                     $guestHref = match ($link['label']) {
                         'home' => route('home'),
-                        'noticias' => route('home').'#noticias',
-                        'comentarios' => route('home') . '#comentarios',
+                        'noticias' => route('public-noticias.index'),
+                        'comentarios' => route('public-noticias.index'),
                         'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
                             ? route('public-comunidad.index')
                             : route('home'),
@@ -58,7 +54,18 @@
                             : route('home'),
                         default => route('home'),
                     };
-                    $authHref = $teamSlug ? route($link['route'], $teamSlug) : route('teams.index');
+                    $authHref = match ($link['label']) {
+                        'home' => route('home'),
+                        'noticias' => route('public-noticias.index'),
+                        'comentarios' => route('public-noticias.index'),
+                        'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
+                            ? route('public-comunidad.index')
+                            : ($teamSlug ? route($link['route'], $teamSlug) : route('teams.index')),
+                        'problemas' => \Illuminate\Support\Facades\Route::has('public-problemas.index')
+                            ? route('public-problemas.index')
+                            : ($teamSlug ? route($link['route'], $teamSlug) : route('teams.index')),
+                        default => $teamSlug ? route($link['route'], $teamSlug) : route('teams.index'),
+                    };
                 @endphp
 
                 @auth
@@ -85,10 +92,7 @@
         </div>
     </header>
 
-    {{-- ESTRUCTURA PRINCIPAL DEL HERO --}}
     <div class="hero-container">
-
-        {{-- COLUMNA IZQUIERDA --}}
         <section class="hero-left">
             <span class="badge-tag">Una comunidad para jugar mejor acompañado</span>
 
@@ -139,7 +143,6 @@
                 </div>
             </div>
 
-            {{-- TARJETA DE ESTADÍSTICAS --}}
             <div class="stats-card">
                 <div class="stat-item">
                     <h3>{{ $formatCompactNumber($usuarios_activos ?? 0) }}</h3>
@@ -154,10 +157,8 @@
                     <p>TELEMETRÍA</p>
                 </div>
             </div>
-
         </section>
 
-        {{-- COLUMNA DERECHA: CARRUSEL DE NOTICIAS --}}
         <section class="hero-right news-carousel" aria-label="Noticias oficiales destacadas" data-news-carousel>
             <div class="slider-header">
                 <div>
@@ -172,37 +173,39 @@
                 @endif
             </div>
 
-            @forelse ($officialNews as $index => $noticia)
-                @php
-                    $carouselImageUrl = null;
+            <div class="carousel-stage">
+                @forelse ($officialNews as $index => $noticia)
+                    @php
+                        $carouselImageUrl = null;
 
-                    if (!empty($noticia->imagen_url)) {
-                        $carouselImageUrl = filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)
-                            ? $noticia->imagen_url
-                            : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url);
-                    }
+                        if (!empty($noticia->imagen_url)) {
+                            $carouselImageUrl = filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)
+                                ? $noticia->imagen_url
+                                : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url);
+                        }
 
-                    if (empty($carouselImageUrl)) {
-                        $carouselImageUrl = asset('nexus.png');
-                    }
-                @endphp
+                        if (empty($carouselImageUrl)) {
+                            $carouselImageUrl = asset('nexus.png');
+                        }
+                    @endphp
 
-                <article class="carousel-slide {{ $index === 0 ? 'is-active' : '' }}" data-carousel-slide>
-                    <img src="{{ $carouselImageUrl }}" alt="{{ $noticia->titulo }}" loading="{{ $index === 0 ? 'eager' : 'lazy' }}" onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';">
-                    <div class="carousel-slide-overlay">
-                        <p class="official-news-source">{{ $noticia->fuente_nombre ?: 'NEXUS' }} · {{ $noticia->created_at?->diffForHumans() }}</p>
-                        <h2>{{ $noticia->titulo }}</h2>
-                        <p>{{ $noticia->contenido }}</p>
-                        <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
+                    <article class="carousel-slide {{ $index === 0 ? 'is-active' : '' }}" data-carousel-slide>
+                        <img src="{{ $carouselImageUrl }}" alt="{{ $noticia->titulo }}" loading="{{ $index === 0 ? 'eager' : 'lazy' }}" onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';">
+                        <div class="carousel-slide-overlay">
+                            <p class="official-news-source">{{ $noticia->fuente_nombre ?: 'NEXUS' }} · {{ $noticia->created_at?->diffForHumans() }}</p>
+                            <h2>{{ $noticia->titulo }}</h2>
+                            <p>{{ $noticia->contenido }}</p>
+                            <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
+                        </div>
+                    </article>
+                @empty
+                    <div class="carousel-empty">
+                        <span class="badge-tag">NEXUS // ACTUALIZACIONES</span>
+                        <h2>Noticias oficiales</h2>
+                        <p>Las noticias aparecerán aquí cuando se ejecute la sincronización.</p>
                     </div>
-                </article>
-            @empty
-                <div class="carousel-empty">
-                    <span class="badge-tag">NEXUS // ACTUALIZACIONES</span>
-                    <h2>Noticias oficiales</h2>
-                    <p>Las noticias aparecerán aquí cuando se ejecute la sincronización.</p>
-                </div>
-            @endforelse
+                @endforelse
+            </div>
 
             @if ($officialNews->count() > 1)
                 <div class="carousel-dots" aria-label="Seleccionar noticia">
@@ -212,75 +215,8 @@
                 </div>
             @endif
         </section>
-
     </div>
 
-    <section id="noticias" class="official-news-section news-public-shell" aria-labelledby="official-news-title">
-        <div id="comentarios" class="sr-only" aria-hidden="true"></div>
-        <div class="official-news-heading news-public-header">
-            <span class="badge-tag">FUENTES VERIFICADAS // ACTUALIZACIONES</span>
-            <h2 id="official-news-title" class="official-news-title">Noticias oficiales de videojuegos</h2>
-            <p class="hero-description">Novedades publicadas por los blogs oficiales de las principales plataformas.</p>
-        </div>
-
-        <div class="official-news-grid news-public-grid">
-            @forelse ($officialNews as $noticia)
-                @php
-                    $newsImageUrl = null;
-
-                    if (!empty($noticia->imagen_url)) {
-                        $newsImageUrl = filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)
-                            ? $noticia->imagen_url
-                            : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url);
-                    }
-
-                    if (empty($newsImageUrl)) {
-                        $newsImageUrl = asset('nexus.png');
-                    }
-                @endphp
-
-                <article class="official-news-card news-public-card" id="noticia-{{ $noticia->id }}">
-                    <div class="news-public-image-wrap">
-                        <img
-                            src="{{ $newsImageUrl }}"
-                            alt="{{ $noticia->titulo }}"
-                            class="official-news-image"
-                            loading="lazy"
-                            onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';"
-                        >
-                        <span class="news-public-badge">{{ strtoupper($noticia->fuente_nombre ?: 'NEXUS') }}</span>
-                    </div>
-                    <div class="official-news-content">
-                        <p class="official-news-source">{{ $noticia->fuente_nombre }} · {{ $noticia->created_at?->diffForHumans() }}</p>
-                        <h3>{{ $noticia->titulo }}</h3>
-                        <p class="official-news-description">{{ $noticia->contenido }}</p>
-                        <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
-
-                        <div class="official-comments news-public-comments" data-news-id="{{ $noticia->id }}">
-                            <h4>Comentarios (<span data-comments-total="{{ $noticia->id }}">{{ $noticia->comentarios->count() }}</span>)</h4>
-                            <div data-comments-list="{{ $noticia->id }}">
-                                @forelse ($noticia->comentarios->take(3) as $comentario)
-                                    <p class="official-comment"><strong>{{ $comentario->autor?->name ?? 'Usuario' }}:</strong> {{ $comentario->contenido }}</p>
-                                @empty
-                                    <p class="official-comment-empty">Sé el primero en comentar.</p>
-                                @endforelse
-                            </div>
-
-                            <form method="POST" action="{{ route('official-news.comments.store', $noticia) }}" class="official-comment-form">
-                                @csrf
-                                <label class="sr-only" for="comment-{{ $noticia->id }}">Escribe un comentario</label>
-                                <input id="comment-{{ $noticia->id }}" name="contenido" maxlength="2000" required placeholder="Escribe un comentario...">
-                                <button type="submit">{{ auth()->check() ? 'Comentar' : 'Iniciar sesión para publicar' }}</button>
-                            </form>
-                        </div>
-                    </div>
-                </article>
-            @empty
-                <p class="official-news-empty">Las noticias oficiales aparecerán aquí cuando se ejecute la sincronización.</p>
-            @endforelse
-        </div>
-    </section>
-
-    <script src="{{ asset('js/home.js') }}" defer></script>
+    @vite('resources/js/home.js')
     </div>
 </x-layouts::public>

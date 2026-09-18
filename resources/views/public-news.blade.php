@@ -1,6 +1,6 @@
 <x-layouts::public :title="__('Noticias oficiales')">
     <div class="public-home">
-        <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
+        @vite('resources/css/style_th.css')
 
         <header class="community-public-header">
             <div class="brand">

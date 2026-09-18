@@ -48,10 +48,16 @@
                 return;
             }
 
-            const slides = [...carousel.querySelectorAll('[data-carousel-slide]')];
+            const slides = [...carousel.querySelectorAll('.carousel-stage [data-carousel-slide]')];
             const dots = [...carousel.querySelectorAll('[data-carousel-dot]')];
+            const prevButton = carousel.querySelector('[data-carousel-prev]');
+            const nextButton = carousel.querySelector('[data-carousel-next]');
 
             if (slides.length < 2) {
+                if (slides[0]) {
+                    slides[0].classList.add('is-active');
+                }
+                carousel.dataset.bound = 'true';
                 return;
             }
 
@@ -60,7 +66,10 @@
 
             const showSlide = (index) => {
                 currentIndex = (index + slides.length) % slides.length;
-                slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === currentIndex));
+                slides.forEach((slide, slideIndex) => {
+                    slide.classList.toggle('is-active', slideIndex === currentIndex);
+                });
+
                 dots.forEach((dot, dotIndex) => {
                     const active = dotIndex === currentIndex;
                     dot.classList.toggle('is-active', active);
@@ -73,21 +82,27 @@
                 intervalId = window.setInterval(() => showSlide(currentIndex + 1), 6000);
             };
 
-            carousel.querySelector('[data-carousel-prev]')?.addEventListener('click', () => {
+            prevButton?.addEventListener('click', () => {
                 showSlide(currentIndex - 1);
                 restartAutoPlay();
             });
-            carousel.querySelector('[data-carousel-next]')?.addEventListener('click', () => {
+
+            nextButton?.addEventListener('click', () => {
                 showSlide(currentIndex + 1);
                 restartAutoPlay();
             });
-            dots.forEach((dot) => dot.addEventListener('click', () => {
-                showSlide(Number(dot.dataset.carouselDot));
-                restartAutoPlay();
-            }));
+
+            dots.forEach((dot) => {
+                dot.addEventListener('click', () => {
+                    showSlide(Number(dot.dataset.carouselDot));
+                    restartAutoPlay();
+                });
+            });
+
             carousel.addEventListener('mouseenter', () => window.clearInterval(intervalId));
             carousel.addEventListener('mouseleave', restartAutoPlay);
             carousel.dataset.bound = 'true';
+            showSlide(0);
             restartAutoPlay();
         });
     };

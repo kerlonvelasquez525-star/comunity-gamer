@@ -9,7 +9,7 @@
     --}}
     <div class="news-page w-full space-y-8 p-6 lg:p-10">
         {{-- Encabezado con título del equipo y botón para publicar una noticia. --}}
-        <header class="cyber-hero rounded-2xl border border-zinc-800/80 bg-zinc-900/95 p-8 text-white shadow-xl backdrop-blur-md">
+        <header class="cyber-hero news-hero rounded-2xl border border-zinc-800/80 bg-zinc-900/95 p-8 text-white shadow-xl backdrop-blur-md">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                     <p class="text-sm font-semibold text-amber-400">{{ $team->name ?? 'Equipo' }}</p>

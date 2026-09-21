@@ -1,11 +1,11 @@
 <x-layouts::app :title="__('Asistente de la comunidad')">
-    <div class="mx-auto w-full max-w-4xl space-y-6 p-4 sm:p-6 lg:p-10">
-        <header class="flex items-start gap-4">
+    <div class="assistant-page mx-auto w-full max-w-4xl space-y-6 p-4 sm:p-6 lg:p-10">
+        <header class="assistant-hero flex items-start gap-4">
             <div class="h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-cyan-400/70 bg-zinc-900 p-1 shadow-[0_0_18px_rgba(34,211,238,0.25)]"><img src="{{ asset('nexus.png') }}" alt="{{ __('Logotipo del asistente de la comunidad') }}" class="h-full w-full rounded-xl object-cover"></div>
             <div><p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-400">{{ __('Asistente de la comunidad') }}</p><h1 class="mt-2 text-2xl font-bold text-zinc-100 sm:text-3xl">{{ __('¿En qué podemos ayudarte?') }}</h1><p class="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">{{ __('Pregunta sobre privacidad, seguridad, equipos, noticias, chat o reportes. Este asistente usa respuestas predefinidas y no guarda tus preguntas.') }}</p></div>
         </header>
 
-        <section class="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 shadow-2xl shadow-cyan-950/20 sm:p-6" aria-labelledby="assistant-form-title">
+        <section class="assistant-console rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 shadow-2xl shadow-cyan-950/20 sm:p-6" aria-labelledby="assistant-form-title">
             <h2 id="assistant-form-title" class="sr-only">{{ __('Pregunta al asistente de la comunidad') }}</h2>
             <div id="assistantMessages" class="mb-5 hidden max-h-[28rem] space-y-3 overflow-y-auto" aria-live="polite"></div>
             <div class="mb-5 flex flex-wrap gap-2"><button type="button" data-question="¿Cómo protegen mis datos?" class="rounded-full border border-zinc-700 px-3 py-2 text-xs text-zinc-300 transition hover:border-cyan-400 hover:text-cyan-300">Privacidad</button><button type="button" data-question="¿Cómo reporto contenido?" class="rounded-full border border-zinc-700 px-3 py-2 text-xs text-zinc-300 transition hover:border-cyan-400 hover:text-cyan-300">Reportes</button><button type="button" data-question="¿Cómo funciona la autenticación de dos factores?" class="rounded-full border border-zinc-700 px-3 py-2 text-xs text-zinc-300 transition hover:border-cyan-400 hover:text-cyan-300">Seguridad</button><button type="button" data-question="¿Cómo funcionan los equipos?" class="rounded-full border border-zinc-700 px-3 py-2 text-xs text-zinc-300 transition hover:border-cyan-400 hover:text-cyan-300">Equipos</button></div>

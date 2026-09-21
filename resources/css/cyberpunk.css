@@ -1,9 +1,9 @@
 @import './project-theme.css';
 
 .app-main {
-    --cp-bg: #080d16;
-    --cp-panel: rgba(13, 21, 34, .9);
-    --cp-panel-strong: #101c2c;
+    --cp-bg: #132642;
+    --cp-panel: rgba(20, 43, 72, .92);
+    --cp-panel-strong: #1a3557;
     --cp-line: rgba(65, 219, 255, .24);
     --cp-cyan: #41dbff;
     --cp-pink: #ff4fd8;

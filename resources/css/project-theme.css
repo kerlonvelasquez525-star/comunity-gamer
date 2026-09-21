@@ -1,10 +1,10 @@
 /* Shared Nexus Community theme for every project surface. */
 :root {
-  --nexus-bg: #11151b;
-  --nexus-surface: #1a2129;
-  --nexus-surface-soft: #202a33;
-  --nexus-surface-deep: #0d1116;
-  --nexus-border: #2b3540;
+  --nexus-bg: #142238;
+  --nexus-surface: #1d304a;
+  --nexus-surface-soft: #29415f;
+  --nexus-surface-deep: #101b30;
+  --nexus-border: #365777;
   --nexus-text: #f3f5f7;
   --nexus-muted: #a5b0ba;
   --nexus-brand: #f2a93b;

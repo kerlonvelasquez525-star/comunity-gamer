@@ -16,40 +16,71 @@
         <!-- TARJETAS DE MÉTRICAS -->
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @foreach ([
-                ['label' => 'Noticias',            'value' => $noticias_totales,     'route' => 'noticias.index', 'theme' => 'news'],
-                ['label' => 'Comunidades',         'value' => $comunidades_totales, 'route' => 'comunidad.index', 'theme' => 'communities'],
-                ['label' => 'Casos abiertos',      'value' => $problemas_abiertos,   'route' => 'problemas.index', 'theme' => 'issues'],
+                ['label' => 'Noticias',       'value' => $noticias_totales,     'route' => 'noticias.index', 'theme' => 'news', 'icon' => 'newspaper', 'caption' => 'Señales de la comunidad'],
+                ['label' => 'Comunidades',    'value' => $comunidades_totales, 'route' => 'comunidad.index', 'theme' => 'communities', 'icon' => 'user-group', 'caption' => 'Escuadras conectadas'],
+                ['label' => 'Casos abiertos', 'value' => $problemas_abiertos,   'route' => 'problemas.index', 'theme' => 'issues', 'icon' => 'exclamation-triangle', 'caption' => 'Requieren atención'],
             ] as $card)
                 <a href="{{ route($card['route'], $team->slug) }}" wire:navigate
                    class="metric-card metric-card--{{ $card['theme'] }} rounded-xl border border-zinc-200 bg-white p-5 transition hover:border-amber-400 dark:border-zinc-700 dark:bg-zinc-900">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $card['label'] }}</p>
-                    <p class="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">{{ $card['value'] }}</p>
+                    <div class="metric-card-topline">
+                        <span class="metric-card-icon"><flux:icon :name="$card['icon']" class="size-5" /></span>
+                        <span class="metric-card-signal">EN LÍNEA</span>
+                    </div>
+                    <p class="metric-card-label">{{ $card['label'] }}</p>
+                    <p class="metric-card-value">{{ $card['value'] }}</p>
+                    <p class="metric-card-caption">{{ $card['caption'] }}</p>
+                    <span class="metric-card-bar" aria-hidden="true"></span>
                 </a>
             @endforeach
         </div>
 
         <nav class="dashboard-quick-links" aria-label="Accesos rápidos de la comunidad">
             <a href="{{ route('noticias.index', $team->slug) }}" wire:navigate>
-                <span class="dashboard-quick-icon">N</span>
+                <span class="dashboard-quick-icon"><flux:icon.newspaper class="size-4" /></span>
                 <span><strong>Noticias</strong><small>Publica y conversa</small></span>
                 <span class="dashboard-quick-arrow">&rarr;</span>
             </a>
             <a href="{{ route('comunidad.index', $team->slug) }}" wire:navigate>
-                <span class="dashboard-quick-icon">C</span>
+                <span class="dashboard-quick-icon"><flux:icon.user-group class="size-4" /></span>
                 <span><strong>Comunidades</strong><small>Gestiona tus grupos</small></span>
                 <span class="dashboard-quick-arrow">&rarr;</span>
             </a>
             <a href="{{ route('problemas.index', $team->slug) }}" wire:navigate>
-                <span class="dashboard-quick-icon">S</span>
+                <span class="dashboard-quick-icon"><flux:icon.exclamation-triangle class="size-4" /></span>
                 <span><strong>Soporte</strong><small>Revisa casos abiertos</small></span>
                 <span class="dashboard-quick-arrow">&rarr;</span>
             </a>
             <a href="{{ route('chatbot.index') }}" wire:navigate>
-                <span class="dashboard-quick-icon">A</span>
+                <span class="dashboard-quick-icon"><flux:icon.sparkles class="size-4" /></span>
                 <span><strong>Asistente</strong><small>Obtén ayuda rápida</small></span>
                 <span class="dashboard-quick-arrow">&rarr;</span>
             </a>
         </nav>
+
+        <section class="dashboard-live-strip" aria-labelledby="live-activity-title">
+            <div class="dashboard-live-heading">
+                <span class="dashboard-live-pulse" aria-hidden="true"></span>
+                <div>
+                    <p class="dashboard-section-kicker">ACTIVIDAD EN VIVO</p>
+                    <h2 id="live-activity-title">Lo último en Nexus</h2>
+                </div>
+                <span class="dashboard-live-status">Sistema activo</span>
+            </div>
+            <div class="dashboard-activity-list">
+                @forelse ($notificaciones_recientes as $notification)
+                    <a href="{{ data_get($notification->data, 'url', route('notificaciones.index')) }}" class="dashboard-activity-item">
+                        <span class="dashboard-activity-icon">{{ $notification->leida_en ? '•' : '!' }}</span>
+                        <span>
+                            <strong>{{ data_get($notification->data, 'title', ucfirst($notification->tipo)) }}</strong>
+                            <small>{{ data_get($notification->data, 'message', 'Hay una actualización en tu comunidad.') }}</small>
+                        </span>
+                        <time>{{ $notification->created_at?->diffForHumans() }}</time>
+                    </a>
+                @empty
+                    <p class="dashboard-activity-empty">Tu actividad aparecerá aquí cuando haya novedades.</p>
+                @endforelse
+            </div>
+        </section>
 
         <!-- NOTICIAS Y COMUNIDADES -->
         <div class="grid gap-8 lg:grid-cols-2">

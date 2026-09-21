@@ -1,7 +1,7 @@
 <x-layouts::app :title="__('Comunidades')">
-    <div class="mx-auto w-full max-w-7xl space-y-8 p-6 lg:p-10">
+    <div class="community-page mx-auto w-full max-w-7xl space-y-8 p-6 lg:p-10">
 
-        <header class="flex flex-wrap items-end justify-between gap-4">
+        <header class="community-hero flex flex-wrap items-end justify-between gap-4">
             <div class="space-y-3">
                 <p class="text-sm font-semibold uppercase tracking-[0.18em] text-amber-600">
                     {{ $team->name }} // red gamer

@@ -43,18 +43,18 @@
 
 /* --- VARIABLES GLOBALES & PALETA DE COLOR --- */
 :root {
-  --bg-dark: #11151b;
-  --card-bg: #1a2129;
-  --panel-dark: #0d1116;
-  --panel-deep: #090c10;
-  --panel-raised: #232c36;
+  --bg-dark: #142238;
+  --card-bg: #1d304a;
+  --panel-dark: #101b30;
+  --panel-deep: #0d1628;
+  --panel-raised: #29415f;
   --accent-purple: #f2a93b;
   --accent-purple-glow: rgba(242, 169, 59, 0.22);
   --accent-cyan: #65d6c2;
   --accent-cyan-glow: rgba(101, 214, 194, 0.2);
   --text-main: #f3f5f7;
   --text-muted: #a5b0ba;
-  --border-color: #2b3540;
+  --border-color: #365777;
 }
 
 @theme {
@@ -111,7 +111,10 @@
     position: relative;
     isolation: isolate;
     overflow-x: hidden;
-    background: radial-gradient(circle at 20% 20%, #202a33 0%, #11151b 60%, #0d1116 100%);
+    background:
+      radial-gradient(circle at 12% 12%, rgba(65, 219, 255, .2), transparent 30%),
+      radial-gradient(circle at 88% 18%, rgba(255, 79, 216, .14), transparent 28%),
+      linear-gradient(135deg, #172b48 0%, #12213a 48%, #0e192e 100%);
   }
 
   body.project-background::before {
@@ -120,8 +123,8 @@
     z-index: -1;
     content: '';
     background-image:
-      linear-gradient(rgba(101, 214, 194, .05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(101, 214, 194, .05) 1px, transparent 1px);
+      linear-gradient(rgba(65, 219, 255, .09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 79, 216, .06) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
   }

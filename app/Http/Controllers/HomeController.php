@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comentarios;
 use App\Models\Comunidad;
 use App\Models\noticias;
+use App\Models\Notificacion;
 use App\Models\Problemas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -77,6 +78,11 @@ class HomeController extends Controller
             'chat_users' => $team->members()
                 ->whereKeyNot($request->user()->id)
                 ->limit(12)
+                ->get(),
+            'notificaciones_recientes' => Notificacion::query()
+                ->where('user_id', $request->user()->id)
+                ->latest()
+                ->limit(4)
                 ->get(),
             'noticias_totales' => noticias::where('team_id', $team->id)->count(),
             'comentarios_totales' => Comentarios::where('team_id', $team->id)->count(),

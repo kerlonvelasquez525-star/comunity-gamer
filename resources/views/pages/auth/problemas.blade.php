@@ -1,8 +1,8 @@
 <x-layouts::app :title="__('Problemas')">
-    <div class="w-full space-y-8 p-6 lg:p-10">
+    <div class="problems-page w-full space-y-8 p-6 lg:p-10">
 
         <!-- ENCABEZADO SUPERIOR -->
-        <header class="rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
+        <header class="problems-hero rounded-2xl bg-zinc-950 p-8 text-white shadow-xl dark:bg-black">
             <p class="text-sm font-semibold uppercase tracking-[0.2em] text-amber-400">
                 {{ $team->name }} // Canal de convivencia
             </p>

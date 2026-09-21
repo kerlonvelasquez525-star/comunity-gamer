@@ -16,6 +16,14 @@
     $chatUsers = auth()->check() && auth()->user()->currentTeam
         ? auth()->user()->currentTeam->members()->whereKeyNot(auth()->id())->limit(12)->get()
         : collect();
+
+    $recentNotifications = auth()->check()
+        ? auth()->user()->notificaciones()->latest()->limit(5)->get()
+        : collect();
+
+    $unreadNotifications = auth()->check()
+        ? auth()->user()->notificaciones()->whereNull('leida_en')->count()
+        : 0;
 @endphp
 
 <!DOCTYPE html>
@@ -60,6 +68,40 @@
                     <!-- Lado Derecho: Switcher de Equipo + Menú de Usuario -->
                     <div class="flex items-center gap-3">
                         @auth
+                            <div class="notification-center" x-data="notificationCenter({{ $unreadNotifications }})" x-init="start()">
+                                <button type="button" class="notification-trigger" @click="open = !open" :aria-expanded="open.toString()" aria-label="Abrir notificaciones">
+                                    <flux:icon.bell class="size-5" />
+                                    <span class="notification-badge" x-show="unread > 0" x-text="unread > 99 ? '99+' : unread" x-cloak></span>
+                                </button>
+                                <div class="notification-panel" x-show="open" x-transition @click.outside="open = false" x-cloak>
+                                    <div class="notification-panel-header">
+                                        <div>
+                                            <p class="notification-kicker">NEXUS // ALERTAS</p>
+                                            <h2>Notificaciones</h2>
+                                        </div>
+                                        <form method="POST" action="{{ route('notificaciones.read-all') }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="notification-read-all" x-show="unread > 0">Marcar todo</button>
+                                        </form>
+                                    </div>
+                                    <div class="notification-list">
+                                        @forelse ($recentNotifications as $notification)
+                                            <a href="{{ data_get($notification->data, 'url', route('notificaciones.index')) }}" class="notification-item {{ $notification->leida_en ? '' : 'is-unread' }}">
+                                                <span class="notification-dot"></span>
+                                                <span>
+                                                    <strong>{{ data_get($notification->data, 'title', ucfirst($notification->tipo)) }}</strong>
+                                                    <small>{{ data_get($notification->data, 'message', 'Tienes una nueva actualización en la comunidad.') }}</small>
+                                                    <time>{{ $notification->created_at?->diffForHumans() }}</time>
+                                                </span>
+                                            </a>
+                                        @empty
+                                            <p class="notification-empty">No tienes notificaciones nuevas.</p>
+                                        @endforelse
+                                    </div>
+                                    <a href="{{ route('notificaciones.index') }}" class="notification-footer">Ver centro de notificaciones &rarr;</a>
+                                </div>
+                            </div>
                             <div class="hidden sm:block">
                                 <livewire:team-switcher />
                             </div>
@@ -166,6 +208,25 @@
 
         @auth
             <script>
+                window.notificationCenter = (initialUnread) => ({
+                    open: false,
+                    unread: initialUnread,
+                    start() {
+                        window.setInterval(async () => {
+                            try {
+                                const response = await fetch('{{ route('notificaciones.index') }}?per_page=5', {
+                                    headers: { Accept: 'application/json' },
+                                });
+                                if (!response.ok) return;
+                                const payload = await response.json();
+                                this.unread = payload.data.filter((item) => !item.leida_en).length;
+                            } catch (error) {
+                                // La navegación sigue funcionando aunque el refresco falle.
+                            }
+                        }, 30000);
+                    },
+                });
+
                 (() => {
                     const drawer = document.querySelector('[data-chat-drawer]');
                     const openButton = document.querySelector('[data-chat-open]');

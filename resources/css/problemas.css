@@ -1,14 +1,14 @@
 @import './project-theme.css';
 
 .problems-page {
-    --problem-bg: #1f1f37;
-    --problem-card: #464681;
-    --problem-deep: #17172a;
-    --problem-purple: #8b2fc9;
-    --problem-cyan: #00f0ff;
-    --problem-text: #f0f3f8;
-    --problem-muted: #7e8b9b;
-    --problem-border: #1a1d28;
+    --problem-bg: var(--nexus-bg);
+    --problem-card: var(--nexus-surface);
+    --problem-deep: var(--nexus-surface-deep);
+    --problem-purple: var(--nexus-brand);
+    --problem-cyan: var(--nexus-accent);
+    --problem-text: var(--nexus-text);
+    --problem-muted: var(--nexus-muted);
+    --problem-border: var(--nexus-border);
     width: min(1100px, 100%);
     margin: 0 auto;
     padding: 2.5rem 1.5rem 4rem;

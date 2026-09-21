@@ -6,19 +6,19 @@
 
 .news-page {
   /* Paleta de colores consistente con style_th */
-  --bg-dark: #11151b;
-  --card-bg: #1a2129;
-  --accent-purple: #f2a93b;
-  --accent-purple-glow: rgba(242, 169, 59, 0.22);
-  --accent-cyan: #65d6c2;
-  --accent-cyan-glow: rgba(101, 214, 194, 0.2);
-  --text-main: #f3f5f7;
-  --text-muted: #a5b0ba;
-  --border-color: #2b3540;
+  --bg-dark: var(--nexus-bg);
+  --card-bg: var(--nexus-surface);
+  --accent-purple: var(--nexus-brand);
+  --accent-purple-glow: rgba(242, 169, 59, .22);
+  --accent-cyan: var(--nexus-accent);
+  --accent-cyan-glow: rgba(101, 214, 194, .2);
+  --text-main: var(--nexus-text);
+  --text-muted: var(--nexus-muted);
+  --border-color: var(--nexus-border);
   
   /* Colores adicionales para variedad */
   --accent-orange: #f2a93b;
-  --accent-pink: #ef8d7a;
+  --accent-pink: var(--nexus-danger);
 }
 
 /* Los estilos permanecen encapsulados para no alterar el layout principal. */

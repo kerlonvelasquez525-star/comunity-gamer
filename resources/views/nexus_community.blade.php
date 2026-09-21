@@ -89,11 +89,6 @@
         </div>
     </header>
 
-    <div class="home-scroll-controls" aria-label="Controles de desplazamiento">
-        <button type="button" id="page-scroll-up" aria-label="Subir">&uarr;</button>
-        <button type="button" id="page-scroll-down" aria-label="Bajar">&darr;</button>
-    </div>
-
     <div class="hero-container">
         <section class="hero-left">
             <span class="badge-tag">Una comunidad para jugar mejor acompañado</span>

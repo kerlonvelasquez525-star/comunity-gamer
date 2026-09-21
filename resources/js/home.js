@@ -42,26 +42,6 @@
         bindButton(document.getElementById('slider-down'), slider, 1);
     };
 
-    const bindPageScrollControls = () => {
-        const upButton = document.getElementById('page-scroll-up');
-        const downButton = document.getElementById('page-scroll-down');
-
-        if (!upButton || !downButton || upButton.dataset.bound === 'true') {
-            return;
-        }
-
-        const scrollPage = (direction) => {
-            window.scrollBy({
-                top: direction * Math.max(window.innerHeight * .78, 420),
-                behavior: 'smooth',
-            });
-        };
-
-        upButton.addEventListener('click', () => scrollPage(-1));
-        downButton.addEventListener('click', () => scrollPage(1));
-        upButton.dataset.bound = 'true';
-    };
-
     const bindNewsCarousel = () => {
         document.querySelectorAll('[data-news-carousel]').forEach((carousel) => {
             if (carousel.dataset.bound === 'true') {
@@ -247,14 +227,12 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             initSlider();
-            bindPageScrollControls();
             bindNewsCarousel();
             bindPublicComments();
             bindPublicCommentGate();
         }, { once: true });
     } else {
         initSlider();
-        bindPageScrollControls();
         bindNewsCarousel();
         bindPublicComments();
         bindPublicCommentGate();

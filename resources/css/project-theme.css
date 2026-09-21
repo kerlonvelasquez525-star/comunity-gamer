@@ -11,7 +11,47 @@
   --nexus-accent: #65d6c2;
   --nexus-danger: #ef8d7a;
   --nexus-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .2);
+  --nexus-bg-gradient: linear-gradient(135deg, #172b48 0%, #12213a 48%, #0e192e 100%);
+  --nexus-grid-line: rgba(101, 214, 194, .08);
 }
+
+body {
+  background: var(--nexus-bg) !important;
+  color: var(--nexus-text);
+}
+
+body.project-background {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(101, 214, 194, .14), transparent 30%),
+    radial-gradient(circle at 88% 18%, rgba(242, 169, 59, .1), transparent 28%),
+    var(--nexus-bg-gradient) !important;
+}
+
+body.project-background::before {
+  background-image:
+    linear-gradient(var(--nexus-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 169, 59, .05) 1px, transparent 1px) !important;
+}
+
+.app-main {
+  background: transparent !important;
+}
+
+.app-main :is(.bg-white, .dark\:bg-zinc-900) {
+  background-color: var(--nexus-surface) !important;
+  border-color: var(--nexus-border) !important;
+  color: var(--nexus-text);
+}
+
+.app-main :is(.bg-zinc-50, .bg-zinc-100, .dark\:bg-zinc-800, .dark\:bg-zinc-800\/50) {
+  background-color: var(--nexus-surface-soft) !important;
+  border-color: var(--nexus-border) !important;
+}
+
+.app-main :is(.text-zinc-900, .dark\:text-white) { color: var(--nexus-text) !important; }
+.app-main :is(.text-zinc-500, .text-zinc-400, .dark\:text-zinc-400) { color: var(--nexus-muted) !important; }
+.app-main :is(.text-amber-400, .text-amber-500, .text-amber-600, .dark\:text-amber-400) { color: var(--nexus-brand) !important; }
+.app-main :is(.border-zinc-200, .dark\:border-zinc-700, .dark\:border-zinc-800) { border-color: var(--nexus-border) !important; }
 
 :is(.dashboard-shell, .chat-wrapper, .news-page, .problems-page, .ranking-container, .contact-container, .community-page, .comments-page, .login-container) {
   color: var(--nexus-text);

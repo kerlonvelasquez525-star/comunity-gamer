@@ -1,14 +1,14 @@
 @import './project-theme.css';
 
 .dashboard-shell {
-    --dash-bg: #142238;
-    --dash-surface: #1d304a;
-    --dash-surface-soft: #29415f;
-    --dash-border: #365777;
-    --dash-text: #f3f5f7;
-    --dash-muted: #a5b0ba;
-    --dash-brand: #f2a93b;
-    --dash-accent: #65d6c2;
+    --dash-bg: var(--nexus-bg);
+    --dash-surface: var(--nexus-surface);
+    --dash-surface-soft: var(--nexus-surface-soft);
+    --dash-border: var(--nexus-border);
+    --dash-text: var(--nexus-text);
+    --dash-muted: var(--nexus-muted);
+    --dash-brand: var(--nexus-brand);
+    --dash-accent: var(--nexus-accent);
     position: relative;
     isolation: isolate;
     color: var(--dash-text);

@@ -3,8 +3,8 @@
 .app-sidebar {
     --sidebar-bg: #142238;
     --sidebar-panel: #1d304a;
-    --sidebar-purple: #f2a93b;
-    --sidebar-cyan: #65d6c2;
+    --sidebar-purple: var(--nexus-brand);
+    --sidebar-cyan: var(--nexus-accent);
     --sidebar-text: #f3f5f7;
     --sidebar-muted: #a5b0ba;
     --sidebar-border: #365777;
@@ -45,10 +45,10 @@
 
 .app-sidebar [data-flux-sidebar-item]:hover,
 .app-sidebar [data-flux-sidebar-item][data-current] {
-    background: linear-gradient(90deg, rgba(139, 47, 201, 0.28), rgba(0, 240, 255, 0.08));
-    border-color: rgba(0, 240, 255, 0.35);
+    background: linear-gradient(90deg, rgba(242, 169, 59, .18), rgba(101, 214, 194, .1));
+    border-color: rgba(101, 214, 194, .35);
     color: var(--sidebar-text);
-    box-shadow: 0 0 14px rgba(0, 240, 255, 0.12);
+    box-shadow: 0 0 14px rgba(101, 214, 194, .12);
 }
 
 .app-sidebar [data-flux-sidebar-item][data-current] svg,

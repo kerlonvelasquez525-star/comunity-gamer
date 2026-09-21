@@ -13,7 +13,10 @@ class ReporteModeracionController extends Controller
     {
         $team = $this->currentTeam($request);
         Gate::authorize('viewAny', [ReporteModeracion::class, $team]);
-        $items = ReporteModeracion::with(['reportador', 'reportado'])->latest('fecha')->paginate(20);
+        $items = ReporteModeracion::where('team_id', $team->id)
+            ->with(['reportador', 'reportado'])
+            ->latest('fecha')
+            ->paginate(20);
 
         return $request->expectsJson() ? response()->json($items) : response()->view('gamer.index', ['resource' => 'reportes-moderacion', 'title' => 'Reportes de moderación', 'items' => $items, 'team' => $team]);
     }
@@ -22,7 +25,7 @@ class ReporteModeracionController extends Controller
     {
         $team = $this->currentTeam($request);
         Gate::authorize('create', [ReporteModeracion::class, $team]);
-        $item = ReporteModeracion::create(['id_reportador' => $request->user()->id, ...$request->validate(['id_reportado' => 'required|integer|exists:users,id', 'motivo' => 'required|string|max:5000']), 'fecha' => now()]);
+        $item = ReporteModeracion::create(['team_id' => $team->id, 'id_reportador' => $request->user()->id, ...$request->validate(['id_reportado' => 'required|integer|exists:users,id', 'motivo' => 'required|string|max:5000']), 'fecha' => now()]);
 
         return $request->expectsJson() ? response()->json($item, 201) : back()->with('status', 'Reporte enviado.');
     }

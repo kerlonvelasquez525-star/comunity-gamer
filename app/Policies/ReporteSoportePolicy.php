@@ -16,7 +16,9 @@ class ReporteSoportePolicy
 
     public function view(User $user, ReporteSoporte $item, Team $team): bool
     {
-        return $user->belongsToTeam($team) && ($item->id_usuario === $user->id || $user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true);
+        return $user->belongsToTeam($team)
+            && $item->team_id === $team->id
+            && ($item->id_usuario === $user->id || $user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true);
     }
 
     public function create(User $user, Team $team): bool
@@ -36,11 +38,13 @@ class ReporteSoportePolicy
 
     public function respond(User $user, ReporteSoporte $item, Team $team): bool
     {
-        return $user->belongsToTeam($team) && $user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true;
+        return $user->belongsToTeam($team)
+            && $item->team_id === $team->id
+            && $user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true;
     }
 
     public function vote(User $user, ReporteSoporte $item, Team $team): bool
     {
-        return $this->viewAny($user, $team);
+        return $this->viewAny($user, $team) && $item->team_id === $team->id;
     }
 }

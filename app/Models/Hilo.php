@@ -25,16 +25,19 @@ class Hilo extends Model
         'fecha_creacion' => 'datetime',
     ];
 
+    /** @return BelongsTo<Foro, $this> */
     public function foro(): BelongsTo
     {
         return $this->belongsTo(Foro::class, 'id_foro', 'id_foro');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function autor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
 
+    /** @return HasMany<Aporte, $this> */
     public function aportes(): HasMany
     {
         return $this->hasMany(Aporte::class, 'id_hilo', 'id_hilo');

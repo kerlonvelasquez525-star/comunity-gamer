@@ -26,7 +26,9 @@ class HiloPolicy
 
     public function update(User $user, Hilo $item, Team $team): bool
     {
-        return $user->belongsToTeam($team) && (($user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true) || $item->id_usuario === $user->id);
+        return $user->belongsToTeam($team)
+            && $item->foro?->comunidad?->team_id === $team->id
+            && (($user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true) || $item->id_usuario === $user->id);
     }
 
     public function delete(User $user, Hilo $item, Team $team): bool

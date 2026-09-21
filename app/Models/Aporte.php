@@ -24,11 +24,13 @@ class Aporte extends Model
         'fecha_aporte' => 'datetime',
     ];
 
+    /** @return BelongsTo<Hilo, $this> */
     public function hilo(): BelongsTo
     {
         return $this->belongsTo(Hilo::class, 'id_hilo', 'id_hilo');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function autor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_usuario');

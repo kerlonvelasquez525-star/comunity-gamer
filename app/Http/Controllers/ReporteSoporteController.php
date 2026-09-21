@@ -15,7 +15,10 @@ class ReporteSoporteController extends Controller
     {
         $team = $this->currentTeam($request);
         Gate::authorize('viewAny', [ReporteSoporte::class, $team]);
-        $items = ReporteSoporte::with(['usuario', 'etiquetas'])->latest('fecha_creacion')->paginate(20);
+        $items = ReporteSoporte::where('team_id', $team->id)
+            ->with(['usuario', 'etiquetas'])
+            ->latest('fecha_creacion')
+            ->paginate(20);
 
         return $request->expectsJson() ? response()->json($items) : response()->view('gamer.index', ['resource' => 'reportes-soporte', 'title' => 'Reportes de soporte', 'items' => $items, 'team' => $team]);
     }
@@ -33,7 +36,7 @@ class ReporteSoporteController extends Controller
         $team = $this->currentTeam($request);
         Gate::authorize('create', [ReporteSoporte::class, $team]);
         $data = $request->validate(['asunto' => 'required|string|max:150', 'descripcion' => 'required|string', 'etiquetas' => 'nullable|array', 'etiquetas.*' => 'integer|exists:etiquetas,id_etiqueta']);
-        $item = ReporteSoporte::create(['id_usuario' => $request->user()->id, 'asunto' => $data['asunto'], 'descripcion' => $data['descripcion'], 'fecha_creacion' => now()]);
+        $item = ReporteSoporte::create(['team_id' => $team->id, 'id_usuario' => $request->user()->id, 'asunto' => $data['asunto'], 'descripcion' => $data['descripcion'], 'fecha_creacion' => now()]);
         $item->etiquetas()->sync($data['etiquetas'] ?? []);
 
         return $request->expectsJson() ? response()->json($item->load('etiquetas'), 201) : redirect()->route('reportes-soporte.show', [$team->slug, $item]);
@@ -61,7 +64,7 @@ class ReporteSoporteController extends Controller
         $team = $this->currentTeam($request);
         Gate::authorize('update', [$reporteSoporte, $team]);
         $data = $request->validate(['asunto' => 'sometimes|required|string|max:150', 'descripcion' => 'sometimes|required|string', 'estado' => 'sometimes|required|in:abierto,en_proceso,cerrado', 'etiquetas' => 'nullable|array', 'etiquetas.*' => 'integer|exists:etiquetas,id_etiqueta']);
-        $reporteSoporte->update(collect($data)->except('etiquetas')->all());
+        $reporteSoporte->update(array_diff_key($data, ['etiquetas' => true]));
         if (array_key_exists('etiquetas', $data)) {
             $reporteSoporte->etiquetas()->sync($data['etiquetas'] ?? []);
         }

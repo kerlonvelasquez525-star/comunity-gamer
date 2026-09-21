@@ -11,11 +11,13 @@ class Amistad extends Model
 
     protected $fillable = ['user_id', 'amigo_id', 'estado'];
 
+    /** @return BelongsTo<User, $this> */
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function amigo(): BelongsTo
     {
         return $this->belongsTo(User::class, 'amigo_id');

@@ -26,11 +26,18 @@ class AportePolicy
 
     public function update(User $user, Aporte $item, Team $team): bool
     {
-        return $user->belongsToTeam($team) && (($user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true) || $item->id_usuario === $user->id);
+        return $this->belongsToTeam($user, $team)
+            && $item->hilo?->foro?->comunidad?->team_id === $team->id
+            && (($user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true) || $item->id_usuario === $user->id);
     }
 
     public function delete(User $user, Aporte $item, Team $team): bool
     {
         return $this->update($user, $item, $team);
+    }
+
+    private function belongsToTeam(User $user, Team $team): bool
+    {
+        return $user->belongsToTeam($team);
     }
 }

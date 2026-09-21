@@ -61,7 +61,7 @@
             <div class="dashboard-live-heading">
                 <span class="dashboard-live-pulse" aria-hidden="true"></span>
                 <div>
-                    <p class="dashboard-section-kicker">ACTIVIDAD EN VIVO</p>
+                    <p class="dashboard-section-kicker">ACTIVIDAD EN VIVO</p> 
                     <h2 id="live-activity-title">Lo último en Nexus</h2>
                 </div>
                 <span class="dashboard-live-status">Sistema activo</span>

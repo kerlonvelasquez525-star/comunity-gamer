@@ -25,11 +25,13 @@ class Foro extends Model
         'fecha_creacion' => 'datetime',
     ];
 
+    /** @return BelongsTo<Comunidad, $this> */
     public function comunidad(): BelongsTo
     {
         return $this->belongsTo(Comunidad::class, 'comunidad_id');
     }
 
+    /** @return HasMany<Hilo, $this> */
     public function hilos(): HasMany
     {
         return $this->hasMany(Hilo::class, 'id_foro', 'id_foro');

@@ -19,11 +19,13 @@ class Reaccion extends Model
         'fecha' => 'datetime',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
 
+    /** @return BelongsTo<Publicacion, $this> */
     public function publicacion(): BelongsTo
     {
         return $this->belongsTo(Publicacion::class, 'id_publicacion', 'id');

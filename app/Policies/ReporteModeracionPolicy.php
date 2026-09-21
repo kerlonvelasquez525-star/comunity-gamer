@@ -16,7 +16,7 @@ class ReporteModeracionPolicy
 
     public function view(User $user, ReporteModeracion $item, Team $team): bool
     {
-        return $this->admin($user, $team);
+        return $this->admin($user, $team) && $item->team_id === $team->id;
     }
 
     public function create(User $user, Team $team): bool
@@ -26,7 +26,7 @@ class ReporteModeracionPolicy
 
     public function update(User $user, ReporteModeracion $item, Team $team): bool
     {
-        return $this->admin($user, $team);
+        return $this->admin($user, $team) && $item->team_id === $team->id;
     }
 
     private function admin(User $user, Team $team): bool

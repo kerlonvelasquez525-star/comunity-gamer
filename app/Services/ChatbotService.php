@@ -10,6 +10,7 @@ class ChatbotService
     /**
      * Devuelve una respuesta predefinida sin guardar ni reenviar la pregunta.
      */
+    /** @return array{intent: string, answer: string, suggestions: array<int, string>} */
     public function answer(string $question): array
     {
         $normalized = Str::lower(Str::ascii(trim($question)));
@@ -56,7 +57,7 @@ class ChatbotService
     /**
      * Prioriza coincidencias específicas de varias palabras sobre términos generales.
      *
-     * @return array{id: string, keywords: array<int, string>, answer: string, suggestions: array<int, string>}|null
+    * @return array{id: string, keywords: array<int, string>, answer: string, suggestions: array<int, string>}|null
      */
     private function bestIntent(string $question): ?array
     {
@@ -101,6 +102,7 @@ class ChatbotService
     /**
      * @return array<int, array{id: string, keywords: array<int, string>, answer: string, suggestions: array<int, string>}
      */
+    /** @return array<int, array{id: string, keywords: array<int, string>, answer: string, suggestions: array<int, string>}> */
     private function intents(): array
     {
         return [

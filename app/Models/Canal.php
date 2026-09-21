@@ -25,11 +25,13 @@ class Canal extends Model
         'fecha_creacion' => 'datetime',
     ];
 
+    /** @return BelongsTo<Comunidad, $this> */
     public function comunidad(): BelongsTo
     {
         return $this->belongsTo(Comunidad::class, 'comunidad_id');
     }
 
+    /** @return HasMany<Mensaje, $this> */
     public function mensajes(): HasMany
     {
         return $this->hasMany(Mensaje::class, 'canal_id', 'id_canal');

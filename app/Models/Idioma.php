@@ -11,6 +11,7 @@ class Idioma extends Model
 
     protected $fillable = ['codigo', 'nombre'];
 
+    /** @return BelongsToMany<Juego, $this> */
     public function juegos(): BelongsToMany
     {
         return $this->belongsToMany(Juego::class, 'juego_idioma', 'idioma_id', 'juego_id');

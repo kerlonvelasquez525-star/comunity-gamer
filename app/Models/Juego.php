@@ -20,11 +20,13 @@ class Juego extends Model
         'fecha_lanzamiento' => 'date',
     ];
 
+    /** @return BelongsToMany<Plataforma, $this> */
     public function plataformas(): BelongsToMany
     {
         return $this->belongsToMany(Plataforma::class, 'juego_plataforma', 'juego_id', 'plataforma_id');
     }
 
+    /** @return BelongsToMany<Idioma, $this> */
     public function idiomas(): BelongsToMany
     {
         return $this->belongsToMany(Idioma::class, 'juego_idioma', 'juego_id', 'idioma_id');

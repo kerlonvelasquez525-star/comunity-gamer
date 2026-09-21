@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Mensaje extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'mensajes';
 
@@ -27,11 +26,13 @@ class Mensaje extends Model
         'deleted_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Canal, $this> */
     public function canal(): BelongsTo
     {
         return $this->belongsTo(Canal::class, 'canal_id', 'id_canal');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function autor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

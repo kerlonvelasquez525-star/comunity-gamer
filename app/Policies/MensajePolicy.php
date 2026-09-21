@@ -26,6 +26,8 @@ class MensajePolicy
 
     public function delete(User $user, Mensaje $item, Team $team): bool
     {
-        return $user->belongsToTeam($team) && (($user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true) || $item->user_id === $user->id);
+        return $user->belongsToTeam($team)
+            && $item->canal?->comunidad?->team_id === $team->id
+            && (($user->teamRole($team)?->isAtLeast(TeamRole::Admin) === true) || $item->user_id === $user->id);
     }
 }

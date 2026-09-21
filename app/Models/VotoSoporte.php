@@ -15,11 +15,13 @@ class VotoSoporte extends Model
 
     protected $fillable = ['id_reporte', 'id_usuario', 'voto'];
 
+    /** @return BelongsTo<ReporteSoporte, $this> */
     public function reporte(): BelongsTo
     {
         return $this->belongsTo(ReporteSoporte::class, 'id_reporte', 'id_reporte');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_usuario');

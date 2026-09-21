@@ -24,7 +24,7 @@ class JuegoController extends Controller
         $team = $this->currentTeam($request);
         Gate::authorize('create', [Juego::class, $team]);
         $data = $request->validate(['titulo' => 'required|string|max:150', 'descripcion' => 'nullable|string', 'desarrollador' => 'nullable|string|max:150', 'fecha_lanzamiento' => 'nullable|date', 'plataformas' => 'nullable|array', 'plataformas.*' => 'integer|exists:plataformas,id', 'idiomas' => 'nullable|array', 'idiomas.*' => 'integer|exists:idiomas,id']);
-        $item = Juego::create(collect($data)->except(['plataformas', 'idiomas'])->all());
+        $item = Juego::create(array_diff_key($data, array_flip(['plataformas', 'idiomas'])));
         $item->plataformas()->sync($data['plataformas'] ?? []);
         $item->idiomas()->sync($data['idiomas'] ?? []);
 
@@ -46,7 +46,7 @@ class JuegoController extends Controller
         $team = $this->currentTeam($request);
         Gate::authorize('update', [$juego, $team]);
         $data = $request->validate(['titulo' => 'sometimes|required|string|max:150', 'descripcion' => 'nullable|string', 'desarrollador' => 'nullable|string|max:150', 'fecha_lanzamiento' => 'nullable|date', 'plataformas' => 'nullable|array', 'plataformas.*' => 'integer|exists:plataformas,id', 'idiomas' => 'nullable|array', 'idiomas.*' => 'integer|exists:idiomas,id']);
-        $juego->update(collect($data)->except(['plataformas', 'idiomas'])->all());
+        $juego->update(array_diff_key($data, array_flip(['plataformas', 'idiomas'])));
         if (array_key_exists('plataformas', $data)) {
             $juego->plataformas()->sync($data['plataformas'] ?? []);
         } if (array_key_exists('idiomas', $data)) {

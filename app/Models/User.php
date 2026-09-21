@@ -69,21 +69,25 @@ class User extends Authenticatable implements PasskeyUser
             : $initials;
     }
 
+    /** @return HasMany<Amistad, $this> */
     public function amistades(): HasMany
     {
         return $this->hasMany(Amistad::class, 'user_id');
     }
 
+    /** @return HasMany<Amistad, $this> */
     public function amistadesRecibidas(): HasMany
     {
         return $this->hasMany(Amistad::class, 'amigo_id');
     }
 
+    /** @return HasMany<Notificacion, $this> */
     public function notificaciones(): HasMany
     {
         return $this->hasMany(Notificacion::class, 'user_id');
     }
 
+    /** @return HasMany<Publicacion, $this> */
     public function publicaciones(): HasMany
     {
         return $this->hasMany(Publicacion::class, 'user_id');

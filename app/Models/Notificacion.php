@@ -20,6 +20,7 @@ class Notificacion extends Model
         'leida_en' => 'datetime',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

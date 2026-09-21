@@ -22,21 +22,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 20% 20%, #202a33 0%, #11151b 60%, #0d1116 100%);
+  background: transparent;
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
-}
- 
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(101, 214, 194, .05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(101, 214, 194, .05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
 }
  
 .login-container {

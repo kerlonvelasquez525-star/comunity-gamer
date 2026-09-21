@@ -11,13 +11,8 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    background-color: var(--cp-bg) !important;
-    background-image:
-        linear-gradient(rgba(65, 219, 255, .045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(65, 219, 255, .045) 1px, transparent 1px),
-        radial-gradient(circle at 10% 10%, rgba(255, 79, 216, .1), transparent 28%),
-        radial-gradient(circle at 90% 78%, rgba(65, 219, 255, .09), transparent 30%);
-    background-size: 42px 42px, 42px 42px, auto, auto;
+    background-color: transparent !important;
+    background-image: none !important;
 }
 
 .app-main::after {

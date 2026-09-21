@@ -107,6 +107,35 @@
     background-image: linear-gradient(135deg, rgba(101, 214, 194, 0.035), transparent 38%);
   }
 
+  body.project-background {
+    position: relative;
+    isolation: isolate;
+    overflow-x: hidden;
+    background: radial-gradient(circle at 20% 20%, #202a33 0%, #11151b 60%, #0d1116 100%);
+  }
+
+  body.project-background::before {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    content: '';
+    background-image:
+      linear-gradient(rgba(101, 214, 194, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(101, 214, 194, .05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  body.project-background > * {
+    position: relative;
+    z-index: 0;
+  }
+
+  body.project-background .public-home,
+  body.project-background .app-main {
+    background: transparent;
+  }
+
   h1,
   h2,
   h3 {

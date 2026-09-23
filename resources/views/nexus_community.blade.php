@@ -19,7 +19,7 @@
         ['label' => 'home', 'route' => 'dashboard', 'anchor' => '#top'],
         ['label' => 'noticias', 'route' => 'noticias.index', 'anchor' => '#noticias'],
         ['label' => 'comunidad', 'route' => 'comunidad.index', 'anchor' => '#comunidad'],
-        ['label' => 'problemas', 'route' => 'problemas.index', 'anchor' => '#problemas'],
+        ['label' => 'soporte', 'route' => 'problemas.index', 'anchor' => '#soporte'],
     ];
 @endphp
 

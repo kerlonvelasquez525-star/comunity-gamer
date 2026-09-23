@@ -56,14 +56,40 @@ class ComunidadController extends Controller
             ->paginate($request->integer('per_page', 12))
             ->appends($request->query());
 
-        return $request->expectsJson()
-            ? response()->json($comunidades)
-            : response()->view('pages::auth.comunidad', [
-                'resource' => 'comunidad',
-                'title' => 'Comunidades gamer',
-                'items' => $comunidades,
-                'team' => $team,
-            ]);
+        if ($request->expectsJson()) {
+            return response()->json($comunidades);
+        }
+
+        $filterCatalog = [
+            'juego_principal' => ['Fortnite', 'Valorant', 'Minecraft', 'Apex Legends', 'League of Legends', 'Call of Duty', 'GTA V'],
+            'plataforma' => ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Móvil', 'Multiplataforma'],
+            'region' => ['LATAM', 'Norteamérica', 'Europa', 'Brasil', 'Asia', 'Global'],
+            'idioma' => ['Español', 'Inglés', 'Portugués', 'Francés', 'Multilingüe'],
+            'modalidad' => ['Casual', 'Competitiva', 'Ranked', 'Cooperativa', 'Social'],
+            'horario' => ['Mañana', 'Tarde', 'Noche', 'Fines de semana', 'Flexible'],
+            'tipo' => ['publica', 'privada', 'cerrada'],
+            'nivel' => ['Casual', 'Competitivo', 'Pro gamer'],
+            'rango' => ['Sin rango', 'Bronce', 'Plata', 'Oro', 'Platino', 'Diamante', 'Maestro'],
+            'estado' => ['Abierta', 'Cerrada', 'En revisión'],
+        ];
+
+        $filterOptions = collect($filterCatalog)->mapWithKeys(
+            fn (array $defaults, string $column) => [$column => collect($defaults)
+                ->merge(Comunidad::query()
+                    ->whereNotNull($column)
+                    ->where($column, '!=', '')
+                    ->distinct()
+                    ->orderBy($column)
+                    ->pluck($column))
+                ->filter()
+                ->unique()
+                ->values()],
+        );
+
+        return response()->view('public-community', [
+            'items' => $comunidades,
+            'filterOptions' => $filterOptions,
+        ]);
     }
 
     public function create(Request $request): Response

@@ -22,7 +22,7 @@ class TeamFactory extends Factory
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name),
+            'slug' => Str::slug($name).'-'.Str::lower(Str::random(10)),
             'is_personal' => false,
         ];
     }

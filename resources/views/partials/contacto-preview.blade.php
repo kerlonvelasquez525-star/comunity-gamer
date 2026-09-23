@@ -72,7 +72,7 @@
     <div class="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
         <h4 class="text-lg font-semibold text-zinc-900 dark:text-white">✉️ ¿Asuntos comerciales o soporte técnico?</h4>
         <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Para alianzas de patrocinio, problemas con cuentas o reportes de bugs, escríbenos directamente a:
+            Para alianzas de patrocinio, incidencias con cuentas o reportes de bugs, escríbenos directamente a:
         </p>
         <div class="mt-4">
             <span class="inline-block rounded-lg bg-zinc-100 px-4 py-2 font-mono text-sm font-semibold text-zinc-900 dark:bg-zinc-800 dark:text-amber-400">

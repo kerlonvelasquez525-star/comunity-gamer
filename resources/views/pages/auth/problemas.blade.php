@@ -1,4 +1,4 @@
-<x-layouts::app :title="__('Problemas')">
+<x-layouts::app :title="__('Soporte')">
     <div class="problems-page w-full space-y-8 p-6 lg:p-10">
 
         <!-- ENCABEZADO SUPERIOR -->

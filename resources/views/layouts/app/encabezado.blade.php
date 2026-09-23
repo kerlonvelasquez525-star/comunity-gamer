@@ -5,7 +5,7 @@
         ['label' => __('Dashboard'), 'icon' => 'home', 'route' => 'dashboard', 'pattern' => 'dashboard'],
         ['label' => __('Noticias'), 'icon' => 'newspaper', 'route' => 'noticias.index', 'pattern' => 'noticias.*'],
         ['label' => __('Comunidades'), 'icon' => 'user-group', 'route' => 'comunidad.index', 'pattern' => 'comunidad.*'],
-        ['label' => __('Problemas'), 'icon' => 'exclamation-triangle', 'route' => 'problemas.index', 'pattern' => 'problemas.*'],
+        ['label' => __('Soporte'), 'icon' => 'exclamation-triangle', 'route' => 'problemas.index', 'pattern' => 'problemas.*'],
         ['label' => __('Asistente'), 'icon' => 'sparkles', 'route' => 'chatbot.index', 'pattern' => 'chatbot.*'],
     ] : [
         ['label' => __('Inicio'), 'icon' => 'home', 'route' => 'home', 'pattern' => null],
@@ -43,7 +43,6 @@
                     <!-- Lado Izquierdo: Logo contenido correctamente -->
                     <div class="flex shrink-0 items-center gap-4">
                         <a href="{{ route('home') }}"
-                           wire:navigate
                            class="flex items-center transition-transform hover:scale-105"
                            title="Ir al inicio">
                             <img src="{{ asset('nexus.png') }}" alt="Nexus Logo" class="h-12 w-12 rounded-[45%] border-2 border-cyan-400/80 object-cover p-0.5 shadow-[0_0_12px_rgba(0,240,255,0.35)]">

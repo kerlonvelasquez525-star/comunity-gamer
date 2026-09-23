@@ -7,7 +7,7 @@
         </div>
 
         <div class="grid gap-4 sm:grid-cols-3">
-            <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900"><p class="text-sm text-zinc-500">Problemas abiertos</p><p class="mt-2 text-3xl font-bold">{{ $problemas_abiertos }}</p></div>
+            <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900"><p class="text-sm text-zinc-500">Casos abiertos</p><p class="mt-2 text-3xl font-bold">{{ $problemas_abiertos }}</p></div>
             <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900"><p class="text-sm text-zinc-500">Comentarios</p><p class="mt-2 text-3xl font-bold">{{ $comentarios_totales }}</p></div>
             <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900"><p class="text-sm text-zinc-500">Comunidades activas</p><p class="mt-2 text-3xl font-bold">{{ $comunidades_activas->count() }}</p></div>
         </div>

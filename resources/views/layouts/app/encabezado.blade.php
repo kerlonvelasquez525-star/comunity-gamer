@@ -4,19 +4,33 @@
     $navigationItems = $teamSlug ? [
         ['label' => __('Dashboard'), 'icon' => 'home', 'route' => 'dashboard', 'pattern' => 'dashboard'],
         ['label' => __('Noticias'), 'icon' => 'newspaper', 'route' => 'noticias.index', 'pattern' => 'noticias.*'],
-        ['label' => __('Comentarios'), 'icon' => 'chat-bubble-left-right', 'route' => 'comentarios.index', 'pattern' => 'comentarios.*'],
         ['label' => __('Comunidades'), 'icon' => 'user-group', 'route' => 'comunidad.index', 'pattern' => 'comunidad.*'],
         ['label' => __('Problemas'), 'icon' => 'exclamation-triangle', 'route' => 'problemas.index', 'pattern' => 'problemas.*'],
+        ['label' => __('Asistente'), 'icon' => 'sparkles', 'route' => 'chatbot.index', 'pattern' => 'chatbot.*'],
     ] : [
         ['label' => __('Inicio'), 'icon' => 'home', 'route' => 'home', 'pattern' => null],
     ];
+@endphp
+
+@php
+    $chatUsers = auth()->check() && auth()->user()->currentTeam
+        ? auth()->user()->currentTeam->members()->whereKeyNot(auth()->id())->limit(12)->get()
+        : collect();
+
+    $recentNotifications = auth()->check()
+        ? auth()->user()->notificaciones()->latest()->limit(5)->get()
+        : collect();
+
+    $unreadNotifications = auth()->check()
+        ? auth()->user()->notificaciones()->whereNull('leida_en')->count()
+        : 0;
 @endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
-        @vite(['resources/css/encabezado.css'])
+        @vite(['resources/css/encabezado.css', 'resources/css/chat.css'])
     </head>
     <body class="min-h-screen bg-zinc-950 font-sans text-zinc-100 antialiased" x-data="{ mobileMenuOpen: false }">
 
@@ -28,7 +42,7 @@
                     
                     <!-- Lado Izquierdo: Logo contenido correctamente -->
                     <div class="flex shrink-0 items-center gap-4">
-                        <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : route('home') }}"
+                        <a href="{{ route('home') }}"
                            wire:navigate
                            class="flex items-center transition-transform hover:scale-105"
                            title="Ir al inicio">
@@ -54,6 +68,40 @@
                     <!-- Lado Derecho: Switcher de Equipo + Menú de Usuario -->
                     <div class="flex items-center gap-3">
                         @auth
+                            <div class="notification-center" x-data="notificationCenter({{ $unreadNotifications }})" x-init="start()">
+                                <button type="button" class="notification-trigger" @click="open = !open" :aria-expanded="open.toString()" aria-label="Abrir notificaciones">
+                                    <flux:icon.bell class="size-5" />
+                                    <span class="notification-badge" x-show="unread > 0" x-text="unread > 99 ? '99+' : unread" x-cloak></span>
+                                </button>
+                                <div class="notification-panel" x-show="open" x-transition @click.outside="open = false" x-cloak>
+                                    <div class="notification-panel-header">
+                                        <div>
+                                            <p class="notification-kicker">NEXUS // ALERTAS</p>
+                                            <h2>Notificaciones</h2>
+                                        </div>
+                                        <form method="POST" action="{{ route('notificaciones.read-all') }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="notification-read-all" x-show="unread > 0">Marcar todo</button>
+                                        </form>
+                                    </div>
+                                    <div class="notification-list">
+                                        @forelse ($recentNotifications as $notification)
+                                            <a href="{{ data_get($notification->data, 'url', route('notificaciones.index')) }}" class="notification-item {{ $notification->leida_en ? '' : 'is-unread' }}">
+                                                <span class="notification-dot"></span>
+                                                <span>
+                                                    <strong>{{ data_get($notification->data, 'title', ucfirst($notification->tipo)) }}</strong>
+                                                    <small>{{ data_get($notification->data, 'message', 'Tienes una nueva actualización en la comunidad.') }}</small>
+                                                    <time>{{ $notification->created_at?->diffForHumans() }}</time>
+                                                </span>
+                                            </a>
+                                        @empty
+                                            <p class="notification-empty">No tienes notificaciones nuevas.</p>
+                                        @endforelse
+                                    </div>
+                                    <a href="{{ route('notificaciones.index') }}" class="notification-footer">Ver centro de notificaciones &rarr;</a>
+                                </div>
+                            </div>
                             <div class="hidden sm:block">
                                 <livewire:team-switcher />
                             </div>
@@ -112,6 +160,38 @@
                 </div>
             </main>
 
+            @auth
+                <button type="button" class="global-chat-open" data-chat-open aria-controls="global-chat-drawer" aria-expanded="false">
+                    <span class="global-chat-status"></span>
+                    <span>Ver jugadores</span>
+                </button>
+
+                <aside id="global-chat-drawer" class="global-chat-drawer" data-chat-drawer aria-hidden="true" aria-labelledby="global-chat-title">
+                    <div class="global-chat-header">
+                        <div>
+                            <p class="global-chat-kicker">NEXUS // MENSAJES</p>
+                            <h2 id="global-chat-title">Tus jugadores</h2>
+                        </div>
+                        <button type="button" class="global-chat-close" data-chat-close aria-label="Cerrar panel de chat">&times;</button>
+                    </div>
+                    <p class="global-chat-copy">Selecciona la foto o el nombre de un usuario para abrir su conversación.</p>
+                    <div class="global-chat-users">
+                        @forelse ($chatUsers as $chatUser)
+                            <a href="{{ route('chat.show', $chatUser) }}" class="global-chat-user">
+                                <span class="global-chat-avatar">{{ strtoupper(substr($chatUser->name, 0, 1)) }}</span>
+                                <span class="global-chat-user-info">
+                                    <strong>{{ $chatUser->name }}</strong>
+                                    <small>{{ $chatUser->email }}</small>
+                                </span>
+                                <span class="global-chat-arrow" aria-hidden="true">&rarr;</span>
+                            </a>
+                        @empty
+                            <p class="global-chat-empty">No hay otros usuarios disponibles en este equipo.</p>
+                        @endforelse
+                    </div>
+                </aside>
+            @endauth
+
         </div>
 
         @auth
@@ -125,5 +205,48 @@
         @endpersist
 
         @fluxScripts
+
+        @auth
+            <script>
+                window.notificationCenter = (initialUnread) => ({
+                    open: false,
+                    unread: initialUnread,
+                    start() {
+                        window.setInterval(async () => {
+                            try {
+                                const response = await fetch('{{ route('notificaciones.index') }}?per_page=5', {
+                                    headers: { Accept: 'application/json' },
+                                });
+                                if (!response.ok) return;
+                                const payload = await response.json();
+                                this.unread = payload.data.filter((item) => !item.leida_en).length;
+                            } catch (error) {
+                                // La navegación sigue funcionando aunque el refresco falle.
+                            }
+                        }, 30000);
+                    },
+                });
+
+                (() => {
+                    const drawer = document.querySelector('[data-chat-drawer]');
+                    const openButton = document.querySelector('[data-chat-open]');
+                    const closeButton = document.querySelector('[data-chat-close]');
+
+                    if (!drawer || !openButton || !closeButton) return;
+
+                    const setDrawerState = (isOpen) => {
+                        drawer.classList.toggle('is-open', isOpen);
+                        drawer.setAttribute('aria-hidden', String(!isOpen));
+                        openButton.setAttribute('aria-expanded', String(isOpen));
+                    };
+
+                    openButton.addEventListener('click', () => setDrawerState(true));
+                    closeButton.addEventListener('click', () => setDrawerState(false));
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') setDrawerState(false);
+                    });
+                })();
+            </script>
+        @endauth
     </body>
 </html>

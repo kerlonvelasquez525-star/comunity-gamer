@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\noticias;
 use App\Models\NoticiasComentario;
+use App\Models\Publicacion;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 /**
@@ -21,21 +25,117 @@ class PublicNewsController extends Controller
      */
     public function index(): View
     {
-        return view('nexus_community', [
-            'officialNews' => noticias::query()
+        if (auth()->check() && session()->has('pending_public_comment')) {
+            $pendingComment = session()->pull('pending_public_comment');
+            $noticia = noticias::query()
                 ->whereNull('team_id')
                 ->where('es_oficial', true)
-                ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
-                ->latest()
-                ->limit(6)
-                ->get(),
+                ->whereKey($pendingComment['noticia_id'] ?? 0)
+                ->first();
+
+            if ($noticia && filled($pendingComment['contenido'] ?? null)) {
+                NoticiasComentario::create([
+                    'noticia_id' => $noticia->id,
+                    'user_id' => auth()->id(),
+                    'contenido' => $pendingComment['contenido'],
+                ]);
+            }
+        }
+
+        $totalUsuarios = User::query()->count();
+        $actividadDesde = Carbon::now()->subDays(30);
+        $usuariosActivos = collect()
+            ->merge(User::query()->where('created_at', '>=', $actividadDesde)->pluck('id'))
+            ->merge(Publicacion::query()->where('created_at', '>=', $actividadDesde)->pluck('user_id'))
+            ->merge(NoticiasComentario::query()->where('created_at', '>=', $actividadDesde)->pluck('user_id'))
+            ->merge(
+                \DB::table('miembros_comunidad')
+                    ->where('created_at', '>=', $actividadDesde)
+                    ->pluck('user_id'),
+            )
+            ->filter()
+            ->unique()
+            ->count();
+        $postsDiarios = Publicacion::query()->count() + noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->count();
+        $telemetria = $totalUsuarios > 0
+            ? round(($usuariosActivos / $totalUsuarios) * 100, 1)
+            : 0;
+
+        $featuredNews = noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('nexus_community', [
+            'officialNews' => $featuredNews,
+            'featuredNews' => $featuredNews,
+            'usuarios_activos' => $usuariosActivos,
+            'post_diarios' => $postsDiarios,
+            'telemetria' => $telemetria,
         ]);
+    }
+
+    public function publicIndex(): View
+    {
+        $news = noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
+            ->latest()
+            ->paginate(6);
+
+        return view('public-news', [
+            'items' => $news,
+            'title' => 'Noticias oficiales',
+        ]);
+    }
+
+    public function publicProblems(): View
+    {
+        return view('public-problems', [
+            'title' => 'Soporte y ayuda',
+            'helpPoints' => [
+                'Guías rápidas para montar tu equipo y encontrar partidas.',
+                'Preguntas frecuentes sobre seguridad, registro y acceso.',
+                'Soporte para equipos, reportes y moderación del contenido.',
+            ],
+        ]);
+    }
+
+    public function refresh(): JsonResponse
+    {
+        $news = noticias::query()
+            ->whereNull('team_id')
+            ->where('es_oficial', true)
+            ->with(['comentarios' => fn ($query) => $query->with('autor')->latest()])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        return response()->json($news->map(function (noticias $noticia): array {
+            return [
+                'id' => $noticia->id,
+                'comments_count' => $noticia->comentarios->count(),
+                'comments' => $noticia->comentarios->map(function (NoticiasComentario $comentario): array {
+                    return [
+                        'author' => optional($comentario->autor)->name ?? 'Usuario',
+                        'content' => $comentario->contenido,
+                    ];
+                })->values()->all(),
+            ];
+        })->values()->all());
     }
 
     /**
      * Guarda un comentario asociado a una noticia oficial pública.
      */
-    public function comment(Request $request, noticias $noticia): RedirectResponse
+    public function comment(Request $request, noticias $noticia): RedirectResponse|JsonResponse
     {
         abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);
 
@@ -43,12 +143,69 @@ class PublicNewsController extends Controller
             'contenido' => ['required', 'string', 'max:2000'],
         ]);
 
-        NoticiasComentario::create([
+        if (! $request->user()) {
+            session()->put('pending_public_comment', [
+                'noticia_id' => $noticia->id,
+                'contenido' => $validated['contenido'],
+            ]);
+            session()->put('url.intended', route('home').'#noticia-'.$noticia->id);
+
+            if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'message' => 'Debes registrarte o iniciar sesión para guardar tu comentario.',
+                    'register_url' => route('register'),
+                    'login_url' => route('login'),
+                ], 401);
+            }
+
+            return redirect()->route('register');
+        }
+
+        $comentario = NoticiasComentario::create([
             'noticia_id' => $noticia->id,
             'user_id' => $request->user()->id,
             'contenido' => $validated['contenido'],
         ]);
 
+        if ($request->expectsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'comment' => [
+                    'id' => $comentario->id,
+                    'contenido' => $comentario->contenido,
+                    'author' => optional($comentario->autor)->name ?? 'Usuario',
+                ],
+            ], 201);
+        }
+
         return back()->with('status', 'Comentario publicado.');
+    }
+
+    public function updateComment(Request $request, noticias $noticia, NoticiasComentario $comentario): RedirectResponse|JsonResponse
+    {
+        abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);
+        abort_unless($comentario->noticia_id === $noticia->id && $comentario->user_id === $request->user()->id, 403);
+
+        $validated = $request->validate([
+            'contenido' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $comentario->update($validated);
+
+        return $request->expectsJson()
+            ? response()->json(['success' => true, 'comment' => $comentario->fresh()->load('autor')])
+            : back()->with('status', 'Comentario actualizado.');
+    }
+
+    public function destroyComment(Request $request, noticias $noticia, NoticiasComentario $comentario): RedirectResponse|JsonResponse
+    {
+        abort_unless($noticia->team_id === null && $noticia->es_oficial, 404);
+        abort_unless($comentario->noticia_id === $noticia->id && $comentario->user_id === $request->user()->id, 403);
+
+        $comentario->delete();
+
+        return $request->expectsJson()
+            ? response()->json(['success' => true])
+            : back()->with('status', 'Comentario eliminado.');
     }
 }

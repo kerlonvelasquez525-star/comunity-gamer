@@ -26,9 +26,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $number = fake()->unique()->numberBetween(1, 999999);
+        $localPart = 'usuario'.$number;
+
         return [
             'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'email' => $localPart.'@example.com',
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

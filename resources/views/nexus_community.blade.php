@@ -1,98 +1,76 @@
 @php
     $teamSlug = auth()->user()?->currentTeam?->slug;
 
-    $navLinks = [
-        ['label' => 'home',        'route' => 'dashboard'],
-        ['label' => 'noticias',    'route' => 'noticias.index'],
-        ['label' => 'comentarios', 'route' => 'comentarios.index'],
-        ['label' => 'comunidad',   'route' => 'comunidad.index'],
-        ['label' => 'problemas',   'route' => 'problemas.index'],
-    ];
+    $formatCompactNumber = function ($value): string {
+        $value = (float) $value;
 
-    // Array de tarjetas para el slider de la derecha
-    $gamesCards = [
-        [
-            'img'   => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ÚLTIMAS NOTICIAS', 
-            'read'  => '4 MIN READ',
-            'title' => 'PROYECTO BLACKOUT: Descifrando las nuevas reglas de extracción en los videojuegos',
-            'desc'  => 'Un análisis exhaustivo de las mecánicas del parche v4.12, las nubes de radiación dinámicas y las rutas tácticas óptimas de despliegue.',
-            'user'  => 'GhostOperator', 
-            'time'  => 'HACE 2H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ÚLTIMOS PARCHES', 
-            'read'  => '6 MIN READ',
-            'title' => 'NEON VELOCITY: Actualización de motor de aceleración',
-            'desc'  => 'Revisión completa de la física de derrape en circuitos urbanos y enlaces cibernéticos nivel 3.',
-            'user'  => 'ViperNet', 
-            'time'  => 'HACE 5H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1605902711622-cfb43c443f6c?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ANÁLISIS DE JUEGO', 
-            'read'  => '5 MIN READ',
-            'title' => 'SHADOW REALMS: Estrategias de sigilo y combate',
-            'desc'  => 'Exploración de las mecánicas de sigilo, rutas de escape y optimización de recursos en entornos urbanos.',
-            'user'  => 'StealthMaster', 
-            'time'  => 'HACE 3H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'NOVEDADES DE JUEGO', 
-            'read'  => '7 MIN READ',
-            'title' => 'CYBER HORIZON: Explorando la expansión de mundo abierto',
-            'desc'  => 'Análisis de la nueva expansión, incluyendo misiones secundarias y la integración de la inteligencia artificial en NPCs.',
-            'user'  => 'CyberExplorer', 
-            'time'  => 'HACE 4H'
-        ],
-        [
-            'img'   => 'https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=800&q=80',
-            'badge' => 'ACTUALIZACIÓN DE MOTOR', 
-            'read'  => '8 MIN READ',
-            'title' => 'VIRTUAL REALITY: Mejoras en la física y la interacción',
-            'desc'  => 'Revisión de las últimas mejoras en el motor de realidad virtual, incluyendo la simulación de físicas y la respuesta háptica.',
-            'user'  => 'VRTechie', 
-            'time'  => 'HACE 6H'
-        ],
+        if ($value >= 1000000) {
+            return number_format($value / 1000000, 1, ',', '').'M';
+        }
+
+        if ($value >= 1000) {
+            return number_format($value / 1000, 1, ',', '').'K';
+        }
+
+        return number_format($value, 0, ',', '.');
+    };
+
+    $navLinks = [
+        ['label' => 'home', 'route' => 'dashboard', 'anchor' => '#top'],
+        ['label' => 'noticias', 'route' => 'noticias.index', 'anchor' => '#noticias'],
+        ['label' => 'comunidad', 'route' => 'comunidad.index', 'anchor' => '#comunidad'],
+        ['label' => 'problemas', 'route' => 'problemas.index', 'anchor' => '#problemas'],
     ];
 @endphp
 
-{{-- Usamos :: para el layout (namespace de la carpeta /resources/views/layouts) --}}
 <x-layouts::public :title="__('Nexus Community')">
-    
-    <link rel="stylesheet" href="{{ asset('css/style_th.css') }}">
+    <div id="top" class="public-home">
 
-    {{-- Usamos punto . para el componente de Livewire --}}
+    @vite('resources/css/style_th.css')
+
     <livewire:pages.teams.pending-invitations-modal />
 
-    {{-- NAVBAR SUPERIOR --}}
     <header>
         <div class="brand">
-            <div class="brand-logo">
+            <a href="{{ route('home') }}" class="brand-logo" aria-label="Ir a la página principal de Nexus Community">
                 <img src="{{ asset('nexus.png') }}" alt="Nexus Community" width="48" height="48" decoding="async">
-            </div>
-            <span class="brand-title">nexus-comunity</span>
+            </a>
+            <a href="{{ route('home') }}" class="brand-title" aria-label="Ir a la página principal de Nexus Community">nexus-comunity</a>
         </div>
 
-        <nav aria-label="Navegación principal">
+        <nav aria-label="Navegación principal" class="public-main-nav">
             @foreach ($navLinks as $index => $link)
+                @php
+                    $guestHref = match ($link['label']) {
+                        'home' => route('home'),
+                        'noticias' => route('public-noticias.index'),
+                        'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
+                            ? route('public-comunidad.index')
+                            : route('home'),
+                        'problemas' => \Illuminate\Support\Facades\Route::has('public-problemas.index')
+                            ? route('public-problemas.index')
+                            : route('home'),
+                        default => route('home'),
+                    };
+                    $authHref = match ($link['label']) {
+                        'home' => route('home'),
+                        'noticias' => route('public-noticias.index'),
+                        'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
+                            ? route('public-comunidad.index')
+                            : ($teamSlug ? route($link['route'], $teamSlug) : route('teams.index')),
+                        'problemas' => \Illuminate\Support\Facades\Route::has('public-problemas.index')
+                            ? route('public-problemas.index')
+                            : ($teamSlug ? route($link['route'], $teamSlug) : route('teams.index')),
+                        default => $teamSlug ? route($link['route'], $teamSlug) : route('teams.index'),
+                    };
+                @endphp
+
                 @auth
-                    @if ($teamSlug)
-                        {{-- Logueado y con equipo activo: va directo a la sección --}}
-                        <a href="{{ route($link['route'], $teamSlug) }}" @class(['active' => $index === 0])>
-                            {{ $link['label'] }}
-                        </a>
-                    @else
-                        {{-- Logueado pero SIN equipo activo: llévalo a elegir/crear equipo, no a login --}}
-                        <a href="{{ route('teams.index') }}" @class(['active' => $index === 0])>
-                            {{ $link['label'] }}
-                        </a>
-                    @endif
+                    <a href="{{ $authHref }}" @class(['active' => $index === 0, 'public-nav-link' => true])>
+                        {{ $link['label'] }}
+                    </a>
                 @else
-                    {{-- Sin sesión: la sección exige autenticación --}}
-                    <a href="{{ route('login') }}" @class(['active' => $index === 0])>
+                    <a href="{{ $guestHref }}" @class(['active' => $index === 0, 'public-nav-link' => true])>
                         {{ $link['label'] }}
                     </a>
                 @endauth
@@ -104,164 +82,143 @@
                 <span class="status-dot"></span>
             </div>
             <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : (auth()->check() ? route('teams.index') : route('login')) }}"
-               class="btn-signin"
+               class="btn-signin btn-signin-soft"
                aria-label="{{ $teamSlug ? 'Ir al panel' : (auth()->check() ? 'Elegir equipo' : 'Iniciar sesión') }}">
                 <flux:icon name="user" class="w-4 h-4" />
             </a>
         </div>
     </header>
 
-    {{-- ESTRUCTURA PRINCIPAL DEL HERO --}}
+    <div class="home-scroll-controls" aria-label="Controles de desplazamiento">
+        <button type="button" id="page-scroll-up" aria-label="Subir">&uarr;</button>
+        <button type="button" id="page-scroll-down" aria-label="Bajar">&darr;</button>
+    </div>
+
     <div class="hero-container">
-
-        {{-- COLUMNA IZQUIERDA --}}
         <section class="hero-left">
-            <span class="badge-tag">BIENVENIDO // NUEVOS JUEGOS CADA DÍA</span>
+            <span class="badge-tag">Una comunidad para jugar mejor acompañado</span>
 
-            <h1 class="hero-title">CONOCE TUS JUEGOS</h1>
+            <h1 class="hero-title">Encuentra tu próxima partida</h1>
 
             <p class="hero-description">
-                Reseñas tácticas, datos de esports en bruto y publicaciones de la comunidad sin filtros.
-                Nexus Community es tu banco de memoria externo para conocer tus juegos.
+                Descubre noticias, grupos y conversaciones de jugadores que comparten tus mismos juegos.
+                Nexus Community es tu lugar para encontrar gente y volver a disfrutar de jugar en compañía.
             </p>
 
             <div class="cta-group">
                 @auth
                     <a href="{{ $teamSlug ? route('dashboard', $teamSlug) : route('teams.index') }}" class="btn-primary">
-                        Ir al panel &rarr;
+                        Abrir mi comunidad &rarr;
                     </a>
                 @else
                     <a href="{{ route('login') }}" class="btn-primary">
                         Iniciar sesión &rarr;
                     </a>
                     <a href="{{ route('register') }}" class="btn-icon">
-                        registrarse &gt;
+                        <span>Crear mi cuenta</span>
+                        <span class="btn-icon-arrow" aria-hidden="true">&rarr;</span>
                     </a>
                 @endauth
             </div>
 
-            {{-- TARJETA DE ESTADÍSTICAS --}}
+            <div class="feature-strip" aria-label="Ventajas de la comunidad">
+                <div class="feature-pill">
+                    <span class="feature-kicker">01</span>
+                    <div>
+                        <strong>Comunidades activas</strong>
+                        <small>Grupos por juego y estilo de play</small>
+                    </div>
+                </div>
+                <div class="feature-pill">
+                    <span class="feature-kicker">02</span>
+                    <div>
+                        <strong>Noticias reales</strong>
+                        <small>Actualizaciones y contenido verificado</small>
+                    </div>
+                </div>
+                <div class="feature-pill">
+                    <span class="feature-kicker">03</span>
+                    <div>
+                        <strong>Juego en equipo</strong>
+                        <small>Más fácil encontrar squad y hablar</small>
+                    </div>
+                </div>
+            </div>
+
             <div class="stats-card">
                 <div class="stat-item">
-                    <h3>248K</h3>
+                    <h3>{{ $formatCompactNumber($usuarios_activos ?? 0) }}</h3>
                     <p>USUARIOS ACTIVOS</p>
                 </div>
                 <div class="stat-item">
-                    <h3>12.4M</h3>
+                    <h3>{{ $formatCompactNumber($post_diarios ?? 0) }}</h3>
                     <p>POST DIARIOS</p>
                 </div>
                 <div class="stat-item">
-                    <h3>98.4%</h3>
+                    <h3>{{ rtrim(rtrim(number_format($telemetria ?? 0, 1, ',', '.'), '0'), ',') }}%</h3>
                     <p>TELEMETRÍA</p>
                 </div>
             </div>
-
-            {{-- SALAS DE CONVERSACIÓN ACTIVAS --}}
-            <div class="extra-section">
-                <div class="extra-header">
-                    <span class="extra-title">⚡ SALAS DE CONVERSACION ACTIVAS</span>
-                    <span class="voice-tag">FILTRAR POR JUEGO</span>
-                </div>
-
-                <div class="squad-list">
-                    @foreach ([
-                        ['name' => 'BUGS NUEVOS',   'detail' => 'Cyberpunk / Extraction'],
-                        ['name' => 'BUSCANDO SQUADS',  'detail' => 'FORTNITE, CSGO, COD • 4-5 jugadores'],
-                    ] as $squad)
-                        <div class="squad-item">
-                            <div class="squad-info">
-                                <h4>{{ $squad['name'] }}</h4>
-                                <p>{{ $squad['detail'] }}</p>
-                            </div>
-                            <a href="{{ $teamSlug ? route('comunidad.index', $teamSlug) : (auth()->check() ? route('teams.index') : route('login')) }}"
-                               class="btn-join">UNIRSE</a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
         </section>
 
-        {{-- COLUMNA DERECHA: SLIDER DE JUEGOS --}}
-        <section class="hero-right">
+        <section class="hero-right news-carousel" aria-label="Noticias oficiales destacadas" data-news-carousel>
             <div class="slider-header">
-                <h2 class="slider-title">EXPLORAR BASES DE DATOS</h2>
-                <div class="slider-controls">
-                    <button type="button" id="slider-up" class="control-btn" aria-label="Anterior">&lt;</button>
-                    <button type="button" id="slider-down" class="control-btn" aria-label="Siguiente">&gt;</button>
+                <div>
+                    <span class="badge-tag">NEXUS // ACTUALIZACIONES</span>
+                    <p class="carousel-kicker">Noticias oficiales</p>
                 </div>
+                @if ($officialNews->count() > 1)
+                    <div class="slider-controls">
+                        <button type="button" class="control-btn" data-carousel-prev aria-label="Noticia anterior">&larr;</button>
+                        <button type="button" class="control-btn" data-carousel-next aria-label="Siguiente noticia">&rarr;</button>
+                    </div>
+                @endif
             </div>
 
-            <div class="games-slider" id="slider">
-                @foreach ($gamesCards as $game)
-                    <article class="game-card">
-                        <img src="{{ $game['img'] }}" alt="" loading="lazy" decoding="async" class="game-image">
-                        <div class="game-card-body">
-                            <div>
-                                <span class="news-badge">{{ $game['badge'] }}</span>
-                                <span class="read-time">{{ $game['read'] }}</span>
-                            </div>
-                            <h3 class="game-card-title">{{ $game['title'] }}</h3>
-                            <p class="game-card-desc">{{ $game['desc'] }}</p>
-                            <div class="game-card-footer">
-                                <div class="operator-info">
-                                    <div class="avatar-sm"></div>
-                                    <span class="operator-name">{{ $game['user'] }}</span>
-                                </div>
-                                <span class="deploy-time">PUBLICADO: {{ $game['time'] }}</span>
-                            </div>
+            <div class="carousel-stage">
+                @forelse ($officialNews as $index => $noticia)
+                    @php
+                        $carouselImageUrl = null;
+
+                        if (!empty($noticia->imagen_url)) {
+                            $carouselImageUrl = filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)
+                                ? $noticia->imagen_url
+                                : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url);
+                        }
+
+                        if (empty($carouselImageUrl)) {
+                            $carouselImageUrl = asset('nexus.png');
+                        }
+                    @endphp
+
+                    <article class="carousel-slide {{ $index === 0 ? 'is-active' : '' }}" data-carousel-slide>
+                        <img src="{{ $carouselImageUrl }}" alt="{{ $noticia->titulo }}" loading="{{ $index === 0 ? 'eager' : 'lazy' }}" onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';">
+                        <div class="carousel-slide-overlay">
+                            <p class="official-news-source">{{ $noticia->fuente_nombre ?: 'NEXUS' }} · {{ $noticia->created_at?->diffForHumans() }}</p>
+                            <h2>{{ $noticia->titulo }}</h2>
+                            <p>{{ $noticia->contenido }}</p>
+                            <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
                         </div>
                     </article>
-                @endforeach
+                @empty
+                    <div class="carousel-empty">
+                        <span class="badge-tag">NEXUS // ACTUALIZACIONES</span>
+                        <h2>Noticias oficiales</h2>
+                        <p>Las noticias aparecerán aquí cuando se ejecute la sincronización.</p>
+                    </div>
+                @endforelse
             </div>
-        </section>
 
+            @if ($officialNews->count() > 1)
+                <div class="carousel-dots" aria-label="Seleccionar noticia">
+                    @foreach ($officialNews as $index => $noticia)
+                        <button type="button" class="carousel-dot {{ $index === 0 ? 'is-active' : '' }}" data-carousel-dot="{{ $index }}" aria-label="Mostrar noticia {{ $index + 1 }}" aria-current="{{ $index === 0 ? 'true' : 'false' }}"></button>
+                    @endforeach
+                </div>
+            @endif
+        </section>
     </div>
 
-    <section class="official-news-section" aria-labelledby="official-news-title">
-        <div class="official-news-heading">
-            <span class="badge-tag">FUENTES VERIFICADAS // ACTUALIZACIONES</span>
-            <h2 id="official-news-title" class="official-news-title">Noticias oficiales de videojuegos</h2>
-            <p class="hero-description">Novedades publicadas por los blogs oficiales de las principales plataformas.</p>
-        </div>
-
-        <div class="official-news-grid">
-            @forelse ($officialNews as $noticia)
-                <article class="official-news-card" id="noticia-{{ $noticia->id }}">
-                    @if ($noticia->imagen_url)
-                        <img src="{{ filter_var($noticia->imagen_url, FILTER_VALIDATE_URL) ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url) }}" alt="{{ $noticia->titulo }}" class="official-news-image" loading="lazy">
-                    @endif
-                    <div class="official-news-content">
-                        <p class="official-news-source">{{ $noticia->fuente_nombre }} · {{ $noticia->created_at?->diffForHumans() }}</p>
-                        <h3>{{ $noticia->titulo }}</h3>
-                        <p class="official-news-description">{{ $noticia->contenido }}</p>
-                        <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
-
-                        <div class="official-comments">
-                            <h4>Comentarios ({{ $noticia->comentarios->count() }})</h4>
-                            @forelse ($noticia->comentarios->take(3) as $comentario)
-                                <p class="official-comment"><strong>{{ $comentario->autor?->name ?? 'Usuario' }}:</strong> {{ $comentario->contenido }}</p>
-                            @empty
-                                <p class="official-comment-empty">Sé el primero en comentar.</p>
-                            @endforelse
-
-                            @auth
-                                <form method="POST" action="{{ route('official-news.comments.store', $noticia) }}" class="official-comment-form">
-                                    @csrf
-                                    <label class="sr-only" for="comment-{{ $noticia->id }}">Escribe un comentario</label>
-                                    <input id="comment-{{ $noticia->id }}" name="contenido" maxlength="2000" required placeholder="Escribe un comentario...">
-                                    <button type="submit">Comentar</button>
-                                </form>
-                            @else
-                                <a href="{{ route('login') }}" class="official-news-link">Inicia sesión para comentar</a>
-                            @endauth
-                        </div>
-                    </div>
-                </article>
-            @empty
-                <p class="official-news-empty">Las noticias oficiales aparecerán aquí cuando se ejecute la sincronización.</p>
-            @endforelse
-        </div>
-    </section>
-
-    <script src="{{ asset('js/home.js') }}" defer></script>
+    @vite('resources/js/home.js')
+    </div>
 </x-layouts::public>

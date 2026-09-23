@@ -6,15 +6,15 @@
 }
 
 body {
-  --bg-dark: #1f1f37;
-  --card-bg: #464681;
-  --accent-purple: #8b2fc9;
-  --accent-purple-glow: rgba(139, 47, 201, 0.4);
-  --accent-cyan: #00f0ff;
-  --accent-cyan-glow: rgba(0, 240, 255, 0.3);
-  --text-main: #f0f3f8;
-  --text-muted: #7e8b9b;
-  --border-color: #1a1d28;
+  --bg-dark: #11151b;
+  --card-bg: #1a2129;
+  --accent-purple: #f2a93b;
+  --accent-purple-glow: rgba(242, 169, 59, .22);
+  --accent-cyan: #65d6c2;
+  --accent-cyan-glow: rgba(101, 214, 194, .2);
+  --text-main: #f3f5f7;
+  --text-muted: #a5b0ba;
+  --border-color: #2b3540;
 }
  
 body {
@@ -22,32 +22,22 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 20% 20%, #252044 0%, #1f1f37 60%, #090a12 100%);
-  overflow: hidden;
+  background: transparent;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
 }
  
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-}
- 
 .login-container {
-  background: rgba(31, 31, 55, 0.9);
+  background: rgba(26, 33, 41, .94);
   backdrop-filter: blur(6px);
   padding: 40px 38px;
   border-radius: 14px;
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(101, 214, 194, .35);
   box-shadow:
-    0 0 20px rgba(0, 240, 255, 0.25),
-    0 0 60px rgba(139, 47, 201, 0.15),
-    inset 0 0 20px rgba(0, 240, 255, 0.05);
+    0 0 20px rgba(101, 214, 194, .18),
+    0 0 60px rgba(242, 169, 59, .12),
+    inset 0 0 20px rgba(101, 214, 194, .04);
   width: 100%;
   max-width: 390px;
   position: relative;

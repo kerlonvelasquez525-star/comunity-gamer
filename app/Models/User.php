@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -66,5 +67,29 @@ class User extends Authenticatable implements PasskeyUser
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    /** @return HasMany<Amistad, $this> */
+    public function amistades(): HasMany
+    {
+        return $this->hasMany(Amistad::class, 'user_id');
+    }
+
+    /** @return HasMany<Amistad, $this> */
+    public function amistadesRecibidas(): HasMany
+    {
+        return $this->hasMany(Amistad::class, 'amigo_id');
+    }
+
+    /** @return HasMany<Notificacion, $this> */
+    public function notificaciones(): HasMany
+    {
+        return $this->hasMany(Notificacion::class, 'user_id');
+    }
+
+    /** @return HasMany<Publicacion, $this> */
+    public function publicaciones(): HasMany
+    {
+        return $this->hasMany(Publicacion::class, 'user_id');
     }
 }

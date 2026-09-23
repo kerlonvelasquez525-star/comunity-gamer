@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Enums\TeamRole;
 use App\Models\Comunidad;
+use App\Models\ReporteModeracion;
+use App\Models\ReporteSoporte;
 use App\Models\noticias;
 use App\Models\Team;
 use App\Models\User;
@@ -179,6 +181,48 @@ class GamerAuthorizationTest extends TestCase
 
         $this->assertSame($team->id, $community->team_id);
         $this->assertDatabaseHas('miembros_comunidad', ['comunidad_id' => $community->id, 'user_id' => $user->id]);
+    }
+
+    public function test_support_reports_are_isolated_by_team(): void
+    {
+        [$user, $team] = $this->teamWithMember();
+        $otherTeam = Team::factory()->create();
+
+        $visible = ReporteSoporte::factory()->create(['team_id' => $team->id]);
+        $hidden = ReporteSoporte::factory()->create(['team_id' => $otherTeam->id]);
+
+        $response = $this->actingAs($user)->getJson(route('reportes-soporte.index', $team->slug));
+
+        $response->assertOk()
+            ->assertJsonFragment(['id_reporte' => $visible->id_reporte])
+            ->assertJsonMissing(['id_reporte' => $hidden->id_reporte]);
+    }
+
+    public function test_support_report_from_another_team_cannot_be_viewed(): void
+    {
+        [$user, $team] = $this->teamWithMember();
+        $otherTeam = Team::factory()->create();
+        $report = ReporteSoporte::factory()->create(['team_id' => $otherTeam->id]);
+
+        $this->actingAs($user)
+            ->getJson(route('reportes-soporte.show', [$team->slug, $report]))
+            ->assertForbidden();
+    }
+
+    public function test_moderation_report_from_another_team_cannot_be_viewed(): void
+    {
+        [$user, $team] = $this->teamWithMember();
+        $otherTeam = Team::factory()->create();
+        $report = ReporteModeracion::create([
+            'team_id' => $otherTeam->id,
+            'id_reportador' => $user->id,
+            'motivo' => 'Contenido inapropiado',
+            'fecha' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->getJson(route('reportes-moderacion.show', [$team->slug, $report]))
+            ->assertForbidden();
     }
 
     private function teamWithMember(): array

@@ -1,3 +1,5 @@
+@import './project-theme.css';
+
 .problems-page {
     --problem-bg: #1f1f37;
     --problem-card: #464681;

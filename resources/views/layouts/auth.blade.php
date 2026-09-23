@@ -11,7 +11,7 @@
     <!-- Scripts de Flux/Livewire -->
     @fluxAppearance
 </head>
-<body class="min-h-screen bg-zinc-950 text-white antialiased">
+<body class="project-background min-h-screen bg-zinc-950 text-white antialiased">
     <main class="flex min-h-screen flex-col items-center justify-center p-6">
         {{ $slot }}
     </main>

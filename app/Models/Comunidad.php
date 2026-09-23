@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -20,7 +21,31 @@ class Comunidad extends Model
 
     protected $table = 'comunidades';
 
-    protected $fillable = ['team_id', 'nombre', 'descripcion', 'creador_id'];
+    protected $fillable = [
+        'team_id',
+        'nombre',
+        'descripcion',
+        'imagen_url',
+        'juego_principal',
+        'plataforma',
+        'region',
+        'idioma',
+        'modalidad',
+        'horario',
+        'tipo',
+        'nivel',
+        'rango',
+        'estado',
+        'max_miembros',
+        'creador_id',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'max_miembros' => 'integer',
+        ];
+    }
 
     /**
      * @return BelongsTo<Team, $this>
@@ -46,5 +71,29 @@ class Comunidad extends Model
         return $this->belongsToMany(User::class, 'miembros_comunidad', 'comunidad_id', 'user_id')
             ->withPivot('rol')
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<ComunidadSolicitud, $this>
+     */
+    public function solicitudes(): HasMany
+    {
+        return $this->hasMany(ComunidadSolicitud::class, 'comunidad_id');
+    }
+
+    /**
+     * @return HasMany<Canal, $this>
+     */
+    public function canales(): HasMany
+    {
+        return $this->hasMany(Canal::class, 'comunidad_id');
+    }
+
+    /**
+     * @return HasMany<Foro, $this>
+     */
+    public function foros(): HasMany
+    {
+        return $this->hasMany(Foro::class, 'comunidad_id');
     }
 }

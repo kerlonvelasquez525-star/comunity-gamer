@@ -1,4 +1,6 @@
-:root { --bg:#211e3b; --deep:#11111f; --panel:#4c4a86; --cyan:#00e8ff; --purple:#9c2bdf; --pink:#e94dff; --text:#f4f3ff; --muted:#a29fbd; --line:rgba(115,111,180,.42); --shadow:0 18px 45px rgba(5,4,18,.28); }
+@import './project-theme.css';
+
+:root { --bg:#11151b; --deep:#0d1116; --panel:#1a2129; --cyan:#65d6c2; --purple:#f2a93b; --pink:#ef8d7a; --text:#f3f5f7; --muted:#a5b0ba; --line:rgba(43,53,64,.8); --shadow:0 18px 45px rgba(0,0,0,.2); }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body { margin:0; color:var(--text); background:radial-gradient(circle at 80% 10%,rgba(68,43,120,.32),transparent 34%),var(--bg); font-family:Arial,sans-serif; }

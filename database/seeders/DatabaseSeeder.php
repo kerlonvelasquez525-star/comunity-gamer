@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($users as $user) {
             $demoTeam->members()->syncWithoutDetaching([
-                $user->id => ['role' => $user->id === $users->first()->id
+                $user->id => ['role' => $user->id === $testUser->id
                     ? TeamRole::Owner->value
                     : TeamRole::Member->value],
             ]);
@@ -95,14 +95,6 @@ class DatabaseSeeder extends Seeder
                 'leido' => true,
             ]);
         }
-
-        $officialNewsIds = noticias::query()
-            ->whereNull('team_id')
-            ->where('es_oficial', true)
-            ->pluck('id');
-
-        NoticiasComentario::query()->whereIn('noticia_id', $officialNewsIds)->delete();
-        noticias::query()->whereIn('id', $officialNewsIds)->delete();
 
         $newsData = [
             ['title' => 'La astronomía aficionada estrena un mapa de lluvias de meteoros', 'content' => 'Un observatorio comunitario publicó un calendario para localizar lluvias de meteoros durante las próximas noches despejadas.'],
@@ -172,9 +164,8 @@ class DatabaseSeeder extends Seeder
 
         $officialNews = collect($newsData)->map(function (array $data, int $index) use ($users): noticias {
             return noticias::updateOrCreate(
-                ['titulo' => $data['title']],
+                ['team_id' => null, 'es_oficial' => true, 'titulo' => $data['title']],
                 [
-                    'team_id' => null,
                     'user_id' => $users->values()->get($index % $users->count())->id,
                     'contenido' => $data['content'],
                     'categoria' => 'Actualidad',
@@ -243,7 +234,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Liga de Constructores', 'description' => 'Proyectos creativos y retos de construccion para todos.', 'game' => 'Minecraft', 'platform' => 'Nintendo Switch', 'region' => 'Global', 'language' => 'Portugués', 'mode' => 'Social', 'schedule' => 'Mañana', 'image' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'],
             ['name' => 'Escuadron Tactico', 'description' => 'Comunicacion, coordinacion y partidas organizadas.', 'game' => 'Valorant', 'platform' => 'PC', 'region' => 'Europa', 'language' => 'Español', 'mode' => 'Competitiva', 'schedule' => 'Noche', 'image' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80'],
             ['name' => 'Pistas y Derrapes', 'description' => 'Comparte circuitos, configuraciones y carreras casuales.', 'game' => 'Rocket League', 'platform' => 'Xbox Series', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Tarde', 'image' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80'],
-        ])->map(fn (array $data) => Comunidad::updateOrCreate(
+        ])->map(fn (array $data, int $index) => Comunidad::updateOrCreate(
             ['team_id' => $demoTeam->id, 'nombre' => $data['name']],
             [
                 'descripcion' => $data['description'],
@@ -257,14 +248,19 @@ class DatabaseSeeder extends Seeder
                 'tipo' => 'publica',
                 'nivel' => $data['mode'] === 'Competitiva' ? 'Pro gamer' : 'Casual',
                 'estado' => 'Abierta',
-                'creador_id' => $users->random()->id,
+                'creador_id' => $users->values()->get(($index + 1) % $users->count())->id,
             ],
         ));
 
         foreach ($communities as $index => $community) {
             $memberCount = [12, 7, 18, 10, 14, 11, 16, 13, 15, 10][$index] ?? 10;
+            $members = $users
+                ->where('id', '!=', $community->creador_id)
+                ->random($memberCount - 1)
+                ->push($users->firstWhere('id', $community->creador_id));
+
             $community->miembros()->syncWithoutDetaching(
-                $users->random($memberCount)->mapWithKeys(fn (User $user) => [
+                $members->mapWithKeys(fn (User $user) => [
                     $user->id => ['rol' => $user->id === $community->creador_id ? 'admin' : 'miembro'],
                 ])->all(),
             );

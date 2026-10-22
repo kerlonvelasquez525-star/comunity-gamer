@@ -187,10 +187,14 @@ class DatabaseSeeder extends Seeder
         });
 
         foreach ($officialNews as $index => $noticia) {
-            NoticiasComentario::firstOrCreate(
-                ['noticia_id' => $noticia->id, 'contenido' => $newsComments[$index]],
-                ['user_id' => $users->values()->get(($index + 1) % $users->count())->id],
-            );
+            foreach ([0, 1] as $commentOffset) {
+                $commentBody = $newsComments[$index % count($newsComments)] . ($commentOffset === 0 ? ' — comentario principal' : ' — comentario adicional');
+
+                NoticiasComentario::firstOrCreate(
+                    ['noticia_id' => $noticia->id, 'contenido' => $commentBody],
+                    ['user_id' => $users->values()->get(($index + $commentOffset + 1) % $users->count())->id],
+                );
+            }
         }
 
         $publications = collect(range(1, 12))->map(fn (int $index) => Publicacion::create([

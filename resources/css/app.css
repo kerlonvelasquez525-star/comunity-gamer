@@ -163,6 +163,17 @@ select:focus[data-flux-control] {
 
 /* --- ESTILOS COMPONENTES CYBERPUNK Y SLIDER --- */
 @layer components {
+  .settings-nav-scroll {
+    @apply max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-mandatory max-md:scrollbar-none;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    touch-action: pan-x;
+  }
+
+  .settings-nav-scroll > * {
+    @apply max-md:snap-start;
+  }
+
   .public-home header {
     display: flex;
     justify-content: space-between;

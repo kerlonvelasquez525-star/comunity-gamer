@@ -1,69 +1,37 @@
-# Community Directory
+# Community Directory API
 
-## Overview
-The Community Directory project is a web application that allows users to manage and interact with various communities. It provides a RESTful API for performing CRUD operations on community data.
+Servicio REST opcional e independiente de la aplicación Laravel. Está implementado con Express, TypeScript y Prisma; utiliza SQLite por defecto.
 
-## Features
-- Create, read, update, and delete community entries.
-- Each community has a name, description, and creation date.
-- Built with TypeScript and Express, using Prisma for database interactions.
+## Requisitos
 
-## Project Structure
-```
-community-directory
-├── src
-│   ├── app.ts                  # Entry point of the application
-│   ├── controllers
-│   │   └── communityController.ts # Handles community-related logic
-│   ├── routes
-│   │   └── communityRoutes.ts   # Defines community-related routes
-│   ├── models
-│   │   └── community.ts         # Defines the Community model
-│   └── types
-│       └── index.ts            # Type definitions for community data
-├── prisma
-│   ├── schema.prisma           # Database schema for Prisma
-│   └── seed.ts                 # Seeds the database with initial data
-├── package.json                 # npm configuration file
-├── tsconfig.json               # TypeScript configuration file
-└── README.md                   # Project documentation
+- Node.js 20 o superior y npm.
+
+## Instalación y ejecución
+
+Desde `community-directory/`:
+
+```powershell
+Copy-Item .env.example .env
+npm ci
+npm run db:push
+npm run seed
+npm run dev
 ```
 
-## Setup Instructions
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd community-directory
-   ```
+El servidor escucha en `http://localhost:3000` por defecto. `DATABASE_URL` y `PORT` se pueden cambiar en `.env`.
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
+Para una compilación de producción, ejecuta `npm run build` y luego `npm start`. `npm run db:push` crea o actualiza el esquema de la base SQLite a partir de `prisma/schema.prisma`.
 
-3. Set up the database:
-   - Update the database connection string in `prisma/schema.prisma`.
-   - Run the Prisma migrations:
-     ```
-     npx prisma migrate dev
-     ```
+## API
 
-4. Seed the database with initial community data:
-   ```
-   npx prisma db seed
-   ```
+La base de las rutas es `/api/communities`:
 
-5. Start the application:
-   ```
-   npm run start
-   ```
+| Método | Ruta | Acción |
+|---|---|---|
+| `GET` | `/api/communities` | Listar comunidades |
+| `GET` | `/api/communities/:id` | Consultar una comunidad |
+| `POST` | `/api/communities` | Crear una comunidad |
+| `PUT` | `/api/communities/:id` | Actualizar una comunidad |
+| `DELETE` | `/api/communities/:id` | Eliminar una comunidad |
 
-## API Endpoints
-- `POST /communities` - Create a new community
-- `GET /communities` - Retrieve all communities
-- `GET /communities/:id` - Retrieve a community by ID
-- `PUT /communities/:id` - Update a community by ID
-- `DELETE /communities/:id` - Delete a community by ID
-
-## License
-This project is licensed under the MIT License.
+Para crear o actualizar, envía JSON con `name` y `description`, ambos como texto no vacío. Los identificadores deben ser enteros positivos.

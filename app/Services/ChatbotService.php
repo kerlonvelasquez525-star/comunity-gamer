@@ -57,7 +57,7 @@ class ChatbotService
     /**
      * Prioriza coincidencias específicas de varias palabras sobre términos generales.
      *
-    * @return array{id: string, keywords: array<int, string>, answer: string, suggestions: array<int, string>}|null
+     * @return array{id: string, keywords: array<int, string>, answer: string, suggestions: array<int, string>}|null
      */
     private function bestIntent(string $question): ?array
     {

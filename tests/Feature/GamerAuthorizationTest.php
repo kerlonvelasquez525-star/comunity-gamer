@@ -4,9 +4,9 @@ namespace Tests\Feature;
 
 use App\Enums\TeamRole;
 use App\Models\Comunidad;
+use App\Models\noticias;
 use App\Models\ReporteModeracion;
 use App\Models\ReporteSoporte;
-use App\Models\noticias;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

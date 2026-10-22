@@ -47,7 +47,7 @@
                         'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
                             ? route('public-comunidad.index')
                             : route('home'),
-                        'problemas' => \Illuminate\Support\Facades\Route::has('public-problemas.index')
+                        'soporte' => \Illuminate\Support\Facades\Route::has('public-problemas.index')
                             ? route('public-problemas.index')
                             : route('home'),
                         default => route('home'),
@@ -58,7 +58,7 @@
                         'comunidad' => \Illuminate\Support\Facades\Route::has('public-comunidad.index')
                             ? route('public-comunidad.index')
                             : ($teamSlug ? route($link['route'], $teamSlug) : route('teams.index')),
-                        'problemas' => \Illuminate\Support\Facades\Route::has('public-problemas.index')
+                        'soporte' => \Illuminate\Support\Facades\Route::has('public-problemas.index')
                             ? route('public-problemas.index')
                             : ($teamSlug ? route($link['route'], $teamSlug) : route('teams.index')),
                         default => $teamSlug ? route($link['route'], $teamSlug) : route('teams.index'),

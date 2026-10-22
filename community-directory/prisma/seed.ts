@@ -22,12 +22,14 @@ async function main() {
     ];
 
     for (const community of communities) {
-        await prisma.community.create({
-            data: community,
+        await prisma.community.upsert({
+            where: { name: community.name },
+            update: { description: community.description },
+            create: community,
         });
     }
 
-    console.log('Seeding completed: 15 communities created.');
+    console.log(`Seeded ${communities.length} communities.`);
 }
 
 main()

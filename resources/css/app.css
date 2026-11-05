@@ -12,11 +12,11 @@
   border-radius: 1rem;
   background: #1a2129;
   color: #f3f5f7;
-  transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  transition: border-color .12s ease, transform .12s ease, box-shadow .12s ease;
 }
 .app-main .internal-community-card:hover { border-color: rgba(242, 169, 59, .7); box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, .2); transform: translateY(-3px); }
 .app-main .internal-community-image-wrap { position: relative; height: 10rem; overflow: hidden; background: #0d1116; }
-.app-main .internal-community-image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+.app-main .internal-community-image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .18s ease; }
 .app-main .internal-community-card:hover .internal-community-image { transform: scale(1.04); }
 .app-main .internal-community-badge { position: absolute; top: .75rem; left: .75rem; padding: .3rem .5rem; border: 1px solid rgba(255, 255, 255, .16); border-radius: .4rem; background: rgba(17, 21, 27, .84); color: #f2a93b; font-size: .62rem; font-weight: 800; letter-spacing: .05em; }
 .app-main .internal-community-content { display: flex; min-width: 0; flex: 1; flex-direction: column; padding: 1rem; }
@@ -88,6 +88,15 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* --- REGLAS BASE ADAPTADAS A TAILWIND --- */
 @layer base {
   *,
@@ -96,6 +105,10 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--border-color, currentColor);
+  }
+
+  html {
+    scroll-behavior: auto;
   }
 
   body {

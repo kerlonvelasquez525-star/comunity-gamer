@@ -27,8 +27,15 @@
         button.addEventListener('click', () => scrollSlider(slider, direction));
     };
 
+    const resetViewport = () => {
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            document.documentElement.style.scrollBehavior = 'auto';
+        });
+    };
+
     const initSlider = () => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        resetViewport();
 
         const slider = document.getElementById('slider');
 

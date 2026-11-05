@@ -14,6 +14,19 @@
                 </p>
             </div>
 
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('home') }}" wire:navigate
+                   class="inline-flex items-center rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-400 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:text-white">
+                    ← Inicio
+                </a>
+
+                @auth
+                    <a href="{{ route('dashboard', $team->slug) }}" wire:navigate
+                       class="inline-flex items-center rounded-lg bg-zinc-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                        Dashboard
+                    </a>
+                @endauth
+            </div>
         </header>
 
         @if (session('status'))

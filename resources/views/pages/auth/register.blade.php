@@ -99,33 +99,53 @@
                     @enderror
                 </div>
 
-                <fieldset class="input-group">
-                    <legend>Comunidades a las que quieres solicitar ingreso (opcional)</legend>
-                    <p>Selecciona una o varias. Tu ingreso quedará pendiente hasta que un administrador apruebe la solicitud.</p>
-                    @forelse ($comunidadesDisponibles as $comunidad)
-                    <label for="comunidad-{{ $comunidad->id }}">
-                        <input
-                            type="checkbox"
-                            id="comunidad-{{ $comunidad->id }}"
-                            name="comunidades[]"
-                            value="{{ $comunidad->id }}"
-                            @checked(in_array((string) $comunidad->id, (array) old('comunidades', []), true))
+                @if ($comunidadesDisponibles->isNotEmpty())
+                    <div class="community-discovery mt-4">
+                        <button
+                            type="button"
+                            class="community-discovery-trigger"
+                            aria-expanded="false"
+                            onclick="const panel=document.getElementById('community-selector'); const isHidden = panel.hidden; panel.hidden = !isHidden; this.setAttribute('aria-expanded', String(!isHidden)); this.classList.toggle('is-open', !isHidden);"
                         >
-                        {{ $comunidad->nombre }}
-                        @if ($comunidad->juego_principal)
-                        <span>· {{ $comunidad->juego_principal }}</span>
-                        @endif
-                    </label>
-                    @empty
-                    <p>Por ahora no hay comunidades abiertas para solicitar ingreso.</p>
-                    @endforelse
-                    @error('comunidades')
-                    <span class="field-error">{{ $message }}</span>
-                    @enderror
-                    @error('comunidades.*')
-                    <span class="field-error">{{ $message }}</span>
-                    @enderror
-                </fieldset>
+                            Explorar comunidades (opcional)
+                        </button>
+                    </div>
+
+                    <div id="community-selector" hidden class="community-discovery-panel mt-4">
+                        <fieldset class="community-discovery-fieldset">
+                            <legend>Comunidades a las que quieres solicitar ingreso (opcional)</legend>
+                            <p>Selecciona una o varias. Tu ingreso quedará pendiente hasta que un administrador apruebe la solicitud.</p>
+                            @foreach ($comunidadesDisponibles as $comunidad)
+                                <label for="comunidad-{{ $comunidad->id }}" class="community-option">
+                                    <input
+                                        type="checkbox"
+                                        id="comunidad-{{ $comunidad->id }}"
+                                        name="comunidades[]"
+                                        value="{{ $comunidad->id }}"
+                                        @checked(in_array((string) $comunidad->id, (array) old('comunidades', []), true))
+                                    >
+                                    <span class="community-option-text">
+                                        {{ $comunidad->nombre }}
+                                        @if ($comunidad->juego_principal)
+                                            <span class="community-option-separator">·</span>
+                                            {{ $comunidad->juego_principal }}
+                                        @endif
+                                    </span>
+                                </label>
+                            @endforeach
+                            @error('comunidades')
+                            <span class="field-error">{{ $message }}</span>
+                            @enderror
+                            @error('comunidades.*')
+                            <span class="field-error">{{ $message }}</span>
+                            @enderror
+                        </fieldset>
+                    </div>
+                @else
+                    <div class="mt-4 rounded-xl border border-dashed border-zinc-700 bg-zinc-950/40 p-3 text-sm text-zinc-400">
+                        Por ahora no hay comunidades abiertas para solicitar ingreso.
+                    </div>
+                @endif
 
                 <button type="submit" class="btn-login" data-test="register-user-button">Crear cuenta</button>
             </form>

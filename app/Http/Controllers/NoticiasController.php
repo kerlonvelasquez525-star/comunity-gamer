@@ -42,6 +42,11 @@ class NoticiasController extends Controller
                 'title' => 'Centro de noticias',
                 'items' => $noticias,
                 'team' => $team,
+                'filters' => [
+                    'buscar' => $request->string('buscar'),
+                    'categoria' => $request->string('categoria'),
+                    'oficial' => $request->boolean('oficial'),
+                ],
             ]);
     }
 
@@ -59,6 +64,11 @@ class NoticiasController extends Controller
                 'resource' => 'noticias',
                 'title' => 'Nueva noticia',
                 'team' => $team,
+                'filters' => [
+                    'buscar' => $request->string('buscar'),
+                    'categoria' => $request->string('categoria'),
+                    'oficial' => $request->boolean('oficial'),
+                ],  
             ]);
     }
 
@@ -80,6 +90,8 @@ class NoticiasController extends Controller
 
         if ($request->hasFile('imagen')) {
             $validated['imagen_url'] = $request->file('imagen')->store('noticias', 'public');
+        } elseif (blank($validated['imagen_url'] ?? null) && $request->filled('imagen_url')) {
+            $validated['imagen_url'] = $request->input('imagen_url');
         }
 
         unset($validated['imagen']);
@@ -205,6 +217,15 @@ class NoticiasController extends Controller
             }
 
             $validated['imagen_url'] = $request->file('imagen')->store('noticias', 'public');
+        } elseif ($request->filled('imagen_url') && $request->input('imagen_url') !== $noticia->imagen_url) {
+            if ($noticia->imagen_url && ! filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($noticia->imagen_url);
+            }
+
+            $validated['imagen_url'] = $request->input('imagen_url');
+        } elseif ($request->has('imagen_url') && blank($request->input('imagen_url')) && $noticia->imagen_url && ! filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)) {
+            Storage::disk('public')->delete($noticia->imagen_url);
+            $validated['imagen_url'] = null;
         }
 
         unset($validated['imagen']);

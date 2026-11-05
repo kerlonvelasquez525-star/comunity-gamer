@@ -23,240 +23,282 @@ use App\Models\Reaccion;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        $testUser = User::updateOrCreate(
-            ['email' => 'test@example.com'],
+        $primaryUser = User::updateOrCreate(
+            ['email' => 'admin@nexuscommunity.test'],
             [
-                'name' => 'Test User',
+                'name' => 'Nexus Admin',
                 'email_verified_at' => now(),
-                'password' => 'password',
+                'password' => Hash::make('password123'),
             ],
         );
 
-        User::factory()->count(30)->create();
-        $users = User::query()->get();
+        $gamerNames = [
+            'ShadowKnight', 'PixelReaper', 'VaporNova', 'LevelZero', 'RiftEcho', 'AfterGlow',
+            'JinxRunner', 'NeonBasilisk', 'CyanRook', 'PhantomLynx', 'DragonPulse', 'CrimsonZero',
+            'VectorVolt', 'ArcaneFox', 'NightCinder', 'VoltTrooper', 'GhostByte', 'LunaTitan',
+            'QuestBunny', 'FrostKite', 'AstraRune', 'SteelManta', 'GlitchGhost', 'StormJager',
+            'EchoNova', 'MonarchByte', 'DarkPine', 'FluxMage', 'OnyxPixel', 'ThunderVibe',
+            'BlueComet', 'GoldenHex', 'BlueOrbit', 'MagmaDrift', 'ZenithAce', 'NightThread',
+            'WardenHex', 'NovaPixel', 'SolarFury', 'KineticBloom', 'DuneRhythm', 'Hexblade',
+        ];
+
+        $users = collect();
+        $users->push($primaryUser);
+
+        foreach ($gamerNames as $index => $gamerName) {
+            $user = User::updateOrCreate(
+                ['email' => 'demo'.($index + 1).'@nexuscommunity.test'],
+                [
+                    'name' => $gamerName,
+                    'email_verified_at' => now(),
+                    'password' => Hash::make('password123'),
+                ],
+            );
+
+            $users->push($user);
+        }
+
+        $users = User::query()->orderBy('id')->get();
 
         $demoTeam = Team::firstOrCreate(
             ['slug' => 'nexus-demo-community'],
-            ['name' => 'Nexus Demo Community', 'is_personal' => false],
+            [
+                'name' => 'Nexus Demo Community',
+                'is_personal' => false,
+            ],
         );
 
         foreach ($users as $user) {
             $demoTeam->members()->syncWithoutDetaching([
-                $user->id => ['role' => $user->id === $testUser->id
-                    ? TeamRole::Owner->value
-                    : TeamRole::Member->value],
+                $user->id => [
+                    'role' => $user->id === $primaryUser->id ? TeamRole::Owner->value : TeamRole::Member->value,
+                ],
             ]);
             $user->forceFill(['current_team_id' => $demoTeam->id])->save();
         }
 
-        foreach ($users->where('id', '!=', $testUser->id)->values()->take(3) as $index => $contact) {
+        $this->seedPrivateConversations($users, $primaryUser);
+        $this->seedOfficialNews($users);
+        $this->seedPublications($demoTeam, $users);
+        $this->seedCommunities($demoTeam, $users);
+        $this->seedCatalogs();
+        $this->seedSupportIssues($demoTeam, $users);
+        $this->seedNotifications($demoTeam, $users);
+        $this->seedFriendships($users);
+
+        $this->command->info(
+            'Demo data ready: '.User::count().' users, shared team '.$demoTeam->slug.', '.Publicacion::count().' publications, '.noticias::count().' official posts and '.NoticiasComentario::count().' comments.'
+        );
+    }
+
+    protected function seedPrivateConversations(Collection $users, User $primaryUser): void
+    {
+        $contacts = $users->where('id', '!=', $primaryUser->id)->take(6);
+
+        foreach ($contacts as $index => $contact) {
             $conversationExists = MensajePrivado::query()
-                ->where(function ($query) use ($testUser, $contact): void {
-                    $query->where('id_emisor', $testUser->id)
-                        ->where('id_receptor', $contact->id);
-                })
-                ->orWhere(function ($query) use ($testUser, $contact): void {
-                    $query->where('id_emisor', $contact->id)
-                        ->where('id_receptor', $testUser->id);
-                })
+                ->where(fn ($query) => $query->where('id_emisor', $primaryUser->id)->where('id_receptor', $contact->id))
+                ->orWhere(fn ($query) => $query->where('id_emisor', $contact->id)->where('id_receptor', $primaryUser->id))
                 ->exists();
 
             if ($conversationExists) {
                 continue;
             }
 
+            $starterMessages = [
+                'Hola, ¿te interesa una partida de ranked esta noche?',
+                'He visto que estás en la comunidad de Valorant. ¿Te apuntas?',
+                '¿Quieres formar equipo para el torneo del fin de semana?',
+                'Acabo de publicar una guía para mejorar la coordinación del squad.',
+                'Te recomiendo el canal del equipo, hay mucha actividad esta semana.',
+                'Nos vemos en la sala para probar nuevas estrategias.',
+            ];
+
             MensajePrivado::query()->create([
                 'id_emisor' => $contact->id,
-                'id_receptor' => $testUser->id,
-                'contenido' => [
-                    'Bienvenido a Nexus. Ya tienes una conversación de ejemplo preparada.',
-                    '¿Te apuntas a organizar una partida esta semana?',
-                    'He dejado este mensaje para que puedas probar el chat privado.',
-                ][$index],
+                'id_receptor' => $primaryUser->id,
+                'contenido' => $starterMessages[$index % count($starterMessages)],
                 'leido' => false,
             ]);
 
             MensajePrivado::query()->create([
-                'id_emisor' => $testUser->id,
+                'id_emisor' => $primaryUser->id,
                 'id_receptor' => $contact->id,
-                'contenido' => '¡Hola! Gracias por escribir. Nos vemos en la comunidad.',
+                'contenido' => '¡Claro! Me encantaría. Vamos a organizar la partida y hablar de la estrategia.',
                 'leido' => true,
             ]);
         }
+    }
 
+    protected function seedOfficialNews(Collection $users): void
+    {
         $newsData = [
-            ['title' => 'La astronomía aficionada estrena un mapa de lluvias de meteoros', 'content' => 'Un observatorio comunitario publicó un calendario para localizar lluvias de meteoros durante las próximas noches despejadas.'],
-            ['title' => 'Un museo digitaliza su colección de instrumentos antiguos', 'content' => 'La nueva biblioteca virtual permite explorar piezas musicales históricas con fotografías de alta resolución y fichas técnicas.'],
-            ['title' => 'El transporte urbano prueba marquesinas con techos verdes', 'content' => 'Varias paradas incorporaron plantas resistentes para estudiar su impacto en la temperatura y la calidad del aire.'],
-            ['title' => 'Una biblioteca de barrio amplía su horario de lectura', 'content' => 'El nuevo programa abre las salas hasta la noche y reserva espacios tranquilos para estudiantes y vecinos.'],
-            ['title' => 'Científicos observan una colonia de corales en recuperación', 'content' => 'Un seguimiento submarino registró señales positivas en una zona protegida después de varios años de restauración.'],
-            ['title' => 'La cocina regional recupera una variedad de trigo', 'content' => 'Agricultores y panaderos colaboran para volver a cultivar una semilla local adaptada a los suelos de la región.'],
-            ['title' => 'Un festival de cine independiente anuncia su programación', 'content' => 'La muestra reunirá cortometrajes de doce países y organizará conversaciones abiertas con sus directores.'],
-            ['title' => 'El jardín botánico presenta una ruta nocturna', 'content' => 'La visita guiada explicará cómo cambian los aromas y los polinizadores cuando cae el sol.'],
-            ['title' => 'Una escuela incorpora talleres de reparación de bicicletas', 'content' => 'El proyecto enseña mantenimiento básico y promueve desplazamientos sostenibles entre el alumnado.'],
-            ['title' => 'Una fotógrafa publica un archivo sobre arquitectura rural', 'content' => 'La colección reúne fachadas, molinos y puentes que muestran la evolución de varias comunidades pequeñas.'],
-            ['title' => 'El observatorio meteorológico instala sensores en la costa', 'content' => 'Los nuevos dispositivos medirán cambios de viento y humedad para mejorar los avisos locales.'],
-            ['title' => 'Un grupo de estudiantes construye un reloj solar público', 'content' => 'El diseño fue instalado en una plaza y permite aprender sobre el movimiento aparente del sol durante el año.'],
-            ['title' => 'La orquesta juvenil prepara un concierto al aire libre', 'content' => 'Más de cuarenta músicos ensayarán un repertorio de compositores contemporáneos en un parque municipal.'],
-            ['title' => 'Un archivo familiar descubre cartas de hace un siglo', 'content' => 'La correspondencia aporta detalles cotidianos sobre viajes, oficios y celebraciones de una localidad.'],
-            ['title' => 'La universidad abre un laboratorio de cerámica experimental', 'content' => 'El espacio ofrecerá herramientas para investigar materiales, esmaltes y técnicas de cocción de bajo consumo.'],
-            ['title' => 'Una reserva natural registra el regreso de aves migratorias', 'content' => 'Los equipos de campo identificaron varias especies que no se observaban en la zona desde hacía una década.'],
-            ['title' => 'Un mercado local organiza una jornada de intercambio de semillas', 'content' => 'La actividad facilitará que los horticultores compartan variedades tradicionales y conocimientos de cultivo.'],
-            ['title' => 'El planetario renueva su proyección sobre las lunas de Júpiter', 'content' => 'La experiencia combina imágenes científicas y narración para explicar las particularidades de Europa, Io, Ganímedes y Calisto.'],
-            ['title' => 'Un taller textil recupera técnicas de teñido natural', 'content' => 'El colectivo documentó procesos con plantas locales y creó una pequeña muestra de tejidos artesanales.'],
-            ['title' => 'Una plaza estrena mobiliario diseñado por vecinos', 'content' => 'El proyecto participativo transformó bancos y zonas de sombra a partir de propuestas recogidas durante el invierno.'],
-            ['title' => 'La estación de tren conserva un mural restaurado', 'content' => 'Especialistas en patrimonio recuperaron los colores originales de una obra pintada en la década de 1960.'],
-            ['title' => 'Un centro cultural ofrece clases gratuitas de encuadernación', 'content' => 'Las sesiones enseñarán a coser cuadernos y reutilizar papel para elaborar libretas duraderas.'],
-            ['title' => 'El río contará con una nueva red de medición de agua', 'content' => 'Los sensores permitirán consultar variaciones de caudal y temperatura en distintos puntos del recorrido.'],
-            ['title' => 'Una compañía de teatro adapta relatos de tradición oral', 'content' => 'La obra mezcla narración, música y sombras chinescas para acercar historias populares a nuevos públicos.'],
-            ['title' => 'Un vivero comunitario entrega plantas para balcones', 'content' => 'La iniciativa recomienda especies resistentes y explica cómo crear pequeños espacios verdes en viviendas urbanas.'],
-            ['title' => 'La feria científica muestra experimentos con sonido', 'content' => 'El público podrá observar vibraciones, frecuencias y resonancias mediante instrumentos construidos por estudiantes.'],
-            ['title' => 'Un grupo de montañismo cartografía senderos históricos', 'content' => 'El mapa colaborativo reúne caminos antiguos, fuentes y refugios para facilitar excursiones responsables.'],
-            ['title' => 'La hemeroteca restaura periódicos de la década de 1930', 'content' => 'El trabajo de conservación permitirá consultar noticias locales que hasta ahora solo estaban disponibles en papel frágil.'],
-            ['title' => 'Un comedor escolar prueba un menú de temporada', 'content' => 'La propuesta utiliza productos cercanos y cambia cada mes según la disponibilidad de agricultores locales.'],
-            ['title' => 'El centro de artesanía inaugura una exposición de vidrio', 'content' => 'La muestra presenta piezas utilitarias y esculturas creadas con técnicas de soplado y reciclaje.'],
+            ['title' => 'Nexus League abre inscripciones para la temporada de invierno', 'content' => 'La comunidad prepara la primera edición de la liga competitiva del año con torneos regionales y premios para los equipos mejor clasificados.'],
+            ['title' => 'Se lanza el calendario de eventos comunitarios del mes', 'content' => 'Durante este mes habrá partidas nocturnas, torneos de construcción, scrims y talleres de estrategia para nuevos jugadores.'],
+            ['title' => 'Nexus Academy ofrece sesiones de mejora para jugadores nuevos', 'content' => 'Los miembros con más experiencia abrirán workshops sobre comunicación, posicionamiento y gestión de equipo para principiantes.'],
+            ['title' => 'Comunidad de Minecraft crea una ciudad de prueba cooperativa', 'content' => 'Un grupo de miembros diseñó un mapa de supervivencia con retos diarios, rutas de recursos y construcciones colaborativas.'],
+            ['title' => 'Pautas para organizar partidas con claridad y respeto', 'content' => 'La comunidad publicó una guía para coordinar squads, definir roles y mantener una experiencia agradable para todos.'],
+            ['title' => 'Nexus Awards celebra a la comunidad del mes', 'content' => 'El evento reconoce contribuciones en contenido, apoyo, mentoría y participación en torneos y foros.'],
+            ['title' => 'Se abre un espacio para compartir montajes y clips del mes', 'content' => 'Los usuarios podrán publicar sus mejores jugadas, combinaciones y momentos épicos dentro del feed de la comunidad.'],
+            ['title' => 'Talleres de análisis de partidas en directo', 'content' => 'Se organizan sesiones para revisar jugadas, estrategias y decisiones tácticas con comentarios de la comunidad.'],
+            ['title' => 'La comunidad lanza un proyecto de mentoría por niveles', 'content' => 'Jugadores experimentados acompañarán a nuevos miembros para acompañarles en su evolución y adaptación a la plataforma.'],
+            ['title' => 'Nexus Radio presenta una playlist de motivación para jugar', 'content' => 'Un hilo musical comunitario acompaña sesiones de práctica y partidas amistosas con energía y ritmo.'],
+            ['title' => 'Nueva zona de entrenamiento para squads de alto nivel', 'content' => 'Una sala práctica especial permite coordinar ejecuciones, rotaciones y timing de objetivos en partidas competitivas.'],
+            ['title' => 'Torneo nocturno de construcción y supervivencia', 'content' => 'Los equipos tienen una semana para preparar defensas, rutas de recursos y estrategias de expansión en mapas personalizados.'],
+            ['title' => 'Foro de estrategias: mejores rutas para esta temporada', 'content' => 'La comunidad comparte una guía visual con rutas más seguras, momentos clave y decisiones útiles para principiantes y veteranos.'],
+            ['title' => 'Se anuncia la segunda edición del International Nexus Cup', 'content' => 'El torneo comunitario aumenta su alcance con nuevas categorías, premios y apoyo para equipos locales y regionales.'],
+            ['title' => 'Sesión de análisis de partidas con comentarios en vivo', 'content' => 'La comunidad recibirá feedback directo de jugadores con experiencia para mejorar la coordinación de cada equipo.'],
+            ['title' => 'Nexus Marketplace abre un espacio para contenido de comunidad', 'content' => 'Se habilita un área para compartir recursos, guides, ideas y material útil para crear contenido del club.'],
+            ['title' => 'Se celebrará la semana de mentoría de nuevo ingreso', 'content' => 'Jugadores experimentados acompañarán a los recién llegados para explicar sistema de equipos, canales y torneos.'],
+            ['title' => 'Los equipos de apoyo aportan nuevas recomendaciones para squads', 'content' => 'La comunidad identifica mejores prácticas para sostener comunicación, roles y trabajo en equipo durante largas partidas.'],
+            ['title' => 'Se presentan los resultados del primer torneo de la comunidad', 'content' => 'Los líderes del club comparten estadísticas, mejores jugadas y retrospectivas de la primera edición.'],
+            ['title' => 'Nexus Social Week abre actividades para todas las edades', 'content' => 'La comunidad prepara partidas amistosas, chats, dinámicas de cohesión y torneos para miembros nuevos y veteranos.'],
+            ['title' => 'Lanzamiento de la guía de comunicación en voz y texto', 'content' => 'Un estudio sencillo explica cómo mantener una coordinación clara, rápida y respetuosa durante partidos competitivos.'],
+            ['title' => 'Se crea una sala de clips y montajes para la comunidad', 'content' => 'Los miembros podrán compartir sus mejores jugadas, momentos épicos y retos personales para enriquecer la experiencia colectiva.'],
+            ['title' => 'Nexus Crew confirma más actividades para este fin de semana', 'content' => 'Habrá partidas de entrenamiento, preguntas rápidas y mesas de apoyo para el próximo evento abierto de la comunidad.'],
+            ['title' => 'Nuevo canal de ayuda para jugadores nuevos', 'content' => 'La comunidad prepara un espacio de apoyo para resolver dudas de configuración, roles y adaptación al ecosistema.'],
+            ['title' => 'Análisis comunitario de la temporada: equipos y tendencias', 'content' => 'Los expertos locales revisan las principales tendencias del meta, estilos de juego y estrategias más exitosas.'],
+            ['title' => 'La comunidad activa un sistema de reconocimiento por ayuda', 'content' => 'Los miembros con mayor apoyo serán destacados para motivar la colaboración y el espíritu del club.'],
+            ['title' => 'Se habilitan partidas de prueba por modalidad y rango', 'content' => 'Los usuarios pueden probar la experiencia según su nivel y preferencia, con equipos adecuados para cada caso.'],
+            ['title' => 'Nexus Arena prepara un calendario completo para la próxima quincena', 'content' => 'Se suman competiciones rápidas, sesiones de práctica y actividades sociales para mantener a la comunidad activa.'],
+            ['title' => 'Nuevas recomendaciones para crear squads equilibrados', 'content' => 'La comunidad comparte ideas para formar grupos con combinación adecuada de roles y objetivos.'],
+            ['title' => 'Se suman más streamers de la comunidad a la programación', 'content' => 'Los contenidos en directo permitirán ver análisis, partidas y vivo del club con más interacción desde la comunidad.'],
+            ['title' => 'Nexus Team House abre convocatoria para voluntarios comunitarios', 'content' => 'Se buscan personas para apoyar torneos, moderación y actividades de soporte dentro de la comunidad.'],
         ];
 
-        $newsComments = [
-            'La luz de esta mañana cambió por completo el paisaje.',
-            'Tengo una taza favorita que siempre uso los domingos.',
-            'El sonido de la lluvia ayuda a concentrarse.',
-            'Ayer encontré una receta escrita a mano en un cajón.',
-            'Las piedras de la orilla tienen formas sorprendentes.',
-            'Me gusta observar cómo cambia una ciudad al anochecer.',
-            'Un paseo corto puede aclarar muchas ideas.',
-            'La sombra de los árboles hacía fresco en la plaza.',
-            'Guardar fotografías antiguas permite recordar pequeños detalles.',
-            'El olor del pan recién hecho llenó toda la calle.',
-            'Hay nubes que parecen dibujos cuando se miran con calma.',
-            'Una libreta sencilla resulta útil para anotar pensamientos.',
-            'El silencio de una sala vacía también tiene su propio ritmo.',
-            'Los colores de una pared cambian según la hora del día.',
-            'Aprendí una palabra nueva leyendo una etiqueta.',
-            'El café sabe distinto cuando se comparte una conversación.',
-            'Un banco al sol puede convertirse en el mejor lugar para descansar.',
-            'Las hojas secas forman patrones distintos después del viento.',
-            'Encontrar una canción inesperada mejora cualquier trayecto.',
-            'El papel reciclado tiene texturas muy particulares.',
-            'Una ventana abierta deja entrar sonidos de lugares lejanos.',
-            'Las pequeñas reparaciones evitan que los objetos terminen olvidados.',
-            'El agua refleja colores que no se ven a simple vista.',
-            'Una caminata sin rumbo puede revelar calles desconocidas.',
-            'Los objetos heredados conservan historias aunque nadie las escriba.',
-            'La paciencia suele ser la mejor herramienta para aprender.',
-            'Las semillas parecen pequeñas, pero contienen una posibilidad enorme.',
-            'Una fotografía puede guardar más ambiente que una descripción larga.',
-            'El viento modifica el paisaje incluso cuando nadie lo nota.',
-            'Las conversaciones breves también pueden dejar una buena impresión.',
+        $comments = [
+            'La logística del torneo se ve bastante sólida.',
+            'Esto va a ayudar muchísimo a los nuevos miembros.',
+            'Me gusta la idea de tener encuentros para practicar en equipo.',
+            'La comunidad cada vez se siente más activa.',
+            'Espero ver más sesiones de análisis de partidas.',
+            'Este tipo de iniciativas hace crecer a la comunidad.',
+            'Muy buen trabajo del equipo organizador.',
+            'Esto va a animar a más gente a participar.',
+            'Lo mejor es que incluye a jugadores de todos los niveles.',
+            'Una comunidad con objetivos claros siempre crece mejor.',
         ];
 
-        $officialNews = collect($newsData)->map(function (array $data, int $index) use ($users): noticias {
+        $officialPosts = collect($newsData)->map(function (array $data, int $index) use ($users): noticias {
             return noticias::updateOrCreate(
                 ['team_id' => null, 'es_oficial' => true, 'titulo' => $data['title']],
                 [
                     'user_id' => $users->values()->get($index % $users->count())->id,
                     'contenido' => $data['content'],
-                    'categoria' => 'Actualidad',
-                    'imagen_url' => null,
-                    'fuente_nombre' => 'Nexus Journal',
-                    'fuente_url' => 'https://nexus-community.test/noticias/'.$index,
+                    'categoria' => 'Comunidad',
+                    'imagen_url' => fake()->imageUrl(1200, 800, 'gaming', true, 'NexusCommunity'),
+                    'fuente_nombre' => 'Nexus Community',
+                    'fuente_url' => 'https://nexus-community.test/noticias/' . ($index + 1),
                     'es_oficial' => true,
                 ],
             );
         });
 
-        foreach ($officialNews as $index => $noticia) {
-            foreach ([0, 1] as $commentOffset) {
-                $commentBody = $newsComments[$index % count($newsComments)] . ($commentOffset === 0 ? ' — comentario principal' : ' — comentario adicional');
+        foreach ($officialPosts as $index => $post) {
+            foreach ([0, 1, 2] as $commentOffset) {
+                $commentBody = $comments[$index % count($comments)] . ' — ' . ['comentario principal', 'respuesta comunitaria', 'apoyo del equipo'][$commentOffset];
 
                 NoticiasComentario::firstOrCreate(
-                    ['noticia_id' => $noticia->id, 'contenido' => $commentBody],
-                    ['user_id' => $users->values()->get(($index + $commentOffset + 1) % $users->count())->id],
+                    ['noticia_id' => $post->id, 'contenido' => $commentBody],
+                    ['user_id' => $users->values()->get(($index + $commentOffset + 2) % $users->count())->id],
                 );
             }
         }
+    }
 
-        $publications = collect(range(1, 12))->map(fn (int $index) => Publicacion::create([
-            'team_id' => $demoTeam->id,
-            'user_id' => $users->random()->id,
-            'titulo' => fake()->randomElement([
-                'Busco squad para jugar esta noche',
-                'Que build estan usando esta temporada?',
-                'Clips y jugadas de la comunidad',
-                'Recomendaciones para jugadores nuevos',
-            ]).' #'.$index,
-            'contenido' => fake()->paragraphs(2, true),
-        ]));
+    protected function seedPublications(Team $demoTeam, Collection $users): void
+    {
+        $publicationTemplates = [
+            'Busco squad para jugar esta noche y mejorar el rank.',
+            '¿Alguien quiere probar una build nueva para esta temporada?',
+            'Compartiendo mis clips de la última partida competitiva.',
+            'Colección de consejos para mejorar la comunicación del equipo.',
+            'Hay partido abierto para formar equipo en la comunidad.',
+            'Recomiendo este setup para mejorar el rendimiento en ranked.',
+        ];
+
+        $publications = collect(range(1, 14))->map(function (int $index) use ($demoTeam, $users, $publicationTemplates): Publicacion {
+            $title = $publicationTemplates[$index % count($publicationTemplates)] . ' #' . $index;
+
+            return Publicacion::create([
+                'team_id' => $demoTeam->id,
+                'user_id' => $users->random()->id,
+                'titulo' => $title,
+                'contenido' => fake()->paragraphs(2, true),
+            ]);
+        });
 
         foreach ($publications as $publication) {
-            foreach (range(1, random_int(2, 4)) as $unused) {
+            foreach (range(1, random_int(2, 5)) as $unused) {
                 Comentarios::create([
                     'team_id' => $demoTeam->id,
                     'id_publicacion' => $publication->id,
                     'id_usuario' => $users->random()->id,
                     'contenido' => fake()->randomElement([
-                        'Me apunto a esa partida.',
-                        'Muy buen aporte, gracias por compartirlo.',
-                        'Yo estoy usando una estrategia parecida.',
-                        'Podemos organizarlo en el canal de la comunidad.',
+                        'Se ve muy bien, me apunto.',
+                        'Muy útil, gracias por compartirlo.',
+                        'Yo también estoy usando algo parecido.',
+                        'Podemos organizar una sesión en el canal general.',
+                        'Excelente aporte para la comunidad.',
                     ]),
                 ]);
             }
 
-            foreach ($users->random(random_int(2, 5)) as $user) {
+            foreach ($users->random(random_int(2, 6)) as $user) {
                 Reaccion::firstOrCreate(
                     ['id_usuario' => $user->id, 'id_publicacion' => $publication->id],
                     ['tipo' => fake()->randomElement(['like', 'apoyo', 'interesante'])],
                 );
             }
         }
+    }
 
-        $communities = collect([
-            ['name' => 'Zona de Squad', 'description' => 'Encuentra jugadores y arma tu equipo.', 'game' => 'Fortnite', 'platform' => 'Multiplataforma', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Noche', 'image' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Estrategia y Guias', 'description' => 'Consejos, builds y rutas compartidas por la comunidad.', 'game' => 'Minecraft', 'platform' => 'PC', 'region' => 'Global', 'language' => 'Español', 'mode' => 'Cooperativa', 'schedule' => 'Flexible', 'image' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Torneos Nexus', 'description' => 'Organizacion de eventos y competencias semanales.', 'game' => 'Valorant', 'platform' => 'PC', 'region' => 'Norteamérica', 'language' => 'Inglés', 'mode' => 'Competitiva', 'schedule' => 'Fines de semana', 'image' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Carreras Nocturnas', 'description' => 'Partidas amistosas y campeonatos de Rocket League.', 'game' => 'Rocket League', 'platform' => 'Xbox Series', 'region' => 'Europa', 'language' => 'Español', 'mode' => 'Competitiva', 'schedule' => 'Noche', 'image' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Supervivencia Cooperativa', 'description' => 'Construccion, exploracion y aventuras para jugar en grupo.', 'game' => 'Minecraft', 'platform' => 'PC', 'region' => 'Global', 'language' => 'Español', 'mode' => 'Cooperativa', 'schedule' => 'Tarde', 'image' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Arena Competitiva', 'description' => 'Encuentra compañeros para mejorar tu rango y tus estrategias.', 'game' => 'Apex Legends', 'platform' => 'PlayStation 5', 'region' => 'Norteamérica', 'language' => 'Inglés', 'mode' => 'Competitiva', 'schedule' => 'Fines de semana', 'image' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Nuevos Aventureros', 'description' => 'Un espacio relajado para aprender y compartir consejos.', 'game' => 'Elden Ring', 'platform' => 'PlayStation 5', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Flexible', 'image' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Liga de Constructores', 'description' => 'Proyectos creativos y retos de construccion para todos.', 'game' => 'Minecraft', 'platform' => 'Nintendo Switch', 'region' => 'Global', 'language' => 'Portugués', 'mode' => 'Social', 'schedule' => 'Mañana', 'image' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Escuadron Tactico', 'description' => 'Comunicacion, coordinacion y partidas organizadas.', 'game' => 'Valorant', 'platform' => 'PC', 'region' => 'Europa', 'language' => 'Español', 'mode' => 'Competitiva', 'schedule' => 'Noche', 'image' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=1200&q=80'],
-            ['name' => 'Pistas y Derrapes', 'description' => 'Comparte circuitos, configuraciones y carreras casuales.', 'game' => 'Rocket League', 'platform' => 'Xbox Series', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Tarde', 'image' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80'],
-        ])->map(fn (array $data, int $index) => Comunidad::updateOrCreate(
-            ['team_id' => $demoTeam->id, 'nombre' => $data['name']],
-            [
-                'descripcion' => $data['description'],
-                'imagen_url' => $data['image'],
-                'juego_principal' => $data['game'],
-                'plataforma' => $data['platform'],
-                'region' => $data['region'],
-                'idioma' => $data['language'],
-                'modalidad' => $data['mode'],
-                'horario' => $data['schedule'],
-                'tipo' => 'publica',
-                'nivel' => $data['mode'] === 'Competitiva' ? 'Pro gamer' : 'Casual',
-                'estado' => 'Abierta',
-                'creador_id' => $users->values()->get(($index + 1) % $users->count())->id,
-            ],
-        ));
+    protected function seedCommunities(Team $demoTeam, Collection $users): void
+    {
+        $communityGroups = [
+            ['name' => 'Zona de Squad', 'description' => 'Equipo competitivo para ranked y torneos semanales.', 'game' => 'Valorant', 'platform' => 'PC', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Competitiva', 'schedule' => 'Noche', 'image' => 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'],
+            ['name' => 'Estrategia y Guias', 'description' => 'Compartimos builds, estrategias y recomendaciones para maximizar el rendimiento.', 'game' => 'Fortnite', 'platform' => 'PC', 'region' => 'Global', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Flexible', 'image' => 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80'],
+            ['name' => 'Torneos Nexus', 'description' => 'Exploración, supervivencia y construcción para partidas cooperativas.', 'game' => 'Minecraft', 'platform' => 'PC', 'region' => 'Global', 'language' => 'Español', 'mode' => 'Cooperativa', 'schedule' => 'Tarde', 'image' => 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80'],
+            ['name' => 'Carreras Nocturnas', 'description' => 'Club de pilotos casuales y competiciones amistosas.', 'game' => 'Rocket League', 'platform' => 'Xbox Series', 'region' => 'Europa', 'language' => 'Español', 'mode' => 'Casual', 'schedule' => 'Noche', 'image' => 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80'],
+            ['name' => 'Nexus Tactical', 'description' => 'Análisis, game sense y organización para partidas competitivas.', 'game' => 'Apex Legends', 'platform' => 'PlayStation 5', 'region' => 'Norteamérica', 'language' => 'Inglés', 'mode' => 'Competitiva', 'schedule' => 'Fines de semana', 'image' => 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80'],
+            ['name' => 'Arena Creativa', 'description' => 'Espacio para explorar ideas, clips y desafíos creativos.', 'game' => 'Elden Ring', 'platform' => 'Nintendo Switch', 'region' => 'LATAM', 'language' => 'Español', 'mode' => 'Social', 'schedule' => 'Flexible', 'image' => 'https://images.unsplash.com/photo-1528819622761-6bcf032f3f1d?auto=format&fit=crop&w=1200&q=80'],
+        ];
 
-        foreach ($communities as $index => $community) {
-            $memberCount = [12, 7, 18, 10, 14, 11, 16, 13, 15, 10][$index] ?? 10;
+        collect($communityGroups)->each(function (array $data, int $index) use ($demoTeam, $users): void {
+            $community = Comunidad::updateOrCreate(
+                ['team_id' => $demoTeam->id, 'nombre' => $data['name']],
+                [
+                    'descripcion' => $data['description'],
+                    'imagen_url' => $data['image'],
+                    'juego_principal' => $data['game'],
+                    'plataforma' => $data['platform'],
+                    'region' => $data['region'],
+                    'idioma' => $data['language'],
+                    'modalidad' => $data['mode'],
+                    'horario' => $data['schedule'],
+                    'tipo' => 'publica',
+                    'nivel' => $data['mode'] === 'Competitiva' ? 'Pro gamer' : 'Casual',
+                    'rango' => $data['mode'] === 'Competitiva' ? 'Gold+' : 'Todos',
+                    'estado' => 'Abierta',
+                    'max_miembros' => 60,
+                    'creador_id' => $users->values()->get(($index + 2) % $users->count())->id,
+                ],
+            );
+
             $members = $users
                 ->where('id', '!=', $community->creador_id)
-                ->random($memberCount - 1)
+                ->random(min(12, $users->count() - 1))
                 ->push($users->firstWhere('id', $community->creador_id));
 
             $community->miembros()->syncWithoutDetaching(
@@ -265,40 +307,44 @@ class DatabaseSeeder extends Seeder
                 ])->all(),
             );
 
-            $channel = Canal::firstOrCreate(
+            $generalChannel = Canal::firstOrCreate(
                 ['comunidad_id' => $community->id, 'nombre' => 'general'],
                 ['tipo' => 'texto', 'fecha_creacion' => now()],
             );
 
-            foreach (range(1, 6) as $unused) {
+            foreach (range(1, 4) as $messageCounter) {
                 Mensaje::create([
                     'id' => (string) Str::uuid(),
-                    'canal_id' => $channel->id_canal,
+                    'canal_id' => $generalChannel->id_canal,
                     'user_id' => $users->random()->id,
                     'contenido' => fake()->randomElement([
-                        'Alguien se conecta para la partida de esta noche?',
-                        'Ya esta disponible la guia nueva en el foro.',
-                        'Bienvenidos a los nuevos miembros del grupo.',
-                        'El evento empieza a las 20:00, nos vemos dentro.',
+                        '¡Buenas! ¿Alguien se apunta para la partida de esta tarde?',
+                        'Ajusté la estrategia del grupo y va bastante bien.',
+                        'Hay nueva guía en el foro para esta semana.',
+                        'La próxima sesión queda abierta para nuevos jugadores.',
                     ]),
                 ]);
             }
 
             $forum = Foro::firstOrCreate(
-                ['comunidad_id' => $community->id, 'nombre' => 'Debates y estrategias'],
-                ['descripcion' => 'Conversaciones largas y guias de la comunidad.', 'fecha_creacion' => now()],
+                ['comunidad_id' => $community->id, 'nombre' => 'Estrategias y debates'],
+                ['descripcion' => 'Compartimos guías, teoría, debates y mejores prácticas.', 'fecha_creacion' => now()],
             );
 
-            foreach (range(1, 3) as $unused) {
+            foreach (range(1, 3) as $threadCounter) {
                 $thread = Hilo::create([
                     'id_foro' => $forum->id_foro,
                     'id_usuario' => $users->random()->id,
-                    'titulo' => fake()->sentence(6),
+                    'titulo' => fake()->randomElement([
+                        'Qué build es mejor para esta temporada',
+                        'Ideas para mejorar la coordinación del equipo',
+                        'Cómo organizar un grupo nuevo sin perder ritmo',
+                    ]),
                     'contenido' => fake()->paragraphs(2, true),
                     'fecha_creacion' => now(),
                 ]);
 
-                foreach (range(1, 2) as $reply) {
+                foreach (range(1, 2) as $replyCounter) {
                     $thread->aportes()->create([
                         'id_usuario' => $users->random()->id,
                         'contenido' => fake()->sentence(14),
@@ -306,6 +352,13 @@ class DatabaseSeeder extends Seeder
                     ]);
                 }
             }
+        });
+    }
+
+    protected function seedCatalogs(): void
+    {
+        foreach (['PC', 'PlayStation 5', 'Xbox Series', 'Nintendo Switch'] as $name) {
+            Plataforma::firstOrCreate(['nombre' => $name]);
         }
 
         foreach ([
@@ -316,52 +369,84 @@ class DatabaseSeeder extends Seeder
             Idioma::firstOrCreate(['codigo' => $language['codigo']], ['nombre' => $language['nombre']]);
         }
 
-        $platforms = collect(['PC', 'PlayStation 5', 'Xbox Series', 'Nintendo Switch'])
-            ->map(fn (string $name) => Plataforma::firstOrCreate(['nombre' => $name]));
+        $platforms = Plataforma::all();
         $languages = Idioma::all();
 
-        foreach (['Apex Legends', 'Valorant', 'Minecraft', 'Elden Ring', 'Rocket League', 'Fortnite'] as $title) {
+        foreach (['Valorant', 'Fortnite', 'Minecraft', 'Rocket League', 'Apex Legends', 'Elden Ring'] as $title) {
             $game = Juego::firstOrCreate(
                 ['titulo' => $title],
                 [
-                    'descripcion' => 'Espacio de la comunidad para hablar de '.$title.'.',
+                    'descripcion' => 'Espacio dedicado a la comunidad para hablar de ' . $title . ', estrategias, contenido y eventos.',
                     'desarrollador' => fake()->company(),
                     'fecha_lanzamiento' => fake()->date(),
                 ],
             );
+
             $game->plataformas()->syncWithoutDetaching($platforms->random(random_int(1, 3))->pluck('id'));
             $game->idiomas()->syncWithoutDetaching($languages->random(random_int(1, 2))->pluck('id'));
         }
+    }
 
-        foreach ($users->random(min(20, $users->count())) as $user) {
+    protected function seedSupportIssues(Team $demoTeam, Collection $users): void
+    {
+        $issueTemplates = [
+            ['titulo' => 'Error al conectar con la sala de voz', 'descripcion' => 'La conexión se corta al entrar a la sala de voz y parece afectar a varios miembros del squad.', 'estado' => 'abierto', 'prioridad' => 'alta', 'plataforma' => 'PC'],
+            ['titulo' => 'Problema visual en el perfil', 'descripcion' => 'La sección de estadísticas no carga correctamente en algunos navegadores móviles.', 'estado' => 'en_progreso', 'prioridad' => 'media', 'plataforma' => 'PlayStation 5'],
+            ['titulo' => 'Sugerencia para mejorar la navegación en comunidad', 'descripcion' => 'Sería útil separar mejor los foros por juego y comunidad para encontrar contenido más rápido.', 'estado' => 'abierto', 'prioridad' => 'baja', 'plataforma' => 'Xbox Series'],
+            ['titulo' => 'Fallo al crear una solicitud de ingreso', 'descripcion' => 'El formulario no guarda bien la comunidad principal en algunos casos.', 'estado' => 'en_progreso', 'prioridad' => 'alta', 'plataforma' => 'PC'],
+        ];
+
+        foreach ($issueTemplates as $issue) {
             Problemas::create([
                 'team_id' => $demoTeam->id,
-                'user_id' => $user->id,
-                'titulo' => fake()->randomElement(['Error al conectar con una sala', 'Problema visual en el perfil', 'Sugerencia para mejorar el chat']),
-                'descripcion' => fake()->paragraph(),
-                'estado' => fake()->randomElement(['abierto', 'en_progreso']),
-                'prioridad' => fake()->randomElement(['baja', 'media', 'alta']),
-                'plataforma' => fake()->randomElement(['PC', 'PlayStation 5', 'Xbox Series']),
+                'user_id' => $users->random()->id,
+                'titulo' => $issue['titulo'],
+                'descripcion' => $issue['descripcion'],
+                'estado' => $issue['estado'],
+                'prioridad' => $issue['prioridad'],
+                'plataforma' => $issue['plataforma'],
             ]);
         }
+    }
 
-        foreach ($users->random(min(12, $users->count())) as $user) {
+    protected function seedNotifications(Team $demoTeam, Collection $users): void
+    {
+        $messages = [
+            'Tenemos nueva actividad en tu comunidad de Valorant.',
+            'Un miembro respondió a tu hilo en estrategias.',
+            'Hay un nuevo torneo disponible para equipos de la comunidad.',
+            'Una nueva noticia oficial fue publicada por Nexus.',
+            'Tienes solicitudes pendientes por revisar en tu equipo.',
+        ];
+
+        foreach ($users->random(min(18, $users->count())) as $user) {
             Notificacion::create([
                 'id' => (string) Str::uuid(),
                 'user_id' => $user->id,
                 'tipo' => 'community_activity',
-                'data' => ['message' => 'Hay nueva actividad en Nexus Demo Community.', 'team_id' => $demoTeam->id],
+                'data' => [
+                    'message' => $messages[array_rand($messages)],
+                    'team_id' => $demoTeam->id,
+                ],
             ]);
         }
+    }
 
-        foreach ($users->random(min(15, $users->count())) as $user) {
-            $friend = $users->where('id', '!=', $user->id)->random();
+    protected function seedFriendships(Collection $users): void
+    {
+        foreach ($users as $user) {
+            $candidates = $users->where('id', '!=', $user->id);
+
+            if ($candidates->isEmpty()) {
+                continue;
+            }
+
+            $friend = $candidates->random();
+
             Amistad::firstOrCreate(
                 ['user_id' => $user->id, 'amigo_id' => $friend->id],
                 ['estado' => 'aceptada'],
             );
         }
-
-        $this->command->info('Demo data ready: '.User::count().' users, shared team '.$demoTeam->slug.', '.Publicacion::count().' publications and '.NoticiasComentario::count().' comments.');
     }
 }

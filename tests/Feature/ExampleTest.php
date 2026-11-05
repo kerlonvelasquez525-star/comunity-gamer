@@ -154,6 +154,32 @@ class ExampleTest extends TestCase
         $this->assertInstanceOf(NoticiasComentario::class, NoticiasComentario::query()->first());
     }
 
+    public function test_user_can_comment_multiple_times_on_the_same_public_news(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $news = noticias::create([
+            'titulo' => 'Noticia para opiniones repetidas',
+            'contenido' => 'Contenido oficial para probar comentarios múltiples.',
+            'fuente_nombre' => 'Nexus',
+            'fuente_url' => 'https://example.com/opiniones-repetidas',
+            'es_oficial' => true,
+        ]);
+
+        $this->actingAs($user);
+
+        foreach (['Primera opinión.', 'Segunda opinión.', 'Tercera opinión.'] as $opinion) {
+            $this->post(route('official-news.comments.store', $news), ['contenido' => $opinion])
+                ->assertRedirect();
+        }
+
+        $this->assertDatabaseCount('noticias_comentarios', 3);
+        $this->assertDatabaseHas('noticias_comentarios', [
+            'user_id' => $user->id,
+            'noticia_id' => $news->id,
+            'contenido' => 'Tercera opinión.',
+        ]);
+    }
+
     public function test_public_home_telemetry_reflects_users_active_in_the_last_thirty_days(): void
     {
         User::factory()->create(['created_at' => now()->subDays(45)]);
@@ -199,6 +225,35 @@ class ExampleTest extends TestCase
             'noticia_id' => $news->id,
             'user_id' => $user->id,
             'contenido' => 'Comentario del equipo.',
+        ]);
+    }
+
+    public function test_user_can_comment_multiple_times_on_the_same_team_news(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $team = Team::factory()->create(['name' => 'Team Repeat Comments']);
+        $user->teams()->attach($team->id, ['role' => TeamRole::Owner->value]);
+        $user->switchTeam($team);
+
+        $news = noticias::create([
+            'team_id' => $team->id,
+            'user_id' => $user->id,
+            'titulo' => 'Noticia del equipo para opiniones repetidas',
+            'contenido' => 'Contenido para probar comentarios múltiples.',
+        ]);
+
+        $this->actingAs($user);
+
+        foreach (['Primera opinión.', 'Segunda opinión.', 'Tercera opinión.'] as $opinion) {
+            $this->post(route('noticias.comentarios.store', [$team->slug, $news]), ['contenido' => $opinion])
+                ->assertRedirect();
+        }
+
+        $this->assertDatabaseCount('noticias_comentarios', 3);
+        $this->assertDatabaseHas('noticias_comentarios', [
+            'user_id' => $user->id,
+            'noticia_id' => $news->id,
+            'contenido' => 'Tercera opinión.',
         ]);
     }
 

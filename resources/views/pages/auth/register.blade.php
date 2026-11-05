@@ -12,7 +12,14 @@
         <span class="logo-tag">// Comunidad Gamer</span>
 
         <div class="tabs">
-            <button type="button" class="tab-btn" data-tab="login" onclick="window.location.href='{{ $teamInvitation ? route('login', ['invitation' => $teamInvitation['code']]) : route('login') }}'">Iniciar sesión</button>
+            <button
+                type="button"
+                class="tab-btn"
+                data-tab="login"
+                onclick="window.location.href = '{{ $teamInvitation ? route('login', ['invitation' => $teamInvitation['code']]) : route('login') }}';"
+            >
+                Iniciar sesión
+            </button>
             <button type="button" class="tab-btn active" data-tab="registro">Registrarse</button>
         </div>
 
@@ -25,7 +32,7 @@
             <x-auth-session-status class="text-center" :status="session('status')" />
 
             @if ($teamInvitation)
-                <x-team-invitation-alert :invitation="$teamInvitation" :action="__('Register')" />
+            <x-team-invitation-alert :invitation="$teamInvitation" :action="__('Register')" />
             @endif
 
             <form method="POST" action="{{ route('register.store') }}">
@@ -41,10 +48,9 @@
                         placeholder="Ej: ShadowKnight99"
                         autofocus
                         autocomplete="name"
-                        required
-                    >
+                        required>
                     @error('name')
-                        <span class="field-error">{{ $message }}</span>
+                    <span class="field-error">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -57,10 +63,9 @@
                         value="{{ old('email') }}"
                         placeholder="tucorreo@ejemplo.com"
                         autocomplete="email"
-                        required
-                    >
+                        required>
                     @error('email')
-                        <span class="field-error">{{ $message }}</span>
+                    <span class="field-error">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -73,10 +78,9 @@
                         placeholder="••••••••"
                         autocomplete="new-password"
                         passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                        required
-                    >
+                        required>
                     @error('password')
-                        <span class="field-error">{{ $message }}</span>
+                    <span class="field-error">{{ $message }}</span>
                     @enderror
                 </div>
 
@@ -89,12 +93,39 @@
                         placeholder="••••••••"
                         autocomplete="new-password"
                         passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                        required
-                    >
+                        required>
                     @error('password_confirmation')
-                        <span class="field-error">{{ $message }}</span>
+                    <span class="field-error">{{ $message }}</span>
                     @enderror
                 </div>
+
+                <fieldset class="input-group">
+                    <legend>Comunidades a las que quieres solicitar ingreso (opcional)</legend>
+                    <p>Selecciona una o varias. Tu ingreso quedará pendiente hasta que un administrador apruebe la solicitud.</p>
+                    @forelse ($comunidadesDisponibles as $comunidad)
+                    <label for="comunidad-{{ $comunidad->id }}">
+                        <input
+                            type="checkbox"
+                            id="comunidad-{{ $comunidad->id }}"
+                            name="comunidades[]"
+                            value="{{ $comunidad->id }}"
+                            @checked(in_array((string) $comunidad->id, (array) old('comunidades', []), true))
+                        >
+                        {{ $comunidad->nombre }}
+                        @if ($comunidad->juego_principal)
+                        <span>· {{ $comunidad->juego_principal }}</span>
+                        @endif
+                    </label>
+                    @empty
+                    <p>Por ahora no hay comunidades abiertas para solicitar ingreso.</p>
+                    @endforelse
+                    @error('comunidades')
+                    <span class="field-error">{{ $message }}</span>
+                    @enderror
+                    @error('comunidades.*')
+                    <span class="field-error">{{ $message }}</span>
+                    @enderror
+                </fieldset>
 
                 <button type="submit" class="btn-login" data-test="register-user-button">Crear cuenta</button>
             </form>
@@ -104,8 +135,7 @@
                 <a
                     href="{{ $teamInvitation ? route('login', ['invitation' => $teamInvitation['code']]) : route('login') }}"
                     data-test="team-invitation-login-link"
-                    wire:navigate
-                >Inicia sesión</a>
+                    wire:navigate>Inicia sesión</a>
             </div>
         </div>
 

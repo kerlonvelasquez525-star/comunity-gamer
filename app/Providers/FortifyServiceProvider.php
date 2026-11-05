@@ -9,6 +9,7 @@ use App\Http\Responses\PasskeyLoginResponse;
 use App\Http\Responses\RegisterResponse;
 use App\Http\Responses\TwoFactorLoginResponse;
 use App\Http\Responses\VerifyEmailResponse;
+use App\Models\Comunidad;
 use App\Models\TeamInvitation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -68,6 +69,15 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::confirmPasswordView(fn () => view('pages::auth.confirm-password'));
         Fortify::registerView(fn (Request $request) => view('pages::auth.register', [
             'teamInvitation' => $this->teamInvitation($request),
+            'comunidadesDisponibles' => Comunidad::query()
+                ->where('tipo', 'publica')
+                ->where('estado', 'Abierta')
+                ->withCount('miembros')
+                ->orderBy('nombre')
+                ->get()
+                ->filter(fn (Comunidad $comunidad): bool => ! $comunidad->max_miembros
+                    || $comunidad->miembros_count < $comunidad->max_miembros)
+                ->values(),
         ]));
         Fortify::resetPasswordView(fn () => view('pages::auth.reset-password'));
         Fortify::requestPasswordResetLinkView(fn () => view('pages::auth.forgot-password'));

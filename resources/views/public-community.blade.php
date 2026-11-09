@@ -2,17 +2,65 @@
     <div class="public-home">
         @vite('resources/css/style_th.css')
 
+        @php
+            $teamSlug = auth()->user()?->currentTeam?->slug;
+            $communityNavItems = [
+                ['label' => 'Home', 'href' => route('home'), 'active' => false],
+            ];
+
+            if (auth()->check()) {
+                $communityNavItems = array_merge($communityNavItems, [
+                    [
+                        'label' => 'Panel',
+                        'href' => $teamSlug ? route('dashboard', $teamSlug) : route('teams.index'),
+                        'active' => request()->routeIs('dashboard'),
+                    ],
+                    [
+                        'label' => 'Noticias',
+                        'href' => $teamSlug ? route('noticias.index', $teamSlug) : route('public-noticias.index'),
+                        'active' => request()->routeIs('noticias.*', 'public-noticias.*'),
+                    ],
+                    [
+                        'label' => 'Comunidades',
+                        'href' => $teamSlug ? route('comunidad.index', $teamSlug) : route('public-comunidad.index'),
+                        'active' => request()->routeIs('comunidad.*', 'public-comunidad.*'),
+                    ],
+                    [
+                        'label' => 'Soporte',
+                        'href' => $teamSlug ? route('problemas.index', $teamSlug) : route('public-problemas.index'),
+                        'active' => request()->routeIs('problemas.*', 'public-problemas.*'),
+                    ],
+                    [
+                        'label' => 'Asistente',
+                        'href' => route('chatbot.index'),
+                        'active' => request()->routeIs('chatbot.*'),
+                    ],
+                ]);
+            } else {
+                $communityNavItems = array_merge($communityNavItems, [
+                    ['label' => 'Noticias', 'href' => route('public-noticias.index'), 'active' => false],
+                    ['label' => 'Comunidad', 'href' => route('public-comunidad.index'), 'active' => true],
+                    ['label' => 'Soporte', 'href' => route('public-problemas.index'), 'active' => false],
+                ]);
+            }
+
+            $logoHref = route('home');
+        @endphp
+
         <header class="community-public-header">
             <div class="brand">
-                <div class="brand-logo">
+                <a href="{{ $logoHref }}" class="brand-logo" aria-label="Ir al inicio">
                     <img src="{{ asset('nexus.png') }}" alt="Nexus Community" width="48" height="48" decoding="async">
-                </div>
-                <span class="brand-title">nexus-comunity</span>
+                </a>
+                <a href="{{ $logoHref }}" class="brand-title" aria-label="Ir al inicio">nexus-comunity</a>
             </div>
 
             <nav aria-label="Navegación pública" class="community-public-nav">
-                <a href="{{ route('home') }}">Home</a>
-                <a href="{{ route('public-comunidad.index') }}" class="active">Comunidad</a>
+                @foreach ($communityNavItems as $item)
+                    <a href="{{ $item['href'] }}" @class(['active' => $item['active']]) wire:navigate>
+                        {{ $item['label'] }}
+                    </a>
+                @endforeach
             </nav>
         </header>
 

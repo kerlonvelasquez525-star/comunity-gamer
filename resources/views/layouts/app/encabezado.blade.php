@@ -1,5 +1,6 @@
 @php
     $teamSlug = $teamSlug ?? (isset($team) ? $team->slug : (auth()->user()?->currentTeam?->slug ?? request()->route('current_team')));
+    $logoHref = route('home');
 
     $navigationItems = $teamSlug ? [
         ['label' => __('Dashboard'), 'icon' => 'home', 'route' => 'dashboard', 'pattern' => 'dashboard'],
@@ -42,7 +43,7 @@
                     
                     <!-- Lado Izquierdo: Logo contenido correctamente -->
                     <div class="flex shrink-0 items-center gap-4">
-                        <a href="{{ route('home') }}"
+                        <a href="{{ $logoHref }}"
                            class="flex items-center transition-transform hover:scale-105"
                            title="Ir al inicio">
                             <img src="{{ asset('nexus.png') }}" alt="Nexus Logo" class="h-12 w-12 rounded-[45%] border-2 border-cyan-400/80 object-cover p-0.5 shadow-[0_0_12px_rgba(0,240,255,0.35)]">

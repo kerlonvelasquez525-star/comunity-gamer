@@ -1,5 +1,6 @@
 @php
     $teamSlug = auth()->user()?->currentTeam?->slug;
+    $logoHref = route('home');
 
     $formatCompactNumber = function ($value): string {
         $value = (float) $value;
@@ -32,10 +33,10 @@
 
     <header>
         <div class="brand">
-            <a href="{{ route('home') }}" class="brand-logo" aria-label="Ir a la página principal de Nexus Community">
+            <a href="{{ $logoHref }}" class="brand-logo" aria-label="Ir al inicio">
                 <img src="{{ asset('nexus.png') }}" alt="Nexus Community" width="48" height="48" decoding="async">
             </a>
-            <a href="{{ route('home') }}" class="brand-title" aria-label="Ir a la página principal de Nexus Community">nexus-comunity</a>
+            <a href="{{ $logoHref }}" class="brand-title" aria-label="Ir al inicio">nexus-comunity</a>
         </div>
 
         <nav aria-label="Navegación principal" class="public-main-nav">

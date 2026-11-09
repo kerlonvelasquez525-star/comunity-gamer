@@ -77,7 +77,26 @@ class ExampleTest extends TestCase
     {
         $this->get(route('public-comunidad.index'))
             ->assertOk()
-            ->assertSee('Comunidades activas');
+            ->assertSee('Comunidades activas')
+            ->assertSee(route('home'))
+            ->assertSee(route('public-noticias.index'))
+            ->assertSee(route('public-problemas.index'));
+    }
+
+    public function test_authenticated_community_navigation_links_to_the_team_app(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $team = $user->currentTeam;
+
+        $this->actingAs($user)
+            ->get(route('public-comunidad.index'))
+            ->assertOk()
+            ->assertSee(route('home'))
+            ->assertSee(route('dashboard', $team->slug))
+            ->assertSee(route('noticias.index', $team->slug))
+            ->assertSee(route('comunidad.index', $team->slug))
+            ->assertSee(route('problemas.index', $team->slug))
+            ->assertSee(route('chatbot.index'));
     }
 
     public function test_public_community_page_uses_stored_images_and_actual_member_counts(): void

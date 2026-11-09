@@ -2,12 +2,16 @@
     <div class="public-home">
         @vite('resources/css/style_th.css')
 
+        @php
+            $logoHref = route('home');
+        @endphp
+
         <header class="community-public-header">
             <div class="brand">
-                <div class="brand-logo">
+                <a href="{{ $logoHref }}" class="brand-logo" aria-label="Ir al inicio">
                     <img src="{{ asset('nexus.png') }}" alt="Nexus Community" width="48" height="48" decoding="async">
-                </div>
-                <span class="brand-title">nexus-comunity</span>
+                </a>
+                <a href="{{ $logoHref }}" class="brand-title" aria-label="Ir al inicio">nexus-comunity</a>
             </div>
 
             <nav aria-label="Navegación pública" class="community-public-nav">

@@ -1,7 +1,13 @@
 <x-layouts::auth :title="__('Log in')">
     <link rel="stylesheet" href="{{ asset('css/style_sb.css') }}">
 
-    <a href="{{ route('home') }}" class="logo-corner-link">
+    <a
+        href="{{ route('home') }}"
+        class="logo-corner-link"
+        aria-label="Volver a la página anterior"
+        title="Volver"
+        onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+    >
         <img src="{{ asset('nexus.png') }}" alt="Logo Comunidad Gamer" class="logo-corner">
     </a>
 

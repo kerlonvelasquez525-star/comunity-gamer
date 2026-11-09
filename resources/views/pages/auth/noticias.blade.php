@@ -35,7 +35,7 @@
             @forelse ($items as $noticia)
                 <article class="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-300 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-400/5">
                     @if ($noticia->imagen_url)
-                        <div class="relative h-48 w-full overflow-hidden bg-zinc-950"><img src="{{ filter_var($noticia->imagen_url, FILTER_VALIDATE_URL) ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url) }}" alt="{{ $noticia->titulo }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"></div>
+                        <div class="relative h-48 w-full overflow-hidden bg-zinc-950"><img src="{{ filter_var($noticia->imagen_url, FILTER_VALIDATE_URL) ? $noticia->imagen_url : (str_starts_with($noticia->imagen_url, '/') ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url)) }}" alt="{{ $noticia->titulo }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"></div>
                     @endif
                     <div class="flex flex-1 flex-col justify-between p-6">
                         <div class="space-y-3">

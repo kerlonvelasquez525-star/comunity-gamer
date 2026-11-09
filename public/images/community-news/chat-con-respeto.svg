@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Chat con respeto</title>
+  <desc id="desc">Ilustración original sobre convivencia y respeto en el chat de voz.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#241735"/><stop offset="1" stop-color="#102c3c"/></linearGradient>
+    <linearGradient id="mic" y2="1"><stop stop-color="#ffce71"/><stop offset="1" stop-color="#ff8d8a"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="600" cy="300" r="245" fill="#ff9d87" opacity=".08"/>
+  <path d="M310 243a290 290 0 0 1 580 0" fill="none" stroke="#69e1d3" stroke-width="25" stroke-linecap="round"/>
+  <rect x="270" y="226" width="112" height="205" rx="48" fill="#2c455d" stroke="#69e1d3" stroke-width="9"/>
+  <rect x="818" y="226" width="112" height="205" rx="48" fill="#2c455d" stroke="#69e1d3" stroke-width="9"/>
+  <path d="M874 433q0 123-135 123H600" fill="none" stroke="#69e1d3" stroke-width="17" stroke-linecap="round"/>
+  <rect x="493" y="188" width="214" height="280" rx="100" fill="url(#mic)" stroke="#ffe4ba" stroke-width="8"/>
+  <path d="M446 342v42q0 147 154 147t154-147v-42" fill="none" stroke="#ffe4ba" stroke-width="14" stroke-linecap="round"/>
+  <path d="M600 531v52m-70 0h140" stroke="#ffe4ba" stroke-width="14" stroke-linecap="round"/>
+  <path d="m520 326 48 48 112-121" fill="none" stroke="#27334a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="600" y="640" fill="#fff" font-family="Arial,sans-serif" font-size="42" font-weight="800" text-anchor="middle">BUEN JUEGO. BUEN TRATO. BUEN CHAT.</text>
+</svg>

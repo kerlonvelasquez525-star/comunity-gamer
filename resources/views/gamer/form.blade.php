@@ -10,7 +10,7 @@
 
                     @if (! empty($item?->imagen_url))
                         <div class="sm:col-span-2 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-700 dark:bg-zinc-800/60">
-                            <img src="{{ filter_var($item->imagen_url, FILTER_VALIDATE_URL) ? $item->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($item->imagen_url) }}" alt="{{ $item->titulo }}" class="h-40 w-full rounded-lg object-cover">
+                            <img src="{{ filter_var($item->imagen_url, FILTER_VALIDATE_URL) ? $item->imagen_url : (str_starts_with($item->imagen_url, '/') ? $item->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($item->imagen_url)) }}" alt="{{ $item->titulo }}" class="h-40 w-full rounded-lg object-cover">
                         </div>
                     @endif
                 </div>

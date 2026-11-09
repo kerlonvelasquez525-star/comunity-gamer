@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Regreso al lobby</title>
+  <desc id="desc">Ilustración original de un jugador que regresa a su estación de juego.</desc>
+  <defs>
+    <linearGradient id="bg" y2="1"><stop stop-color="#312052"/><stop offset="1" stop-color="#101827"/></linearGradient>
+    <linearGradient id="screen" x2="1" y2="1"><stop stop-color="#4de5d1"/><stop offset="1" stop-color="#6547da"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="600" cy="320" r="260" fill="#a867ff" opacity=".1"/><path d="M0 520h1200" stroke="#a986ff" stroke-opacity=".22" stroke-width="3"/>
+  <rect x="640" y="120" width="380" height="250" rx="24" fill="#121522" stroke="#8870d8" stroke-width="10"/>
+  <rect x="662" y="142" width="336" height="205" rx="12" fill="url(#screen)"/>
+  <path d="m700 300 92-105 64 72 48-48 70 81z" fill="#d6fff5" opacity=".75"/><circle cx="915" cy="192" r="25" fill="#ffe27a"/>
+  <path d="M795 370v54m72-54v54m-130 0h260" stroke="#bbaaff" stroke-width="12" stroke-linecap="round"/>
+  <path d="M315 455q0-188 125-208 130 16 132 208v37H315z" fill="#32415c"/>
+  <circle cx="443" cy="244" r="87" fill="#e2aa87"/>
+  <path d="M357 236q15-107 116-89 74 13 57 87-48-39-85-36-38 2-88 38z" fill="#533a40"/>
+  <path d="M350 300q-75 0-84 91l-20 99h391l-25-103q-15-85-88-87l-39 38-42-38z" fill="#63d7c6"/>
+  <path d="M510 283q58-37 102 2l-15 78q-54 30-97-15" fill="none" stroke="#121827" stroke-width="20" stroke-linecap="round"/>
+  <path d="M520 320q42-55 87 0v48q-45 53-87 0z" fill="#1a2435" stroke="#a4a9ff" stroke-width="8"/>
+  <path d="M560 345h9" stroke="#f6c95d" stroke-width="8" stroke-linecap="round"/>
+  <text x="600" y="584" fill="#fff" font-family="Arial,sans-serif" font-size="43" font-weight="800" text-anchor="middle">VOLVER AL LOBBY TAMBIÉN ES UNA VICTORIA</text>
+</svg>

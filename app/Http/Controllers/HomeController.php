@@ -46,6 +46,10 @@ class HomeController extends Controller
                 ->latest()
                 ->limit(4)
                 ->get(),
+            'notificaciones_sin_leer' => Notificacion::query()
+                ->where('user_id', $request->user()->id)
+                ->whereNull('leida_en')
+                ->count(),
             'noticias_totales' => noticias::query()
                 ->where(function ($query) use ($team): void {
                     $query->where('team_id', $team->id)

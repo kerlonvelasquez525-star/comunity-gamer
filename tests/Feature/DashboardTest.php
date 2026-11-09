@@ -31,7 +31,11 @@ class DashboardTest extends TestCase
             ->actingAs($user)
             ->get(route('dashboard'));
 
-        $response->assertOk();
+        $response
+            ->assertOk()
+            ->assertSee($user->name)
+            ->assertSee('Noticias recientes')
+            ->assertSee('Tu actividad reciente');
     }
 
     public function test_dashboard_metrics_are_loaded_from_database(): void

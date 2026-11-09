@@ -29,11 +29,13 @@
                 @forelse ($items as $noticia)
                     @php
                         $newsImageUrl = !empty($noticia->imagen_url)
-                            ? (filter_var($noticia->imagen_url, FILTER_VALIDATE_URL) ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url))
+                            ? (filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)
+                                ? $noticia->imagen_url
+                                : (str_starts_with($noticia->imagen_url, '/') ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url)))
                             : asset('nexus.png');
                     @endphp
 
-                    <article class="official-news-card news-public-card">
+                    <article id="noticia-{{ $noticia->id }}" class="official-news-card news-public-card">
                         <div class="news-public-image-wrap">
                             <img src="{{ $newsImageUrl }}" alt="{{ $noticia->titulo }}" class="official-news-image" loading="lazy">
                             <span class="news-public-badge">{{ strtoupper($noticia->fuente_nombre ?: 'NEXUS') }}</span>
@@ -44,9 +46,13 @@
                             <p class="official-news-description">{{ $noticia->contenido }}</p>
                             <div class="community-meta-row">
                                 <span class="community-member-count">{{ $noticia->comentarios->count() }} comentarios</span>
-                                <a href="{{ $noticia->fuente_url ?? route('home') }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer &rarr;</a>
+                                @if ($noticia->fuente_url)
+                                    <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Fuente original &rarr;</a>
+                                @else
+                                    <a href="#comentarios-{{ $noticia->id }}" class="official-news-link">Ver conversación &rarr;</a>
+                                @endif
                             </div>
-                            <div class="official-comments" data-news-comments>
+                            <div id="comentarios-{{ $noticia->id }}" class="official-comments" data-news-comments>
                                 <div class="official-comments-heading">
                                     <h4>Conversación</h4>
                                     <span data-comments-total>{{ $noticia->comentarios->count() }}</span>

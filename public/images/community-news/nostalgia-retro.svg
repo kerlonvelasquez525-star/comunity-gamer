@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Nostalgia retro</title>
+  <desc id="desc">Ilustración original de una consola retro y una partida pixelada.</desc>
+  <defs>
+    <linearGradient id="bg" y2="1"><stop stop-color="#3b1a54"/><stop offset="1" stop-color="#151a38"/></linearGradient>
+    <linearGradient id="console" x2="1" y2="1"><stop stop-color="#ff87bf"/><stop offset="1" stop-color="#f8bd5b"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g fill="#ffd66e" opacity=".8"><path d="M180 110h12v36h-12zM168 122h36v12h-36z"/><path d="M984 180h12v36h-12zM972 192h36v12h-36z"/><circle cx="320" cy="212" r="6"/><circle cx="887" cy="104" r="6"/><circle cx="940" cy="492" r="7"/></g>
+  <rect x="345" y="102" width="510" height="350" rx="32" fill="#201e3a" stroke="#ab8dff" stroke-width="8"/>
+  <rect x="376" y="132" width="448" height="274" rx="18" fill="#13243a"/>
+  <path d="M410 348h46v-46h46v-46h46v46h46v-92h46v46h46v92h46v-46h46v92H410z" fill="#55e4d1"/>
+  <rect x="562" y="174" width="46" height="46" fill="#ffd66e"/><rect x="700" y="218" width="46" height="46" fill="#ff7dad"/>
+  <rect x="273" y="427" width="654" height="175" rx="72" fill="url(#console)" stroke="#ffe8be" stroke-width="8"/>
+  <path d="M390 488h88m-44-44v88" stroke="#34314d" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="770" cy="478" r="18" fill="#34314d"/><circle cx="817" cy="520" r="18" fill="#34314d"/>
+  <text x="600" y="652" fill="#fff" font-family="Arial,sans-serif" font-size="42" font-weight="800" text-anchor="middle">LOS CLÁSICOS SIGUEN UNIENDO GENERACIONES</text>
+</svg>

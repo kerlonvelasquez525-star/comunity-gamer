@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">El parche inesperado</title>
+  <desc id="desc">Ilustración original de una actualización de juego llena de sorpresas.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#13223e"/><stop offset="1" stop-color="#211636"/></linearGradient>
+    <linearGradient id="card" x2="1"><stop stop-color="#4ce0d0"/><stop offset="1" stop-color="#7b67ee"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="910" cy="180" r="250" fill="#8d68ff" opacity=".11"/><circle cx="230" cy="540" r="270" fill="#3fd7d0" opacity=".1"/>
+  <rect x="285" y="108" width="630" height="410" rx="26" fill="#101726" stroke="#56647e" stroke-width="4"/>
+  <rect x="310" y="134" width="580" height="80" rx="15" fill="#1c2c44"/>
+  <circle cx="354" cy="174" r="12" fill="#ff738c"/><circle cx="394" cy="174" r="12" fill="#f7c75a"/><circle cx="434" cy="174" r="12" fill="#55dfbf"/>
+  <rect x="340" y="248" width="350" height="22" rx="11" fill="#334560"/>
+  <rect x="340" y="248" width="218" height="22" rx="11" fill="url(#card)"/>
+  <text x="340" y="315" fill="#eff3ff" font-family="Arial,sans-serif" font-size="29" font-weight="700">ACTUALIZACIÓN INSTALADA</text>
+  <text x="340" y="355" fill="#9eabc0" font-family="Arial,sans-serif" font-size="21">Estrategia anterior: en mantenimiento</text>
+  <path d="m635 400 55-55 55 55-55 55z" fill="#f6c75d"/>
+  <text x="690" y="412" fill="#2a2533" font-family="Arial,sans-serif" font-size="34" font-weight="900" text-anchor="middle">!</text>
+  <path d="M734 385h110m-55-55v110" stroke="#596b88" stroke-width="9" stroke-linecap="round"/>
+  <text x="600" y="586" fill="#fff" font-family="Arial,sans-serif" font-size="42" font-weight="800" text-anchor="middle">NUEVO PARCHE. NUEVAS ANÉCDOTAS.</text>
+</svg>

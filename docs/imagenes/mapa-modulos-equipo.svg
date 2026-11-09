@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+  <defs>
+    <style>
+      .title { font: 700 30px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .subtitle { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #cbd5e1; }
+      .box-title { font: 700 20px 'Segoe UI', Arial, sans-serif; fill: #111827; }
+      .box-text { font: 500 14px 'Segoe UI', Arial, sans-serif; fill: #1f2937; }
+      .small { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #475569; }
+      .arrow { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .core { fill: #fef3c7; stroke: #d97706; stroke-width: 2; }
+      .content { fill: #e0f2fe; stroke: #0284c7; stroke-width: 2; }
+      .community { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; }
+      .support { fill: #f3e8ff; stroke: #7c3aed; stroke-width: 2; }
+      .admin { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1100" fill="#020817"/>
+  <text x="60" y="65" class="title">Mapa del espacio de equipo</text>
+  <text x="60" y="95" class="subtitle">Dashboard + comunidades + contenido + soporte + moderación</text>
+
+  <rect x="620" y="150" width="360" height="130" rx="18" class="core"/>
+  <text x="680" y="190" class="box-title">DASHBOARD</text>
+  <text x="680" y="220" class="box-text">/{current_team}/dashboard</text>
+  <text x="680" y="246" class="small">Resumen general del equipo</text>
+
+  <rect x="120" y="360" width="260" height="150" rx="18" class="content"/>
+  <text x="150" y="400" class="box-title">NOTICIAS</text>
+  <text x="150" y="430" class="box-text">/{team}/noticias</text>
+  <text x="150" y="456" class="small">Crear, editar, comentar</text>
+  <text x="150" y="478" class="small">Contenido oficial y privado</text>
+
+  <rect x="430" y="360" width="280" height="150" rx="18" class="community"/>
+  <text x="460" y="400" class="box-title">COMUNIDADES</text>
+  <text x="460" y="430" class="box-text">/{team}/comunidad</text>
+  <text x="460" y="456" class="small">Miembros, invitaciones</text>
+  <text x="460" y="478" class="small">Solicitudes y transferencia</text>
+
+  <rect x="770" y="360" width="280" height="150" rx="18" class="content"/>
+  <text x="800" y="400" class="box-title">PUBLICACIONES</text>
+  <text x="800" y="430" class="box-text">/{team}/publicaciones</text>
+  <text x="800" y="456" class="small">Posts, reacciones</text>
+  <text x="800" y="478" class="small">Contenido social</text>
+
+  <rect x="1090" y="360" width="260" height="150" rx="18" class="content"/>
+  <text x="1120" y="400" class="box-title">FOROS</text>
+  <text x="1120" y="430" class="box-text">/{team}/foros</text>
+  <text x="1120" y="456" class="small">Temas y categorías</text>
+  <text x="1120" y="478" class="small">Hilos y aportes</text>
+
+  <rect x="220" y="610" width="260" height="160" rx="18" class="content"/>
+  <text x="250" y="650" class="box-title">HILOS</text>
+  <text x="250" y="680" class="box-text">/{team}/hilos</text>
+  <text x="250" y="706" class="small">Conversación estructurada</text>
+  <text x="250" y="730" class="small">Discusión por tema</text>
+
+  <rect x="520" y="610" width="260" height="160" rx="18" class="content"/>
+  <text x="550" y="650" class="box-title">APORTES</text>
+  <text x="550" y="680" class="box-text">/{team}/aportes</text>
+  <text x="550" y="706" class="small">Contribuciones</text>
+  <text x="550" y="730" class="small">Material colaborativo</text>
+
+  <rect x="820" y="610" width="260" height="160" rx="18" class="content"/>
+  <text x="850" y="650" class="box-title">CANALES</text>
+  <text x="850" y="680" class="box-text">/{team}/canales</text>
+  <text x="850" y="706" class="small">/canales/{canal}/mensajes</text>
+  <text x="850" y="730" class="small">Mensajes por canal</text>
+
+  <rect x="1120" y="610" width="260" height="160" rx="18" class="support"/>
+  <text x="1150" y="650" class="box-title">SOPORTE</text>
+  <text x="1150" y="680" class="box-text">/{team}/problemas</text>
+  <text x="1150" y="706" class="small">Casos, gestión y atención</text>
+  <text x="1150" y="730" class="small">Panel de incidencias</text>
+
+  <rect x="260" y="860" width="300" height="150" rx="18" class="support"/>
+  <text x="290" y="900" class="box-title">REPORTES</text>
+  <text x="290" y="930" class="box-text">/{team}/reportes-moderacion</text>
+  <text x="290" y="956" class="small">Moderación del contenido</text>
+  <text x="290" y="978" class="small">Estado y seguimiento</text>
+
+  <rect x="630" y="860" width="340" height="150" rx="18" class="support"/>
+  <text x="660" y="900" class="box-title">SOPORTE TÉCNICO</text>
+  <text x="660" y="930" class="box-text">/{team}/reportes-soporte</text>
+  <text x="660" y="956" class="small">Responder y votar</text>
+  <text x="660" y="978" class="small">Reportes del usuario</text>
+
+  <rect x="1040" y="860" width="290" height="150" rx="18" class="admin"/>
+  <text x="1070" y="900" class="box-title">ADMIN</text>
+  <text x="1070" y="930" class="box-text">Juegos, plataformas, idiomas, etiquetas</text>
+  <text x="1070" y="956" class="small">Configuración del contenido</text>
+  <text x="1070" y="978" class="small">Control de recursos compartidos</text>
+
+  <path d="M800 280 V360" class="arrow"/>
+  <path d="M250 510 V610" class="arrow"/>
+  <path d="M590 510 V610" class="arrow"/>
+  <path d="M950 510 V610" class="arrow"/>
+  <path d="M1245 510 V610" class="arrow"/>
+  <path d="M350 770 V860" class="arrow"/>
+  <path d="M800 770 V860" class="arrow"/>
+  <path d="M1180 770 V860" class="arrow"/>
+  <path d="M360 430 H430" class="arrow"/>
+  <path d="M710 430 H770" class="arrow"/>
+  <path d="M1050 430 H1090" class="arrow"/>
+  <path d="M430 430 C500 300, 615 300, 620 300" class="arrow"/>
+  <path d="M1160 430 C1080 300, 960 300, 980 300" class="arrow"/>
+</svg>

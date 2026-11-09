@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <style>
+      .title { font: 700 34px 'Segoe UI', Arial, sans-serif; fill: #f3f4f6; }
+      .subtitle { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #cbd5e1; }
+      .box-title { font: 700 20px 'Segoe UI', Arial, sans-serif; fill: #111827; }
+      .box-text { font: 500 16px 'Segoe UI', Arial, sans-serif; fill: #1f2937; }
+      .small { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #475569; }
+      .label { font: 600 14px 'Segoe UI', Arial, sans-serif; fill: #e2e8f0; }
+      .public { fill: #e0f2fe; stroke: #0284c7; stroke-width: 2; }
+      .auth { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; }
+      .team { fill: #fef3c7; stroke: #d97706; stroke-width: 2; }
+      .social { fill: #f3e8ff; stroke: #7c3aed; stroke-width: 2; }
+      .optional { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; }
+      .arrow { stroke: #94a3b8; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="900" fill="#020817"/>
+  <text x="60" y="70" class="title">Nexus Community — Mapa de navegación</text>
+  <text x="60" y="100" class="subtitle">Portal público • Autenticación • Equipo • Social • Soporte</text>
+
+  <rect x="60" y="150" width="250" height="170" rx="18" class="public"/>
+  <text x="90" y="190" class="box-title">PORTADA PÚBLICA</text>
+  <text x="90" y="220" class="box-text">/</text>
+  <text x="90" y="248" class="small">Landing principal</text>
+  <text x="90" y="272" class="small">Noticias oficiales</text>
+  <text x="90" y="294" class="small">Comunidades públicas</text>
+
+  <rect x="380" y="150" width="260" height="170" rx="18" class="public"/>
+  <text x="410" y="190" class="box-title">NOVEDADES</text>
+  <text x="410" y="220" class="box-text">/noticias-publicas</text>
+  <text x="410" y="248" class="small">Catálogo de noticias</text>
+  <text x="410" y="272" class="small">Lectura sin sesión</text>
+  <text x="410" y="294" class="small">Comentarios autenticados</text>
+
+  <rect x="700" y="150" width="260" height="170" rx="18" class="public"/>
+  <text x="730" y="190" class="box-title">COMUNIDAD</text>
+  <text x="730" y="220" class="box-text">/comunidad-publica</text>
+  <text x="730" y="248" class="small">Explorar comunidades</text>
+  <text x="730" y="272" class="small">Solicitar acceso</text>
+  <text x="730" y="294" class="small">Sin pertenecer a un equipo</text>
+
+  <rect x="1020" y="150" width="260" height="170" rx="18" class="public"/>
+  <text x="1050" y="190" class="box-title">SOPORTE</text>
+  <text x="1050" y="220" class="box-text">/soporte-publico</text>
+  <text x="1050" y="248" class="small">Problemas públicos</text>
+  <text x="1050" y="272" class="small">Información general</text>
+  <text x="1050" y="294" class="small">Contacto y ayuda</text>
+
+  <rect x="120" y="430" width="280" height="210" rx="18" class="auth"/>
+  <text x="150" y="470" class="box-title">AUTENTICACIÓN</text>
+  <text x="150" y="500" class="box-text">/login /register</text>
+  <text x="150" y="528" class="small">/forgot-password</text>
+  <text x="150" y="556" class="small">/reset-password/{token}</text>
+  <text x="150" y="584" class="small">/email/verify</text>
+  <text x="150" y="612" class="small">2FA y passkeys</text>
+
+  <rect x="470" y="430" width="310" height="210" rx="18" class="auth"/>
+  <text x="500" y="470" class="box-title">CONFIGURACIÓN</text>
+  <text x="500" y="500" class="box-text">/settings/profile</text>
+  <text x="500" y="528" class="small">/settings/appearance</text>
+  <text x="500" y="556" class="small">/settings/security</text>
+  <text x="500" y="584" class="small">/settings/teams</text>
+  <text x="500" y="612" class="small">/settings/communities</text>
+
+  <rect x="860" y="430" width="330" height="210" rx="18" class="team"/>
+  <text x="890" y="470" class="box-title">EQUIPO</text>
+  <text x="890" y="500" class="box-text">/{current_team}/dashboard</text>
+  <text x="890" y="528" class="small">Noticias, comunidad, soporte</text>
+  <text x="890" y="556" class="small">Foros, hilos, aportes</text>
+  <text x="890" y="584" class="small">Canales, publicaciones</text>
+  <text x="890" y="612" class="small">Reportes de moderación</text>
+
+  <rect x="1240" y="430" width="260" height="210" rx="18" class="social"/>
+  <text x="1270" y="470" class="box-title">SOCIAL</text>
+  <text x="1270" y="500" class="box-text">/chatbot</text>
+  <text x="1270" y="528" class="small">/chat/{recipient}</text>
+  <text x="1270" y="556" class="small">/amistades</text>
+  <text x="1270" y="584" class="small">/notificaciones</text>
+  <text x="1270" y="612" class="small">Asistente + mensajes</text>
+
+  <rect x="560" y="700" width="480" height="150" rx="18" class="optional"/>
+  <text x="590" y="740" class="box-title">DIRECTORIO DE COMUNIDADES (OPCIONAL)</text>
+  <text x="590" y="774" class="small">community-directory/</text>
+  <text x="590" y="800" class="small">TypeScript + Prisma + API independiente</text>
+  </rect>
+
+  <path d="M310 235 H380" class="arrow"/>
+  <path d="M640 235 H700" class="arrow"/>
+  <path d="M960 235 H1020" class="arrow"/>
+  <path d="M260 320 V430" class="arrow"/>
+  <path d="M625 320 V430" class="arrow"/>
+  <path d="M1025 320 V430" class="arrow"/>
+  <path d="M1370 320 V430" class="arrow"/>
+  <path d="M800 640 V700" class="arrow"/>
+  <path d="M420 520 H470" class="arrow"/>
+  <path d="M780 520 H860" class="arrow"/>
+  <path d="M1190 520 H1240" class="arrow"/>
+
+  <text x="330" y="220" class="label">Public</text>
+  <text x="665" y="220" class="label">Public</text>
+  <text x="980" y="220" class="label">Public</text>
+  <text x="295" y="380" class="label">Auth</text>
+  <text x="605" y="380" class="label">Account</text>
+  <text x="1055" y="380" class="label">Team</text>
+  <text x="1325" y="380" class="label">Social</text>
+  <text x="830" y="670" class="label">Optional</text>
+</svg>

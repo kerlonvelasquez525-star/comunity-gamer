@@ -4,13 +4,13 @@
         <header class="community-hero flex flex-wrap items-end justify-between gap-4">
             <div class="space-y-3">
                 <p class="text-sm font-semibold uppercase tracking-[0.18em] text-amber-600">
-                    {{ $team->name }} // red gamer
+                    {{ $team->name }} // comunidad gamer
                 </p>
                 <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
                     {{ $title }}
                 </h1>
                 <p class="max-w-2xl text-zinc-500 dark:text-zinc-400">
-                    Encuentra grupos, comparte intereses y juega acompañado.
+                    Descubre comunidades activas de jugadores en Colombia, organiza partidas, comparte estrategias y conecta con equipos competitivos y casuales en tu región.
                 </p>
             </div>
 
@@ -56,6 +56,21 @@
             @endif
         </form>
 
+        <div class="grid gap-4 sm:grid-cols-3">
+            <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400">Comunidades</p>
+                <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white">{{ $items->total() }}</p>
+            </div>
+            <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400">Regiones</p>
+                <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white">Bogotá · Medellín · Cali</p>
+            </div>
+            <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400">Actividad</p>
+                <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white">Eventos semanales</p>
+            </div>
+        </div>
+
         <p class="text-sm text-zinc-500 dark:text-zinc-400">
             <span class="font-semibold text-amber-600">{{ $items->total() }}</span>
             {{ $items->total() === 1 ? 'comunidad disponible' : 'comunidades disponibles' }}
@@ -72,7 +87,7 @@
                                     : \Illuminate\Support\Facades\Storage::disk('public')->url($comunidad->imagen_url))
                                 : asset('nexus.png');
                         @endphp
-                        <img src="{{ $communityImage }}" alt="{{ $comunidad->nombre }}" class="internal-community-image" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';">
+                        <img src="{{ $communityImage ?? asset('nexus.png') }}" alt="{{ $comunidad->nombre ?? 'Comunidad' }}" class="internal-community-image" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('nexus.png') }}';">
                         <span class="internal-community-badge">COMUNIDAD ACTIVA</span>
                     </div>
                     <div class="internal-community-content">
@@ -98,9 +113,15 @@
                     </div>
                 </article>
             @empty
-                <p class="rounded-xl border border-dashed border-zinc-300 p-8 text-sm text-zinc-500 md:col-span-2 xl:col-span-3 dark:border-zinc-700">
-                        Este equipo aún no tiene comunidades propias. Revisa las comunidades públicas disponibles o crea una desde Configuración.
-                </p>
+                <div class="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 p-8 text-sm text-zinc-600 md:col-span-2 xl:col-span-3 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-300">
+                    <p class="text-base font-semibold text-zinc-900 dark:text-white">Aún no hay comunidades activas en este equipo.</p>
+                    <p class="mt-2 max-w-2xl">
+                        Puedes crear una comunidad para esports, partidas casuales, torneos regionales o grupos de contenido en Bogotá, Medellín, Cali y el resto de Colombia.
+                    </p>
+                    <p class="mt-4 text-zinc-500 dark:text-zinc-400">
+                        Revisa las comunidades públicas disponibles o crea una desde Configuración para impulsar tu comunidad gamer.
+                    </p>
+                </div>
             @endforelse
         </div>
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\TeamInvitation;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -50,10 +51,15 @@ new class extends Component {
     public function acceptInvitation(string $code): mixed
     {
         $user = Auth::user();
+
         $invitation = TeamInvitation::query()
             ->where('code', $code)
             ->whereNull('accepted_at')
-            ->firstOrFail();
+            ->first();
+
+        if (! $invitation) {
+            throw new ModelNotFoundException();
+        }
 
         if ($invitation->email !== $user->email || $invitation->isExpired()) {
             $this->addError('invitation', __('This invitation is no longer available.'));
@@ -65,7 +71,7 @@ new class extends Component {
             $user->id => ['role' => $invitation->role],
         ]);
 
-        $user->switchTeam($invitation->team);
+        $user->switchTeams($invitation->team);
 
         $invitation->forceFill(['accepted_at' => Carbon::now()])->save();
 

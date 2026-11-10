@@ -27,7 +27,7 @@ class ExampleTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee(route('public-noticias.index'))
-            ->assertDontSee(route('home').'#comentarios')
+            ->assertDontSee(route('home') . '#comentarios')
             ->assertSee(route('public-comunidad.index'))
             ->assertSee(route('public-problemas.index'));
     }
@@ -78,6 +78,7 @@ class ExampleTest extends TestCase
         $this->get(route('public-comunidad.index'))
             ->assertOk()
             ->assertSee('Comunidades activas')
+            ->assertSee('href="' . route('home') . '" class="brand-logo" aria-label="Ir al inicio"', false)
             ->assertSee(route('home'))
             ->assertSee(route('public-noticias.index'))
             ->assertSee(route('public-problemas.index'));
@@ -91,8 +92,10 @@ class ExampleTest extends TestCase
         $this->actingAs($user)
             ->get(route('public-comunidad.index'))
             ->assertOk()
+            ->assertSee('href="' . route('home') . '" class="brand-logo" aria-label="Ir al inicio"', false)
             ->assertSee(route('home'))
             ->assertSee(route('dashboard', $team->slug))
+            ->assertSee('Panel')
             ->assertSee(route('noticias.index', $team->slug))
             ->assertSee(route('comunidad.index', $team->slug))
             ->assertSee(route('problemas.index', $team->slug))

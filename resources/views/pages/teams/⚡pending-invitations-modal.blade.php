@@ -50,14 +50,10 @@ new class extends Component {
     public function acceptInvitation(string $code): mixed
     {
         $user = Auth::user();
-        $invitation = TeamInvitation::query()->where('code', $code)->firstOrFail();
-
-        if ($invitation->isAccepted()) {
-            TeamInvitation::query()
-                ->where('code', $code)
-                ->whereNull('accepted_at')
-                ->firstOrFail();
-        }
+        $invitation = TeamInvitation::query()
+            ->where('code', $code)
+            ->whereNull('accepted_at')
+            ->firstOrFail();
 
         if ($invitation->email !== $user->email || $invitation->isExpired()) {
             $this->addError('invitation', __('This invitation is no longer available.'));

@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -55,9 +56,10 @@ new class extends Component {
         $invitation = TeamInvitation::query()
             ->where('code', $code)
             ->whereNull('accepted_at')
+            ->with('team') // Asegura que la relación del equipo venga cargada
             ->first();
 
-        if (! $invitation) {
+        if (! $invitation || ! $invitation->team) {
             throw new ModelNotFoundException();
         }
 
@@ -67,14 +69,19 @@ new class extends Component {
             return null;
         }
 
-        $invitation->team->members()->syncWithoutDetaching([
-            $user->id => ['role' => $invitation->role],
-        ]);
-
-        $user->switchTeams($invitation->team);
-
-        $invitation->forceFill(['accepted_at' => Carbon::now()])->save();
-
+        // Operaciones atómicas con transacciones de base de datos
+        DB::transaction(function () use ($user, $invitation) {
+            $invitation->team->members()->syncWithoutDetaching([
+                $user->id => ['role' => $invitation->role],
+            ]);
+            
+            if (method_exists($user, 'switchTeam')) {
+                $user->switchTeam($invitation->team);
+            }
+            
+            $invitation->forceFill(['accepted_at' => Carbon::now()])->save();
+        });
+        
         session()->flash('team-invitation-accepted', true);
         $this->dispatch('invitation-accepted');
 

@@ -45,7 +45,9 @@
                     <div class="flex shrink-0 items-center gap-4">
                         <a href="{{ $logoHref }}"
                            class="flex items-center transition-transform hover:scale-105"
-                           title="Ir al inicio">
+                           title="Volver a la página anterior"
+                           aria-label="Volver a la página anterior"
+                           onclick="if (window.history.length > 1) { window.history.back(); return false; }">
                             <img src="{{ asset('nexus.png') }}" alt="Nexus Logo" class="h-12 w-12 rounded-[45%] border-2 border-cyan-400/80 object-cover p-0.5 shadow-[0_0_12px_rgba(0,240,255,0.35)]">
                         </a>
                     </div>

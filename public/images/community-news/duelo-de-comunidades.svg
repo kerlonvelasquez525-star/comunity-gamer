@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Duelo de comunidades</title>
+  <desc id="desc">Ilustración original de dos equipos gamer enfrentados amistosamente.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#102839"/><stop offset="1" stop-color="#17152d"/></linearGradient>
+    <linearGradient id="green" x2="1" y2="1"><stop stop-color="#9effb8"/><stop offset="1" stop-color="#16c784"/></linearGradient>
+    <linearGradient id="pink" x2="1" y2="1"><stop stop-color="#ffb5a6"/><stop offset="1" stop-color="#ff5c86"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="170" cy="90" r="220" fill="#13d887" opacity=".12"/><circle cx="1040" cy="590" r="260" fill="#ff557d" opacity=".12"/>
+  <path d="M600 76v390" stroke="#fff" stroke-opacity=".16" stroke-width="3" stroke-dasharray="10 14"/>
+  <path d="M90 515 330 230l238 285z" fill="#16c784" opacity=".09"/><path d="m632 515 238-285 240 285z" fill="#ff557d" opacity=".09"/>
+  <g transform="translate(155 205)">
+    <path d="M55 190q10-105 125-128 100 19 124 128l-15 80q-10 34-48 21l-55-39h-38l-55 39q-38 13-48-21z" fill="url(#green)" stroke="#d7ffe4" stroke-width="8"/>
+    <path d="M111 160h65m-32-32v64" stroke="#123b32" stroke-width="15" stroke-linecap="round"/>
+    <circle cx="240" cy="151" r="12" fill="#123b32"/><circle cx="270" cy="178" r="12" fill="#123b32"/>
+    <text x="180" y="350" fill="#d7ffe4" font-family="Arial,sans-serif" font-size="26" font-weight="700" text-anchor="middle">EQUIPO VERDE</text>
+  </g>
+  <g transform="translate(630 205)">
+    <path d="M55 190q10-105 125-128 100 19 124 128l-15 80q-10 34-48 21l-55-39h-38l-55 39q-38 13-48-21z" fill="url(#pink)" stroke="#ffe0db" stroke-width="8"/>
+    <path d="M111 160h65m-32-32v64" stroke="#63243e" stroke-width="15" stroke-linecap="round"/>
+    <circle cx="240" cy="151" r="12" fill="#63243e"/><circle cx="270" cy="178" r="12" fill="#63243e"/>
+    <text x="180" y="350" fill="#ffe0db" font-family="Arial,sans-serif" font-size="26" font-weight="700" text-anchor="middle">EQUIPO ROSA</text>
+  </g>
+  <rect x="472" y="292" width="256" height="84" rx="42" fill="#111827" stroke="#f8c45d" stroke-width="3"/>
+  <text x="600" y="347" fill="#f8c45d" font-family="Arial,sans-serif" font-size="39" font-weight="900" text-anchor="middle">VS</text>
+  <text x="600" y="600" fill="#f4f7fb" font-family="Arial,sans-serif" font-size="40" font-weight="800" text-anchor="middle">RIVALIDAD SÍ. RESPETO SIEMPRE.</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Broma con respeto</title>
+  <desc id="desc">Ilustración original de una conversación amistosa entre jugadores.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#173b46"/><stop offset="1" stop-color="#171c36"/></linearGradient>
+    <linearGradient id="bubble" x2="1"><stop stop-color="#5ae4ca"/><stop offset="1" stop-color="#7b8fff"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="210" cy="560" r="240" fill="#4ce1ca" opacity=".1"/><circle cx="1040" cy="120" r="230" fill="#7885ff" opacity=".11"/>
+  <path d="M300 147h600q42 0 42 42v174q0 42-42 42H556l-110 87v-87H300q-42 0-42-42V189q0-42 42-42z" fill="url(#bubble)"/>
+  <circle cx="414" cy="276" r="20" fill="#133b4b"/><circle cx="600" cy="276" r="20" fill="#133b4b"/><circle cx="786" cy="276" r="20" fill="#133b4b"/>
+  <path d="M430 500q170 96 340 0" fill="none" stroke="#7eeed5" stroke-width="13" stroke-linecap="round"/>
+  <path d="M482 502v38m236-38v38" stroke="#7eeed5" stroke-width="13" stroke-linecap="round"/>
+  <rect x="487" y="530" width="226" height="66" rx="33" fill="#101a2d" stroke="#7eeed5" stroke-width="3"/>
+  <text x="600" y="573" fill="#7eeed5" font-family="Arial,sans-serif" font-size="25" font-weight="800" text-anchor="middle">¿TODOS BIEN?</text>
+  <text x="600" y="648" fill="#fff" font-family="Arial,sans-serif" font-size="36" font-weight="800" text-anchor="middle">SI ALGUIEN NO SE RÍE, TOCA ESCUCHAR</text>
+</svg>

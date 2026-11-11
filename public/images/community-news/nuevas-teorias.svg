@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Nuevas teorías gamer</title>
+  <desc id="desc">Ilustración original de una comunidad imaginando novedades para una temporada de juego.</desc>
+  <defs>
+    <linearGradient id="bg" y2="1"><stop stop-color="#11223e"/><stop offset="1" stop-color="#17152e"/></linearGradient>
+    <linearGradient id="island" y2="1"><stop stop-color="#69e1cd"/><stop offset="1" stop-color="#3976b5"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="600" cy="255" r="190" fill="#f8ce68" opacity=".12"/><circle cx="600" cy="255" r="120" fill="#ffdc82" opacity=".18"/>
+  <path d="M0 438q190-83 354 8t310-8 324 5 212-26v258H0z" fill="#182945"/>
+  <path d="m221 457 215-188 151 94 156-149 235 242z" fill="url(#island)"/>
+  <path d="m436 269 52 54 44-18-35 45-61-32-57 51-44-11zM743 214l57 56 48-24-26 48-74-26-45 51-35-23z" fill="#d5fff1" opacity=".75"/>
+  <path d="M448 437q-88-80-154-39-44 27-25 67h182M753 428q85-85 154-39 43 29 20 69H758" fill="none" stroke="#d2e8ff" stroke-width="13" stroke-linecap="round"/>
+  <rect x="445" y="82" width="310" height="72" rx="36" fill="#101b2c" stroke="#f8ce68" stroke-width="3"/>
+  <text x="600" y="129" fill="#f8ce68" font-family="Arial,sans-serif" font-size="29" font-weight="800" text-anchor="middle">¿QUÉ VIENE AHORA?</text>
+  <text x="600" y="580" fill="#f4f7fb" font-family="Arial,sans-serif" font-size="42" font-weight="800" text-anchor="middle">TEORÍAS SÍ. RUMORES COMO HECHOS, NO.</text>
+</svg>

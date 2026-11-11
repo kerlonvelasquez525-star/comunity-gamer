@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\noticias;
 use App\Models\NoticiasComentario;
+use App\Models\Publicacion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -27,12 +28,13 @@ class DemoSeedDataTest extends TestCase
 
         $usersCount = User::count();
         $officialNewsCount = noticias::query()->whereNull('team_id')->where('es_oficial', true)->count();
+        $postCount = Publicacion::query()->count() + $officialNewsCount;
         $verifiedUsers = User::query()->whereNotNull('email_verified_at')->count();
         $telemetry = $usersCount > 0 ? round(($verifiedUsers / $usersCount) * 100, 1) : 0;
 
         $this->get('/')->assertOk()
             ->assertSee((string) $usersCount)
-            ->assertSee((string) $officialNewsCount)
+            ->assertSee((string) $postCount)
             ->assertSee((string) $telemetry.'%');
     }
 

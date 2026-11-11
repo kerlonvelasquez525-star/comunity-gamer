@@ -179,7 +179,7 @@
                         if (!empty($noticia->imagen_url)) {
                             $carouselImageUrl = filter_var($noticia->imagen_url, FILTER_VALIDATE_URL)
                                 ? $noticia->imagen_url
-                                : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url);
+                                : (str_starts_with($noticia->imagen_url, '/') ? $noticia->imagen_url : \Illuminate\Support\Facades\Storage::disk('public')->url($noticia->imagen_url));
                         }
 
                         if (empty($carouselImageUrl)) {
@@ -193,7 +193,11 @@
                             <p class="official-news-source">{{ $noticia->fuente_nombre ?: 'NEXUS' }} · {{ $noticia->created_at?->diffForHumans() }}</p>
                             <h2>{{ $noticia->titulo }}</h2>
                             <p>{{ $noticia->contenido }}</p>
-                            <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
+                            @if ($noticia->fuente_url)
+                                <a href="{{ $noticia->fuente_url }}" target="_blank" rel="noopener noreferrer" class="official-news-link">Leer fuente original &rarr;</a>
+                            @else
+                                <a href="{{ route('public-noticias.index') }}" class="official-news-link">Ver todas las noticias &rarr;</a>
+                            @endif
                         </div>
                     </article>
                 @empty

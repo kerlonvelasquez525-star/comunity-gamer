@@ -90,6 +90,7 @@ class DatabaseSeeder extends Seeder
 
         $this->seedPrivateConversations($users, $primaryUser);
         $this->seedOfficialNews($users);
+        $this->call(CommunityNewsSeeder::class);
         $this->seedPublications($demoTeam, $users);
         $this->seedCommunities($demoTeam, $users);
         $this->seedCatalogs();

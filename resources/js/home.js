@@ -144,42 +144,45 @@
                 }
 
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken || '',
-                    },
-                    body: new URLSearchParams(new FormData(form)).toString(),
-                });
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': csrfToken || '',
+                        },
+                        body: new URLSearchParams(new FormData(form)).toString(),
+                    });
 
-                if (!response.ok) {
+                    if (!response.ok) {
+                        form.submit();
+                        return;
+                    }
+
+                    const payload = await response.json();
+                    const comment = payload.comment || {};
+                    const emptyState = list.querySelector('.official-comment-empty');
+                    if (emptyState) {
+                        emptyState.remove();
+                    }
+
+                    const newComment = document.createElement('div');
+                    const author = document.createElement('strong');
+                    const content = document.createElement('span');
+                    newComment.className = 'official-comment';
+                    author.textContent = String(comment.author || 'Usuario');
+                    content.textContent = String(comment.contenido || value);
+                    newComment.append(author, content);
+                    list.prepend(newComment);
+
+                    const count = Number(total.textContent || '0') + 1;
+                    total.textContent = String(count);
+                    form.reset();
+                } catch {
                     form.submit();
-                    return;
                 }
-
-                const payload = await response.json();
-                const comment = payload.comment || {
-                    author: 'Usuario',
-                    contenido: value,
-                };
-
-                const emptyState = list.querySelector('.official-comment-empty');
-                if (emptyState) {
-                    emptyState.remove();
-                }
-
-                const newComment = document.createElement('p');
-                newComment.className = 'official-comment';
-                newComment.innerHTML = `<strong>${comment.author}:</strong> ${comment.contenido}`;
-                list.prepend(newComment);
-
-                const count = Number(total.textContent || '0') + 1;
-                total.textContent = String(count);
-
-                form.reset();
             });
         });
     };

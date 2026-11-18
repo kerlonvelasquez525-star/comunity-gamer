@@ -157,6 +157,7 @@
                         <a href="{{ route('noticias.create', $team->slug) }}" wire:navigate class="dashboard-primary-action">Crear noticia</a>
                     </div>
                 @endforelse
+            </div>
         </section>
 
     </div>
